@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenYantra — Visual Architecture Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Source+Code+Pro:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --ink:#0a0612; --saffron:#ff9933; --gold:#d4af37; --gold2:#f0c050;
+  --cream:#fff8e6; --dim:#9a8060; --surface:#130e1e; --surface2:#1e1630;
+  --border:#2e2040; --green:#3dba6e; --red:#d94030; --blue:#4a80d0;
+  --warm:#c8905a; --deep:#060410;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Subtle dot grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: radial-gradient(circle, rgba(212,175,55,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Page sections */
+section { position: relative; z-index: 1; }
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 40px; text-align: center;
+  background: radial-gradient(ellipse at 50% 40%, rgba(255,153,51,0.08) 0%, transparent 70%);
+}
+
+.yantra-icon {
+  width: 160px; height: 160px; margin-bottom: 36px;
+  animation: rotateslow 40s linear infinite;
+}
+@keyframes rotateslow { to { transform: rotate(360deg); } }
+
+.hero h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--gold2) 0%, var(--saffron) 50%, var(--gold) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+}
+
+.hero .devanagari {
+  font-size: 1.2rem; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 20px; opacity: 0.7;
+}
+
+.hero .tagline {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--dim); max-width: 560px;
+  font-style: italic; margin-bottom: 16px;
+}
+
+.hero .version-badge {
+  display: inline-block;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 20px; padding: 4px 16px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.78rem; color: var(--gold); letter-spacing: 0.1em;
+}
+
+/* ── Section headers ──────────────────────────────────────────────────────── */
+.section-header {
+  text-align: center; padding: 60px 40px 40px;
+}
+
+.section-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--saffron); margin-bottom: 8px; letter-spacing: 0.05em;
+}
+
+.section-header .sub {
+  color: var(--dim); font-style: italic; font-size: 1rem;
+}
+
+/* ── Architecture diagram ─────────────────────────────────────────────────── */
+.arch-section {
+  padding: 20px 40px 60px; max-width: 1100px; margin: 0 auto;
+}
+
+.arch-diagram {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  overflow: hidden;
+}
+
+.arch-diagram::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,153,51,0.04) 0%, transparent 60%);
+}
+
+/* Layers */
+.arch-layer {
+  position: relative; z-index: 1;
+  display: flex; align-items: stretch; gap: 16px;
+  margin-bottom: 12px;
+}
+
+.arch-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.65rem; color: var(--dim);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  min-width: 24px; display: flex; align-items: center; justify-content: center;
+  border-right: 1px solid var(--border); padding-right: 10px; margin-right: 4px;
+}
+
+.arch-boxes { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+
+.abox {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px; flex: 1; min-width: 120px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.abox:hover { border-color: var(--saffron); transform: translateY(-2px); }
+
+.abox .icon { font-size: 1.4rem; margin-bottom: 6px; }
+.abox .name {
+  font-family: 'Cinzel', serif; font-size: 0.82rem;
+  color: var(--saffron); letter-spacing: 0.04em; margin-bottom: 4px;
+}
+.abox .sub { font-size: 0.72rem; color: var(--dim); font-style: italic; }
+.abox .tag2 {
+  display: inline-block; margin-top: 6px;
+  background: rgba(255,153,51,0.1); border: 1px solid rgba(255,153,51,0.2);
+  border-radius: 10px; padding: 2px 8px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.62rem; color: var(--saffron);
+}
+
+.abox.gold { border-color: rgba(212,175,55,0.3); }
+.abox.gold .name { color: var(--gold); }
+.abox.gold .tag2 { background: rgba(212,175,55,0.08); border-color: rgba(212,175,55,0.2); color: var(--gold); }
+
+.abox.green { border-color: rgba(61,186,110,0.2); }
+.abox.green .name { color: var(--green); }
+.abox.red { border-color: rgba(217,64,48,0.2); }
+.abox.red .name { color: var(--red); }
+.abox.blue { border-color: rgba(74,128,208,0.2); }
+.abox.blue .name { color: var(--blue); }
+
+/* Arrow */
+.arrow {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 0; color: var(--dim);
+}
+.arrow span {
+  font-size: 0.7rem; color: var(--dim); font-family: 'Source Code Pro', monospace;
+  letter-spacing: 0.05em; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 3px 10px;
+}
+
+/* ── Sheets grid ──────────────────────────────────────────────────────────── */
+.sheets-section {
+  padding: 20px 40px 60px; max-width: 1100px; margin: 0 auto;
+}
+
+.sheets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.sheet-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative; overflow: hidden;
+}
+.sheet-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--saffron), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.sheet-card:hover { border-color: rgba(255,153,51,0.4); transform: translateY(-2px); }
+.sheet-card:hover::before { opacity: 1; }
+
+.sheet-card .emoji { font-size: 1.5rem; margin-bottom: 8px; }
+.sheet-card .sname {
+  font-family: 'Cinzel', serif; font-size: 0.85rem;
+  color: var(--saffron); margin-bottom: 2px; letter-spacing: 0.03em;
+}
+.sheet-card .sanskrit {
+  font-size: 0.72rem; color: var(--gold); opacity: 0.7; margin-bottom: 8px;
+}
+.sheet-card .desc { font-size: 0.78rem; color: var(--dim); line-height: 1.5; }
+.sheet-card .badge2 {
+  display: inline-block; margin-top: 8px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.62rem;
+  padding: 2px 8px; border-radius: 8px;
+  background: rgba(255,153,51,0.08); border: 1px solid rgba(255,153,51,0.15);
+  color: var(--warm);
+}
+.sheet-card.new-card .sname { color: var(--green); }
+.sheet-card.new-card .badge2 { background: rgba(61,186,110,0.08); border-color: rgba(61,186,110,0.2); color: var(--green); }
+.sheet-card.security-card .sname { color: var(--red); }
+.sheet-card.security-card .badge2 { background: rgba(217,64,48,0.08); border-color: rgba(217,64,48,0.2); color: var(--red); }
+
+/* ── Write flow ───────────────────────────────────────────────────────────── */
+.flow-section {
+  padding: 20px 40px 60px; max-width: 900px; margin: 0 auto;
+}
+
+.flow-steps {
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.fstep {
+  display: flex; gap: 20px; align-items: flex-start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.fstep:last-child { border-bottom: none; }
+
+.fstep .num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-weight: 700; color: var(--ink);
+  font-size: 0.9rem; flex-shrink: 0;
+}
+
+.fstep .content { flex: 1; }
+.fstep .title {
+  font-family: 'Cinzel', serif; color: var(--saffron);
+  font-size: 1rem; margin-bottom: 4px; letter-spacing: 0.03em;
+}
+.fstep .desc { font-size: 0.85rem; color: var(--dim); margin-bottom: 8px; }
+.fstep .code {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 12px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.75rem;
+  color: var(--cream); overflow-x: auto;
+}
+.fstep .code .comment { color: var(--dim); }
+.fstep .code .kw { color: var(--saffron); }
+.fstep .code .str { color: var(--green); }
+
+/* ── Trust tiers ──────────────────────────────────────────────────────────── */
+.trust-section {
+  padding: 20px 40px 60px; max-width: 900px; margin: 0 auto;
+}
+
+.trust-pyramid {
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+
+.tier {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px; border-radius: 8px; border: 1px solid;
+  transition: transform 0.2s;
+  width: 100%; max-width: 600px;
+}
+.tier:hover { transform: scaleX(1.02); }
+
+.tier .tlevel {
+  font-family: 'Source Code Pro', monospace; font-size: 0.7rem;
+  min-width: 32px; text-align: center; font-weight: 600;
+}
+.tier .tname {
+  font-family: 'Cinzel', serif; font-size: 0.88rem; flex: 1;
+}
+.tier .tdesc { font-size: 0.75rem; color: var(--dim); }
+.tier .agents {
+  font-family: 'Source Code Pro', monospace; font-size: 0.68rem;
+  color: var(--dim); text-align: right;
+}
+
+.tier-5 { background: rgba(212,175,55,0.08); border-color: rgba(212,175,55,0.4); }
+.tier-5 .tlevel, .tier-5 .tname { color: var(--gold); }
+.tier-4 { background: rgba(255,153,51,0.08); border-color: rgba(255,153,51,0.3); }
+.tier-4 .tlevel, .tier-4 .tname { color: var(--saffron); }
+.tier-3 { background: rgba(61,186,110,0.06); border-color: rgba(61,186,110,0.2); }
+.tier-3 .tlevel, .tier-3 .tname { color: var(--green); }
+.tier-2 { background: rgba(74,128,208,0.06); border-color: rgba(74,128,208,0.2); }
+.tier-2 .tlevel, .tier-2 .tname { color: var(--blue); }
+.tier-1 { background: rgba(200,144,90,0.06); border-color: rgba(200,144,90,0.2); }
+.tier-1 .tlevel, .tier-1 .tname { color: var(--warm); }
+.tier-0 { background: rgba(217,64,48,0.06); border-color: rgba(217,64,48,0.2); }
+.tier-0 .tlevel, .tier-0 .tname { color: var(--red); }
+
+/* ── Version timeline ─────────────────────────────────────────────────────── */
+.versions-section {
+  padding: 20px 40px 60px; max-width: 900px; margin: 0 auto;
+}
+
+.vtimeline { position: relative; padding-left: 32px; }
+.vtimeline::before {
+  content: ''; position: absolute; left: 12px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(to bottom, var(--saffron), var(--gold), transparent);
+}
+
+.vitem { position: relative; margin-bottom: 28px; }
+.vitem::before {
+  content: ''; position: absolute; left: -24px; top: 8px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--saffron); border: 2px solid var(--ink);
+}
+.vitem.current::before { background: var(--gold); box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+.vitem.future::before { background: var(--surface2); border-color: var(--border); }
+
+.vitem .vtag {
+  font-family: 'Source Code Pro', monospace; font-size: 0.72rem;
+  color: var(--saffron); font-weight: 600; letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.vitem.current .vtag { color: var(--gold); }
+.vitem.future .vtag { color: var(--dim); }
+
+.vitem h3 {
+  font-family: 'Cinzel', serif; font-size: 1rem;
+  color: var(--cream); margin-bottom: 6px; letter-spacing: 0.02em;
+}
+.vitem.future h3 { color: var(--dim); }
+
+.vitem .features { display: flex; gap: 6px; flex-wrap: wrap; }
+.vitem .feat {
+  font-family: 'Source Code Pro', monospace; font-size: 0.68rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 2px 8px; color: var(--dim);
+}
+.vitem.current .feat { border-color: rgba(212,175,55,0.25); color: var(--warm); }
+
+/* ── CLI reference ────────────────────────────────────────────────────────── */
+.cli-section {
+  padding: 20px 40px 60px; max-width: 900px; margin: 0 auto;
+}
+
+.cli-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;
+}
+
+.cli-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+}
+.cli-card .cmd {
+  font-family: 'Source Code Pro', monospace; font-size: 0.85rem;
+  color: var(--saffron); margin-bottom: 6px; font-weight: 600;
+}
+.cli-card .cdesc { font-size: 0.78rem; color: var(--dim); }
+
+/* ── Mythology ────────────────────────────────────────────────────────────── */
+.myth-section {
+  padding: 20px 40px 80px; max-width: 900px; margin: 0 auto;
+}
+
+.myth-table {
+  width: 100%; border-collapse: collapse;
+}
+.myth-table th {
+  font-family: 'Cinzel', serif; font-size: 0.82rem;
+  color: var(--gold); padding: 10px 14px; text-align: left;
+  border-bottom: 1px solid var(--border); letter-spacing: 0.04em;
+}
+.myth-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; vertical-align: top;
+}
+.myth-table .sanskrit { color: var(--saffron); font-family: 'Source Code Pro', monospace; }
+.myth-table .myth { color: var(--dim); font-style: italic; }
+.myth-table .impl { color: var(--cream); }
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+footer {
+  text-align: center; padding: 50px 40px;
+  border-top: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+footer .quote {
+  font-style: italic; color: var(--dim); max-width: 500px; margin: 0 auto 20px;
+  font-size: 1rem; line-height: 1.8;
+}
+footer .links {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  font-family: 'Source Code Pro', monospace; font-size: 0.78rem;
+}
+footer a { color: var(--gold); text-decoration: none; }
+footer a:hover { color: var(--saffron); }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .hero { padding: 40px 20px; }
+  .arch-section, .sheets-section, .flow-section, .trust-section,
+  .versions-section, .cli-section, .myth-section { padding: 10px 16px 40px; }
+  .arch-layer { flex-direction: column; }
+  .arch-label { writing-mode: horizontal-tb; border-right: none; border-bottom: 1px solid var(--border); padding: 6px 0; margin: 0 0 8px 0; }
+  .section-header { padding: 40px 20px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <svg class="yantra-icon" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+    <!-- Outer square with gates -->
+    <rect x="10" y="10" width="140" height="140" fill="none" stroke="#d4af37" stroke-width="1.2" opacity="0.5"/>
+    <!-- Rotated square (diamond) -->
+    <polygon points="80,18 142,80 80,142 18,80" fill="none" stroke="#ff9933" stroke-width="1"/>
+    <!-- Circles -->
+    <circle cx="80" cy="80" r="48" fill="none" stroke="#d4af37" stroke-width="0.8" opacity="0.4"/>
+    <circle cx="80" cy="80" r="35" fill="none" stroke="#ff9933" stroke-width="0.8" opacity="0.4"/>
+    <!-- 8-petal star -->
+    <polygon points="80,35 88,65 116,55 96,75 130,80 96,85 116,105 88,95 80,125 72,95 44,105 64,85 30,80 64,75 44,55 72,65" fill="none" stroke="#ff9933" stroke-width="0.9" opacity="0.6"/>
+    <!-- Memory graph nodes -->
+    <circle cx="80" cy="80" r="7" fill="#ff9933"/>
+    <circle cx="80" cy="50" r="4" fill="#d4af37"/>
+    <circle cx="106" cy="65" r="4" fill="#ff9933"/>
+    <circle cx="106" cy="95" r="4" fill="#d4af37"/>
+    <circle cx="80" cy="110" r="4" fill="#ff9933"/>
+    <circle cx="54" cy="95" r="4" fill="#d4af37"/>
+    <circle cx="54" cy="65" r="4" fill="#ff9933"/>
+    <line x1="80" y1="80" x2="80" y2="50" stroke="#ff993350" stroke-width="1"/>
+    <line x1="80" y1="80" x2="106" y2="65" stroke="#ff993350" stroke-width="1"/>
+    <line x1="80" y1="80" x2="106" y2="95" stroke="#ff993350" stroke-width="1"/>
+    <line x1="80" y1="80" x2="80" y2="110" stroke="#ff993350" stroke-width="1"/>
+    <line x1="80" y1="80" x2="54" y2="95" stroke="#ff993350" stroke-width="1"/>
+    <line x1="80" y1="80" x2="54" y2="65" stroke="#ff993350" stroke-width="1"/>
+  </svg>
+
+  <h1>OpenYantra</h1>
+  <div class="devanagari">यन्त्र · चित्रगुप्त</div>
+  <p class="tagline">The Sacred Memory Machine — Visual Architecture Guide</p>
+  <span class="version-badge">v2.5 · Inspired by Chitragupta, the Hindu God of Data</span>
+</section>
+
+<!-- ── ARCHITECTURE ───────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>System Architecture</h2>
+    <p class="sub">How data flows through the Chitragupta pattern</p>
+  </div>
+  <div class="arch-section">
+    <div class="arch-diagram">
+
+      <!-- User layer -->
+      <div class="arch-layer">
+        <div class="arch-label">USER</div>
+        <div class="arch-boxes">
+          <div class="abox gold">
+            <div class="icon">👤</div>
+            <div class="name">User</div>
+            <div class="sub">Dharma-Adesh — always wins</div>
+            <span class="tag2">TRUST: 5/5</span>
+          </div>
+          <div class="abox gold">
+            <div class="icon">📱</div>
+            <div class="name">Telegram Bot</div>
+            <div class="sub">Mobile capture → Inbox</div>
+            <span class="tag2">telegram_bot.py</span>
+          </div>
+          <div class="abox gold">
+            <div class="icon">🌐</div>
+            <div class="name">Browser Dashboard</div>
+            <div class="sub">localhost:7331</div>
+            <span class="tag2">yantra_ui.py</span>
+          </div>
+          <div class="abox gold">
+            <div class="icon">⌨️</div>
+            <div class="name">CLI</div>
+            <div class="sub">yantra inbox · yantra ui · etc</div>
+            <span class="tag2">install.sh</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><span>↓ WriteRequest (Karma-Lekha) · READ free · Dharma-Adesh overrides all ↓</span></div>
+
+      <!-- Agent layer -->
+      <div class="arch-layer">
+        <div class="arch-label">AGENTS</div>
+        <div class="arch-boxes">
+          <div class="abox">
+            <div class="icon">🤖</div>
+            <div class="name">Claude</div>
+            <div class="sub">Read-only · Karma-Lekha to write</div>
+            <span class="tag2">TRUST: 3/5</span>
+          </div>
+          <div class="abox">
+            <div class="icon">🪄</div>
+            <div class="name">OpenClaw</div>
+            <div class="sub">Hooks: start · compact · end</div>
+            <span class="tag2">openclaw/hooks.py</span>
+          </div>
+          <div class="abox">
+            <div class="icon">🔗</div>
+            <div class="name">LangChain</div>
+            <div class="sub">BaseChatMemory backend</div>
+            <span class="tag2">langchain_adapter.py</span>
+          </div>
+          <div class="abox">
+            <div class="icon">⚙️</div>
+            <div class="name">AutoGen / CrewAI</div>
+            <div class="sub">Direct API integration</div>
+            <span class="tag2">TRUST: 3/5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><span>↓ All writes pass through Raksha security scan ↓</span></div>
+
+      <!-- Security layer -->
+      <div class="arch-layer">
+        <div class="arch-label">SECURITY</div>
+        <div class="arch-boxes">
+          <div class="abox red">
+            <div class="icon">🔒</div>
+            <div class="name">Raksha Engine</div>
+            <div class="sub">Injection scanner · Trust tiers · Mudra verify</div>
+            <span class="tag2">yantra_security.py</span>
+          </div>
+          <div class="abox red">
+            <div class="icon">🚫</div>
+            <div class="name">Quarantine Sheet</div>
+            <div class="sub">Blocked writes — user reviews</div>
+            <span class="tag2">🔒 Quarantine</span>
+          </div>
+          <div class="abox red">
+            <div class="icon">🛡️</div>
+            <div class="name">Security Log</div>
+            <div class="sub">Suspicious writes — warned + flagged</div>
+            <span class="tag2">🛡️ Security Log</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><span>↓ Chitragupta (LedgerAgent) — sole writer — validates · seals · audits ↓</span></div>
+
+      <!-- Chitragupta layer -->
+      <div class="arch-layer">
+        <div class="arch-label">CHITRAGUPTA</div>
+        <div class="arch-boxes">
+          <div class="abox" style="border-color:rgba(255,153,51,0.5);background:rgba(255,153,51,0.05);">
+            <div class="icon">⚖️</div>
+            <div class="name" style="color:var(--saffron);font-size:1rem;">Chitragupta</div>
+            <div class="sub">LedgerAgent — sole writer to Chitrapat</div>
+            <span class="tag2">admission · validate · seal · commit · audit</span>
+          </div>
+          <div class="abox">
+            <div class="icon">📦</div>
+            <div class="name">Sanchitta</div>
+            <div class="sub">Crash-safe WriteQueue</div>
+            <span class="tag2">sanchitta.json</span>
+          </div>
+          <div class="abox">
+            <div class="icon">📒</div>
+            <div class="name">Agrasandhanī</div>
+            <div class="sub">Immutable audit trail — SHA-256 Mudra</div>
+            <span class="tag2">📒 Agrasandhanī</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow"><span>↓ Commits to Chitrapat · Syncs VidyaKosha on every write ↓</span></div>
+
+      <!-- Storage + Index layer -->
+      <div class="arch-layer">
+        <div class="arch-label">STORAGE</div>
+        <div class="arch-boxes">
+          <div class="abox green" style="flex:2;">
+            <div class="icon">📜</div>
+            <div class="name">Chitrapat</div>
+            <div class="sub">chitrapat.ods — ISO/IEC 26300 · Open in LibreOffice free on all platforms</div>
+            <span class="tag2">14 sheets · human-readable · user-owned</span>
+          </div>
+          <div class="abox blue">
+            <div class="icon">🔍</div>
+            <div class="name">VidyaKosha</div>
+            <div class="sub">BM25 + TF-IDF · Pratibimba snapshots</div>
+            <span class="tag2">vidyakosha.py</span>
+          </div>
+          <div class="abox">
+            <div class="icon">🌅</div>
+            <div class="name">Digest</div>
+            <div class="sub">Daily proactive summary</div>
+            <span class="tag2">yantra_digest.py</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── 14 SHEETS ──────────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>The 14 Sheets</h2>
+    <p class="sub">The Chitrapat — your life scroll</p>
+  </div>
+  <div class="sheets-section">
+    <div class="sheets-grid">
+
+      <div class="sheet-card">
+        <div class="emoji">👤</div>
+        <div class="sname">Identity</div>
+        <div class="sanskrit">Svarupa — सवरूप</div>
+        <div class="desc">Who you are. Name, occupation, location, timezone, communication style.</div>
+        <span class="badge2">Session start · Always loaded</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">🎯</div>
+        <div class="sname">Goals</div>
+        <div class="sanskrit">Sankalpa — संकल्प</div>
+        <div class="desc">Long and short-term aims with priority, deadline, and status tracking.</div>
+        <span class="badge2">Session start</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">🚀</div>
+        <div class="sname">Projects</div>
+        <div class="sanskrit">Karma — कर्म</div>
+        <div class="desc">Active work with domain, priority, key decisions, and next concrete step.</div>
+        <span class="badge2">Session start · Active only</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">👥</div>
+        <div class="sname">People</div>
+        <div class="sanskrit">Sambandha — संबंध</div>
+        <div class="desc">Your world — relationships, context, sentiment, last mentioned.</div>
+        <span class="badge2">On-demand · Person mention</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">💡</div>
+        <div class="sname">Preferences</div>
+        <div class="sanskrit">Ruchi — रुचि</div>
+        <div class="desc">Taste, style, habits, tools. How you like things. Strong/Mild/Uncertain.</div>
+        <span class="badge2">On-demand · Before recommendations</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">🧠</div>
+        <div class="sname">Beliefs</div>
+        <div class="sanskrit">Vishwas — विश्वास</div>
+        <div class="desc">Values and worldview. Contradiction_Flag for belief evolution tracking.</div>
+        <span class="badge2">On-demand · Before advice</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">✅</div>
+        <div class="sname">Tasks</div>
+        <div class="sanskrit">Kartavya — कर्तव्य</div>
+        <div class="desc">Action items with project link, priority, deadline, and status.</div>
+        <span class="badge2">Session start · Pending only</span>
+      </div>
+
+      <div class="sheet-card" style="border-color:rgba(255,153,51,0.3);">
+        <div class="emoji">🔓</div>
+        <div class="sname" style="color:var(--saffron);">Open Loops</div>
+        <div class="sanskrit">Anishtha — अनिष्ठा</div>
+        <div class="desc">Unresolved threads. Zeigarnik Effect implemented. TTL_Days expiry. Flushed before compaction, re-injected after.</div>
+        <span class="badge2" style="color:var(--saffron);border-color:rgba(255,153,51,0.3);">★ Strongest feature · Always loaded</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">📅</div>
+        <div class="sname">Session Log</div>
+        <div class="sanskrit">Dinacharya — दिनचर्या</div>
+        <div class="desc">Per-session summaries with topics, decisions, new memory, and open loops created.</div>
+        <span class="badge2">Written at session end</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">⚙️</div>
+        <div class="sname">Agent Config</div>
+        <div class="sanskrit">Niyama — नियम</div>
+        <div class="desc">Per-agent instructions, VidyaKosha snapshot mode, priorities, active flags.</div>
+        <span class="badge2">Session start · This agent + ALL</span>
+      </div>
+
+      <div class="sheet-card">
+        <div class="emoji">📒</div>
+        <div class="sname">Agrasandhanī</div>
+        <div class="sanskrit">अग्रसंधानी</div>
+        <div class="desc">Immutable audit trail. Every write signed with SHA-256 Mudra. Append-only.</div>
+        <span class="badge2">Chitragupta-append only</span>
+      </div>
+
+      <div class="sheet-card new-card">
+        <div class="emoji">📥</div>
+        <div class="sname">Inbox</div>
+        <div class="sanskrit">Avagraha — अवग्रह · v2.1</div>
+        <div class="desc">Quick capture without forced categorisation. Chitragupta routes to correct sheets via heuristics.</div>
+        <span class="badge2">New v2.1 · yantra inbox</span>
+      </div>
+
+      <div class="sheet-card new-card">
+        <div class="emoji">✏️</div>
+        <div class="sname">Corrections</div>
+        <div class="sanskrit">Sanshodhan — संशोधन · v2.1</div>
+        <div class="desc">Agent-proposed edits pending user approval. Review in dashboard Conflict tab.</div>
+        <span class="badge2">New v2.1 · User approves</span>
+      </div>
+
+      <div class="sheet-card security-card">
+        <div class="emoji">🔒</div>
+        <div class="sname">Quarantine</div>
+        <div class="sanskrit">Nirodh — निरोध · v2.4</div>
+        <div class="desc">Blocked writes — prompt injection, jailbreak attempts, agent impersonation.</div>
+        <span class="badge2">New v2.4 · Raksha engine</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── WRITE FLOW ─────────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>The Write Flow</h2>
+    <p class="sub">Karma-Lekha → Chitragupta → Chitrapat</p>
+  </div>
+  <div class="flow-section">
+    <div class="flow-steps">
+
+      <div class="fstep">
+        <div class="num">1</div>
+        <div class="content">
+          <div class="title">Agent submits Karma-Lekha</div>
+          <div class="desc">Any agent calls request_write() — the only permitted write path.</div>
+          <div class="code"><span class="kw">oy</span>.add_project(<span class="str">"My Film"</span>, status=<span class="str">"Active"</span>, importance=<span class="str">9</span>)
+<span class="comment"># or: oy.request_write(WriteRequest(...))</span></div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="num">2</div>
+        <div class="content">
+          <div class="title">Sanchitta enqueue — crash safety</div>
+          <div class="desc">WriteRequest written to sanchitta.json before commit. Auto-replays on crash.</div>
+          <div class="code"><span class="comment"># sanchitta.json — persists to disk immediately</span>
+queue.enqueue(req) <span class="comment"># before anything else</span></div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="num">3</div>
+        <div class="content">
+          <div class="title">Raksha security scan</div>
+          <div class="desc">Every write scanned for injection, jailbreak, impersonation. Confirmed threats → quarantine. Suspicious → warn + flag.</div>
+          <div class="code">scan = raksha.scan_write(req.fields, req.agent, req.sheet)
+<span class="kw">if</span> scan.should_block: <span class="kw">return</span> <span class="str">"quarantined"</span>
+<span class="kw">elif</span> scan.should_warn: log_security(req, scan)</div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="num">4</div>
+        <div class="content">
+          <div class="title">Chitragupta validates</div>
+          <div class="desc">Checks controlled vocabulary, admission rules (no noise), conflict detection (Vivada).</div>
+          <div class="code">validation = ledger._validate(req)
+<span class="comment"># checks Status, Priority, Importance, Source vocab</span>
+<span class="comment"># filters: "user said thanks", importance < 2, etc</span></div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="num">5</div>
+        <div class="content">
+          <div class="title">Mudra seal — SHA-256 signature</div>
+          <div class="desc">Write sealed with cryptographic signature before commit.</div>
+          <div class="code">mudra = <span class="str">"sha256:"</span> + hashlib.sha256(payload).hexdigest()[:<span class="str">32</span>]</div>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="num">6</div>
+        <div class="content">
+          <div class="title">Commit to Chitrapat</div>
+          <div class="desc">Write to .ods file. VidyaKosha auto-syncs. Agrasandhanī records permanently.</div>
+          <div class="code">ledger._commit(req, mudra)
+vidyakosha.sync(chitrapat_path) <span class="comment"># index updated</span>
+ledger._log_audit(req, <span class="str">"written"</span>, signature=mudra)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── TRUST TIERS ────────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>Agent Trust Tiers</h2>
+    <p class="sub">Vishwas-Shreni — विश्वास-श्रेणी</p>
+  </div>
+  <div class="trust-section">
+    <div class="trust-pyramid">
+      <div class="tier tier-5">
+        <div class="tlevel">5</div>
+        <div>
+          <div class="tname">User — Dharma-Adesh</div>
+          <div class="tdesc">Never blocked. Always wins. Sovereign over all memory.</div>
+        </div>
+        <div class="agents">User</div>
+      </div>
+      <div class="tier tier-4">
+        <div class="tlevel">4</div>
+        <div>
+          <div class="tname">Chitragupta</div>
+          <div class="tdesc">System writer. LedgerAgent. Full trust.</div>
+        </div>
+        <div class="agents">System · Chitragupta</div>
+      </div>
+      <div class="tier tier-3">
+        <div class="tlevel">3</div>
+        <div>
+          <div class="tname">Known Agent</div>
+          <div class="tdesc">Registered agents. Standard scanning applies.</div>
+        </div>
+        <div class="agents">Claude · OpenClaw · LangChain · AutoGen</div>
+      </div>
+      <div class="tier tier-2">
+        <div class="tlevel">2</div>
+        <div>
+          <div class="tname">Unknown Agent</div>
+          <div class="tdesc">Unregistered agents. Stricter scanning.</div>
+        </div>
+        <div class="agents">Any unregistered agent</div>
+      </div>
+      <div class="tier tier-1">
+        <div class="tlevel">1</div>
+        <div>
+          <div class="tname">External</div>
+          <div class="tdesc">Suspicious patterns → confirmed block.</div>
+        </div>
+        <div class="agents">TelegramBot · Email · Browser ext</div>
+      </div>
+      <div class="tier tier-0">
+        <div class="tlevel">0</div>
+        <div>
+          <div class="tname">Untrusted</div>
+          <div class="tdesc">Any non-clean scan → immediate block.</div>
+        </div>
+        <div class="agents">Explicitly flagged</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VERSION TIMELINE ───────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>Version History</h2>
+    <p class="sub">From protocol to product</p>
+  </div>
+  <div class="versions-section">
+    <div class="vtimeline">
+
+      <div class="vitem">
+        <div class="vtag">v1.0</div>
+        <h3>The Protocol</h3>
+        <div class="features">
+          <span class="feat">Chitragupta pattern</span><span class="feat">Agrasandhanī</span>
+          <span class="feat">Anishtha / Open Loops</span><span class="feat">Sanchitta / WriteQueue</span>
+          <span class="feat">12-sheet schema</span><span class="feat">MYTHOLOGY.md</span>
+        </div>
+      </div>
+
+      <div class="vitem">
+        <div class="vtag">v2.0</div>
+        <h3>Semantic Search</h3>
+        <div class="features">
+          <span class="feat">VidyaKosha</span><span class="feat">BM25 + TF-IDF hybrid</span>
+          <span class="feat">FAISS index</span><span class="feat">Pratibimba snapshots</span>
+          <span class="feat">oy.search()</span>
+        </div>
+      </div>
+
+      <div class="vitem">
+        <div class="vtag">v2.1</div>
+        <h3>Inbox + UI Foundation</h3>
+        <div class="features">
+          <span class="feat">📥 Inbox sheet</span><span class="feat">Importance 1-10</span>
+          <span class="feat">TTL_Days on loops</span><span class="feat">Admission rules</span>
+          <span class="feat">Belief diffing</span><span class="feat">Browser dashboard</span>
+          <span class="feat">WHITEPAPER.md</span>
+        </div>
+      </div>
+
+      <div class="vitem">
+        <div class="vtag">v2.2</div>
+        <h3>Complete Repo</h3>
+        <div class="features">
+          <span class="feat">All docs restored</span><span class="feat">openclaw/</span>
+          <span class="feat">examples/</span><span class="feat">references/</span>
+          <span class="feat">DEPLOYMENT.md</span>
+        </div>
+      </div>
+
+      <div class="vitem">
+        <div class="vtag">v2.3</div>
+        <h3>Self-Contained Installer</h3>
+        <div class="features">
+          <span class="feat">install.sh / install.ps1</span><span class="feat">Telegram bot</span>
+          <span class="feat">yantra_digest.py</span><span class="feat">yantra doctor</span>
+          <span class="feat">Auto-venv</span><span class="feat">Desktop shortcut</span>
+        </div>
+      </div>
+
+      <div class="vitem">
+        <div class="vtag">v2.4</div>
+        <h3>Raksha Security Engine</h3>
+        <div class="features">
+          <span class="feat">yantra_security.py</span><span class="feat">Injection scanner</span>
+          <span class="feat">Agent trust tiers</span><span class="feat">Mudra verification</span>
+          <span class="feat">Quarantine sheet</span><span class="feat">VidyaKosha poison detect</span>
+        </div>
+      </div>
+
+      <div class="vitem current">
+        <div class="vtag">v2.5 · CURRENT</div>
+        <h3>Dashboard Completeness</h3>
+        <div class="features">
+          <span class="feat">Today tab</span><span class="feat">Timeline tab</span>
+          <span class="feat">Conflict Resolver</span><span class="feat">Floating capture</span>
+          <span class="feat">Mobile-responsive</span><span class="feat">This visual guide</span>
+        </div>
+      </div>
+
+      <div class="vitem future">
+        <div class="vtag">v2.6 → roadmap</div>
+        <h3>Bootstrap depth + Onboarding</h3>
+        <div class="features">
+          <span class="feat">12 new interview Qs</span><span class="feat">Progress bar</span>
+          <span class="feat">Sheet preview</span><span class="feat">Onboarding tour</span>
+        </div>
+      </div>
+
+      <div class="vitem future">
+        <div class="vtag">v3.0 → architecture shift</div>
+        <h3>SQLite Backend</h3>
+        <div class="features">
+          <span class="feat">SQLite as live storage</span><span class="feat">.ods = export view</span>
+          <span class="feat">Sub-10ms retrieval</span><span class="feat">Temporal graph queries</span>
+          <span class="feat">Stress test with 8 models</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CLI REFERENCE ──────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>CLI Reference</h2>
+    <p class="sub">yantra — the command line interface</p>
+  </div>
+  <div class="cli-section">
+    <div class="cli-grid">
+      <div class="cli-card"><div class="cmd">yantra bootstrap</div><div class="cdesc">Interview-driven cold start — populates Chitrapat via conversation. No empty spreadsheets.</div></div>
+      <div class="cli-card"><div class="cmd">yantra ui [port]</div><div class="cdesc">Browser dashboard at http://localhost:7331. Today · Inbox · Loops · Timeline · Conflicts · Security.</div></div>
+      <div class="cli-card"><div class="cmd">yantra doctor</div><div class="cdesc">System health check — Python version, packages, port, permissions, ODS integrity.</div></div>
+      <div class="cli-card"><div class="cmd">yantra health</div><div class="cdesc">Memory stats — open loops, inbox pending, corrections, stale projects, file size.</div></div>
+      <div class="cli-card"><div class="cmd">yantra inbox "text"</div><div class="cdesc">Quick capture to Inbox without categorisation. Route later with yantra route.</div></div>
+      <div class="cli-card"><div class="cmd">yantra digest</div><div class="cdesc">Daily proactive summary — urgent loops, stale projects, memory insights, past memory.</div></div>
+      <div class="cli-card"><div class="cmd">yantra telegram</div><div class="cdesc">Start Telegram bot. Any message → Inbox. /loop /task /goal /health /digest commands.</div></div>
+      <div class="cli-card"><div class="cmd">yantra security</div><div class="cdesc">Full Chitrapat security audit — injection detection, Mudra verification, threat report.</div></div>
+      <div class="cli-card"><div class="cmd">yantra loops</div><div class="cdesc">List all unresolved Open Loops (Anishtha) with priority.</div></div>
+      <div class="cli-card"><div class="cmd">yantra diff</div><div class="cdesc">Belief contradiction check — detect evolved or conflicting beliefs across the Vishwas sheet.</div></div>
+      <div class="cli-card"><div class="cmd">yantra ttl</div><div class="cdesc">Check for expired Open Loops past their TTL_Days threshold.</div></div>
+      <div class="cli-card"><div class="cmd">yantra open</div><div class="cdesc">Open Chitrapat in LibreOffice for direct editing (Dharma-Adesh).</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MYTHOLOGY TABLE ────────────────────────────────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <h2>Chitragupta — Implemented</h2>
+    <p class="sub">3,000 years of mythology as software architecture</p>
+  </div>
+  <div class="myth-section">
+    <table class="myth-table">
+      <tr><th>Sanskrit</th><th>Mythology</th><th>OpenYantra</th></tr>
+      <tr><td class="sanskrit">Chitragupta</td><td class="myth">Divine scribe — sole writer of the cosmic ledger</td><td class="impl">LedgerAgent — only agent that writes to Chitrapat</td></tr>
+      <tr><td class="sanskrit">Agrasandhanī</td><td class="myth">The cosmic register — complete record of every soul</td><td class="impl">📒 Audit trail sheet — every write signed with Mudra</td></tr>
+      <tr><td class="sanskrit">Chitrapat</td><td class="myth">The life scroll — a person's complete record</td><td class="impl">chitrapat.ods — the memory file</td></tr>
+      <tr><td class="sanskrit">Karma-Lekha</td><td class="myth">A deed submitted for recording</td><td class="impl">WriteRequest — write submitted to LedgerAgent</td></tr>
+      <tr><td class="sanskrit">Sanchitta</td><td class="myth">Accumulated karma awaiting reckoning</td><td class="impl">WriteQueue — crash-safe queue (sanchitta.json)</td></tr>
+      <tr><td class="sanskrit">Smarana</td><td class="myth">Remembrance — calling forth the record</td><td class="impl">Session Load Sequence — context at session start</td></tr>
+      <tr><td class="sanskrit">Anishtha</td><td class="myth">Unfinished intent — Zeigarnik Effect</td><td class="impl">🔓 Open Loops — flushed before compaction</td></tr>
+      <tr><td class="sanskrit">Mudra</td><td class="myth">The divine seal of authenticity</td><td class="impl">SHA-256 signature on every write</td></tr>
+      <tr><td class="sanskrit">Vivada</td><td class="myth">Dispute escalated for judgment</td><td class="impl">Conflict escalated to user — Conflict Resolver tab</td></tr>
+      <tr><td class="sanskrit">Dharma-Adesh</td><td class="myth">The righteous command that cannot be overruled</td><td class="impl">User edits always override all agent writes</td></tr>
+      <tr><td class="sanskrit">VidyaKosha</td><td class="myth">Repository of knowledge</td><td class="impl">Sidecar semantic index — BM25 + vector hybrid</td></tr>
+      <tr><td class="sanskrit">Pratibimba</td><td class="myth">Reflection — mirror image</td><td class="impl">Per-agent frozen index snapshot</td></tr>
+      <tr><td class="sanskrit">Raksha</td><td class="myth">Protection — divine armour</td><td class="impl">Security engine — injection scanner, trust tiers</td></tr>
+      <tr><td class="sanskrit">Yantra</td><td class="myth">Sacred diagram + machine/instrument</td><td class="impl">The project itself — structured and purposeful</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────────── -->
+<footer>
+  <p class="quote">"Your purpose is to stay in the minds of all people and record their thoughts and deeds."<br>— Brahma to Chitragupta</p>
+  <p style="color:var(--dim);font-size:0.78rem;margin-bottom:16px;font-style:italic">
+    The record exists to serve the remembered, not the recorder.
+  </p>
+  <div class="links">
+    <a href="https://github.com/revanthlevaka/OpenYantra">GitHub</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/WHITEPAPER.md">Whitepaper</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/MYTHOLOGY.md">Mythology</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/PROTOCOL.md">Protocol (CC0)</a>
+  </div>
+  <p style="color:var(--border);font-size:0.7rem;margin-top:24px;font-family:'Source Code Pro',monospace;">
+    OpenYantra v2.5 · Built in Hyderabad, India · MIT + CC0
+  </p>
+</footer>
+
+</body>
+</html>
