@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+*.backup.ods
+chitrapat.*.ods
+sanchitta.json
+.DS_Store
+dist/
+build/
+*.egg-info/
