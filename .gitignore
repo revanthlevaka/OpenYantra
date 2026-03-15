@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+sanchitta.json
+chitrapat.*.ods
+.DS_Store
+vidyakosha.faiss
+vidyakosha_bm25.pkl
+vidyakosha_registry.json
+pratibimba/
