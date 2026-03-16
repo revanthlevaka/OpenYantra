@@ -17,6 +17,7 @@ import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 try:
@@ -24,28 +25,46 @@ try:
     from fastapi.responses import HTMLResponse
     import uvicorn
 except ImportError:
-    print("pip install fastapi uvicorn"); sys.exit(1)
+    print("pip install fastapi uvicorn")
+    sys.exit(1)
 
 try:
     from openyantra import (
-        OpenYantra, WriteRequest,
-        SHEET_PROJECTS, SHEET_TASKS, SHEET_OPEN_LOOPS,
-        SHEET_PEOPLE, SHEET_GOALS, SHEET_PREFERENCES,
-        SHEET_BELIEFS, SHEET_SESSION_LOG, SHEET_INBOX,
-        SHEET_CORRECTIONS, SHEET_LEDGER,
-        SHEET_QUARANTINE, SHEET_SECURITY_LOG,
+        OpenYantra,
+        WriteRequest,
+        SHEET_PROJECTS,
+        SHEET_TASKS,
+        SHEET_OPEN_LOOPS,
+        SHEET_PEOPLE,
+        SHEET_GOALS,
+        SHEET_PREFERENCES,
+        SHEET_BELIEFS,
+        SHEET_SESSION_LOG,
+        SHEET_INBOX,
+        SHEET_CORRECTIONS,
+        SHEET_LEDGER,
+        SHEET_QUARANTINE,
+        SHEET_SECURITY_LOG,
     )
 except ImportError:
-    print("openyantra.py not found."); sys.exit(1)
+    print("openyantra.py not found.")
+    sys.exit(1)
 
 app = FastAPI(title="OpenYantra", version="2.10", docs_url=None, redoc_url=None)
 _oy = None
 
+
 def get_oy() -> OpenYantra:
-    if _oy is None: raise HTTPException(500, "Not initialised")
+    if _oy is None:
+        raise HTTPException(500, "Not initialised")
     return _oy
 
-HTML = open(__file__).read().split("# --HTML--")[1].split("# --END--")[0] if "# --HTML--" in open(__file__).read() else ""
+
+HTML = (
+    open(__file__).read().split("# --HTML--")[1].split("# --END--")[0]
+    if "# --HTML--" in open(__file__).read()
+    else ""
+)
 
 # Since we can't use the marker trick cleanly, define HTML inline
 DASHBOARD_HTML = r"""<!DOCTYPE html>
@@ -634,73 +653,141 @@ if (!localStorage.getItem('oy_toured')) {
 </body>
 </html>"""
 
+
 @app.get("/", response_class=HTMLResponse)
-async def root(): return DASHBOARD_HTML
+async def root():
+    return DASHBOARD_HTML
+
 
 @app.get("/api/health")
-async def api_health(): return get_oy().health_check()
+async def api_health():
+    return get_oy().health_check()
+
 
 @app.get("/api/sheet/{name}")
 async def api_sheet(name: str):
-    m = {"projects":SHEET_PROJECTS,"tasks":SHEET_TASKS,"open_loops":SHEET_OPEN_LOOPS,
-         "people":SHEET_PEOPLE,"goals":SHEET_GOALS,"preferences":SHEET_PREFERENCES,
-         "beliefs":SHEET_BELIEFS,"session_log":SHEET_SESSION_LOG,"inbox":SHEET_INBOX,
-         "corrections":SHEET_CORRECTIONS,"ledger":SHEET_LEDGER,
-         "quarantine":SHEET_QUARANTINE,"security_log":SHEET_SECURITY_LOG}
+    m = {
+        "projects": SHEET_PROJECTS,
+        "tasks": SHEET_TASKS,
+        "open_loops": SHEET_OPEN_LOOPS,
+        "people": SHEET_PEOPLE,
+        "goals": SHEET_GOALS,
+        "preferences": SHEET_PREFERENCES,
+        "beliefs": SHEET_BELIEFS,
+        "session_log": SHEET_SESSION_LOG,
+        "inbox": SHEET_INBOX,
+        "corrections": SHEET_CORRECTIONS,
+        "ledger": SHEET_LEDGER,
+        "quarantine": SHEET_QUARANTINE,
+        "security_log": SHEET_SECURITY_LOG,
+    }
     sheet = m.get(name)
-    if not sheet: raise HTTPException(404, f"Unknown: {name}")
+    if not sheet:
+        raise HTTPException(404, f"Unknown: {name}")
     rows = get_oy()._read_sheet(sheet)
     return {"sheet": sheet, "rows": rows, "count": len(rows)}
+
 
 @app.post("/api/inbox")
 async def api_inbox(req: Request):
     d = await req.json()
-    t = d.get("text","").strip()
-    if not t: raise HTTPException(400, "text required")
-    return get_oy().inbox(t, importance=int(d.get("importance",5)))
+    t = d.get("text", "").strip()
+    if not t:
+        raise HTTPException(400, "text required")
+    return get_oy().inbox(t, importance=int(d.get("importance", 5)))
+
 
 @app.post("/api/inbox/route")
 async def api_route():
     routing = get_oy().route_inbox(dry_run=False)
     return {"routed": sum(1 for r in routing if r.get("routed")), "decisions": routing}
 
+
 @app.post("/api/corrections/review")
 async def api_review(req: Request):
-    d = await req.json(); idx = d.get("index",0); decision = d.get("decision","Rejected")
+    d = await req.json()
+    idx = d.get("index", 0)
+    decision = d.get("decision", "Rejected")
     oy = get_oy()
-    corrections = [r for r in oy._read_sheet(SHEET_CORRECTIONS) if r.get("Status")=="Pending"]
-    if idx >= len(corrections): raise HTTPException(404,"Not found")
+    corrections = [
+        r for r in oy._read_sheet(SHEET_CORRECTIONS) if r.get("Status") == "Pending"
+    ]
+    if idx >= len(corrections):
+        raise HTTPException(404, "Not found")
     c = corrections[idx]
-    oy.request_write(WriteRequest("Yantra-UI",SHEET_CORRECTIONS,"update",
-        {"Status":decision,"Reviewed By":"User","Reviewed At":datetime.utcnow().isoformat(timespec="seconds")},
-        row_identifier=str(c.get("Target Sheet",""))[:50],
-        confidence="High",source="User-stated",importance=8))
-    if decision=="Approved":
-        t,f,v,r=c.get("Target Sheet",""),c.get("Field",""),c.get("Proposed Value",""),c.get("Row Identifier","")
+    oy.request_write(
+        WriteRequest(
+            "Yantra-UI",
+            SHEET_CORRECTIONS,
+            "update",
+            {
+                "Status": decision,
+                "Reviewed By": "User",
+                "Reviewed At": datetime.utcnow().isoformat(timespec="seconds"),
+            },
+            row_identifier=str(c.get("Target Sheet", ""))[:50],
+            confidence="High",
+            source="User-stated",
+            importance=8,
+        )
+    )
+    if decision == "Approved":
+        t, f, v, r = (
+            c.get("Target Sheet", ""),
+            c.get("Field", ""),
+            c.get("Proposed Value", ""),
+            c.get("Row Identifier", ""),
+        )
         if t and f and r:
-            oy.request_write(WriteRequest("Chitragupta",t,"update",{f:v},
-                row_identifier=r,confidence="High",source="User-stated",importance=8))
-    return {"status":"ok","decision":decision}
+            oy.request_write(
+                WriteRequest(
+                    "Chitragupta",
+                    t,
+                    "update",
+                    {f: v},
+                    row_identifier=r,
+                    confidence="High",
+                    source="User-stated",
+                    importance=8,
+                )
+            )
+    return {"status": "ok", "decision": decision}
+
 
 @app.post("/api/loops/{topic}/resolve")
 async def api_resolve_loop(topic: str, req: Request):
     d = await req.json()
-    return get_oy().resolve_open_loop(topic, d.get("resolution","Resolved via UI"))
+    return get_oy().resolve_open_loop(topic, d.get("resolution", "Resolved via UI"))
+
 
 @app.post("/api/tasks/complete")
 async def api_complete_task(req: Request):
-    d = await req.json(); task = d.get("task","")
-    return get_oy().request_write(WriteRequest(
-        "Yantra-UI",SHEET_TASKS,"update",{"Status":"Done"},
-        row_identifier=task,confidence="High",source="User-stated",importance=7))
+    d = await req.json()
+    task = d.get("task", "")
+    return get_oy().request_write(
+        WriteRequest(
+            "Yantra-UI",
+            SHEET_TASKS,
+            "update",
+            {"Status": "Done"},
+            row_identifier=task,
+            confidence="High",
+            source="User-stated",
+            importance=7,
+        )
+    )
+
 
 @app.post("/api/security/scan")
-async def api_sec_scan(): return get_oy().security_scan()
+async def api_sec_scan():
+    return get_oy().security_scan()
+
 
 @app.post("/api/security/quarantine/release")
 async def api_release_q(req: Request):
     d = await req.json()
-    return get_oy().release_quarantine(d.get("request_id",""))
+    return get_oy().release_quarantine(d.get("request_id", ""))
+
 
 @app.get("/api/stats")
 async def api_stats():
@@ -713,10 +800,10 @@ async def api_morning():
     brief = oy.morning_brief(format="markdown")
     stats = oy.stats()
     return {
-        "brief":  brief,
+        "brief": brief,
         "streak": stats.get("writes_last_7_days", 0),
-        "loops":  stats.get("open_loops_total", 0),
-        "inbox":  stats.get("chitrapat_size_kb", 0),
+        "loops": stats.get("open_loops_total", 0),
+        "inbox": stats.get("chitrapat_size_kb", 0),
     }
 
 
@@ -736,22 +823,29 @@ async def api_context_copy():
 
 @app.get("/api/security/trust/{agent_name}")
 async def api_trust(agent_name: str):
-    return {"agent":agent_name,"trust_tier":get_oy().get_trust_tier(agent_name)}
+    return {"agent": agent_name, "trust_tier": get_oy().get_trust_tier(agent_name)}
+
 
 def main():
     parser = argparse.ArgumentParser(description="OpenYantra Dashboard v2.10")
-    parser.add_argument("--file","-f",default=str(Path.home()/"openyantra"/"chitrapat.ods"))
-    parser.add_argument("--port","-p",type=int,default=7331)
-    parser.add_argument("--host",default="127.0.0.1")
+    parser.add_argument(
+        "--file", "-f", default=str(Path.home() / "openyantra" / "chitrapat.ods")
+    )
+    parser.add_argument("--port", "-p", type=int, default=7331)
+    parser.add_argument("--host", default="127.0.0.1")
     args = parser.parse_args()
     global _oy
     path = Path(args.file).expanduser()
     if not path.exists():
-        print("[OpenYantra] Chitrapat not found. Run: yantra bootstrap"); sys.exit(1)
+        print("[OpenYantra] Chitrapat not found. Run: yantra bootstrap")
+        sys.exit(1)
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     h = _oy.health_check()
-    print(f"\n{'='*50}\n  OpenYantra Dashboard v2.10\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
+    print(
+        f"\n{'='*50}\n  OpenYantra Dashboard v2.10\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n"
+    )
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
+
 
 if __name__ == "__main__":
     main()

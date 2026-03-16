@@ -32,8 +32,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 try:
     from telegram import Update
     from telegram.ext import (
-        Application, CommandHandler, MessageHandler,
-        filters, ContextTypes
+        Application,
+        CommandHandler,
+        MessageHandler,
+        filters,
+        ContextTypes,
     )
 except ImportError:
     print("python-telegram-bot not installed.")
@@ -41,16 +44,14 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from openyantra import (
-        OpenYantra, WriteRequest,
-        SHEET_OPEN_LOOPS, SHEET_TASKS, SHEET_GOALS
-    )
+    from openyantra import OpenYantra, WriteRequest, SHEET_OPEN_LOOPS, SHEET_GOALS
 except ImportError:
     print("openyantra.py not found in the same directory.")
     sys.exit(1)
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
+
 
 def get_token() -> str:
     """Get Telegram bot token from env or config file."""
@@ -75,8 +76,8 @@ def get_oy(oy_path: str) -> OpenYantra:
 
 # ── Handlers ──────────────────────────────────────────────────────────────────
 
+
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    oy_path = context.bot_data.get("oy_path", "")
     await update.message.reply_text(
         "🪔 *Namaste. I am Chitragupta, your memory keeper.*\n\n"
         "Send me any text and I'll save it to your Inbox.\n\n"
@@ -89,7 +90,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/loops → open loops\n"
         "/digest → daily summary\n"
         "/help → this message",
-        parse_mode="Markdown"
+        parse_mode="Markdown",
     )
 
 
@@ -101,7 +102,7 @@ async def cmd_health(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
     try:
         oy = get_oy(oy_path)
-        h  = oy.health_check()
+        h = oy.health_check()
         msg = (
             f"*OpenYantra Health*\n"
             f"Status: {h.get('status','?')}\n"
@@ -119,16 +120,17 @@ async def cmd_health(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cmd_loops(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
     try:
-        oy    = get_oy(oy_path)
-        loops = [r for r in oy._read_sheet(SHEET_OPEN_LOOPS)
-                 if r.get("Resolved?") == "No"]
+        oy = get_oy(oy_path)
+        loops = [
+            r for r in oy._read_sheet(SHEET_OPEN_LOOPS) if r.get("Resolved?") == "No"
+        ]
         if not loops:
             msg = "✅ No open loops!"
         else:
             lines = [f"*Open Loops ({len(loops)}):*"]
-            for l in loops[:10]:
-                priority = l.get("Priority", "?")
-                topic    = l.get("Topic", "?")
+            for loop in loops[:10]:
+                priority = loop.get("Priority", "?")
+                topic = loop.get("Topic", "?")
                 lines.append(f"• [{priority}] {topic}")
             if len(loops) > 10:
                 lines.append(f"_...and {len(loops)-10} more_")
@@ -142,6 +144,7 @@ async def cmd_digest(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
     try:
         from yantra_digest import generate_digest
+
         msg = generate_digest(oy_path, format="telegram")
     except Exception as e:
         msg = f"Could not generate digest: {e}"
@@ -150,23 +153,21 @@ async def cmd_digest(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_loop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
-    text    = " ".join(context.args) if context.args else ""
+    text = " ".join(context.args) if context.args else ""
     if not text:
-        await update.message.reply_text(
-            "Usage: /loop [describe the unresolved thread]")
+        await update.message.reply_text("Usage: /loop [describe the unresolved thread]")
         return
     try:
         oy = get_oy(oy_path)
         oy.flush_open_loop(
-            topic    = text[:80],
-            context  = text,
-            priority = "Medium",
-            ttl_days = 30,
-            importance = 7,
+            topic=text[:80],
+            context=text,
+            priority="Medium",
+            ttl_days=30,
+            importance=7,
         )
         await update.message.reply_text(
-            f"🔓 *Open Loop saved:*\n_{text[:100]}_",
-            parse_mode="Markdown"
+            f"🔓 *Open Loop saved:*\n_{text[:100]}_", parse_mode="Markdown"
         )
     except Exception as e:
         await update.message.reply_text(f"Failed to save loop: {e}")
@@ -174,7 +175,7 @@ async def cmd_loop(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
-    text    = " ".join(context.args) if context.args else ""
+    text = " ".join(context.args) if context.args else ""
     if not text:
         await update.message.reply_text("Usage: /task [task description]")
         return
@@ -182,8 +183,7 @@ async def cmd_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         oy = get_oy(oy_path)
         oy.add_task(task=text, priority="Medium", importance=6)
         await update.message.reply_text(
-            f"✅ *Task saved:*\n_{text[:100]}_",
-            parse_mode="Markdown"
+            f"✅ *Task saved:*\n_{text[:100]}_", parse_mode="Markdown"
         )
     except Exception as e:
         await update.message.reply_text(f"Failed to save task: {e}")
@@ -191,25 +191,30 @@ async def cmd_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_goal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     oy_path = context.bot_data.get("oy_path", "")
-    text    = " ".join(context.args) if context.args else ""
+    text = " ".join(context.args) if context.args else ""
     if not text:
         await update.message.reply_text("Usage: /goal [goal description]")
         return
     try:
         oy = get_oy(oy_path)
-        oy.request_write(WriteRequest(
-            requesting_agent = "TelegramBot",
-            sheet            = SHEET_GOALS,
-            operation        = "add",
-            fields           = {"Goal": text, "Type": "Short-term",
-                                 "Priority": "Medium", "Status": "Active"},
-            confidence       = "High",
-            source           = "User-stated",
-            importance       = 8,
-        ))
+        oy.request_write(
+            WriteRequest(
+                requesting_agent="TelegramBot",
+                sheet=SHEET_GOALS,
+                operation="add",
+                fields={
+                    "Goal": text,
+                    "Type": "Short-term",
+                    "Priority": "Medium",
+                    "Status": "Active",
+                },
+                confidence="High",
+                source="User-stated",
+                importance=8,
+            )
+        )
         await update.message.reply_text(
-            f"🎯 *Goal saved:*\n_{text[:100]}_",
-            parse_mode="Markdown"
+            f"🎯 *Goal saved:*\n_{text[:100]}_", parse_mode="Markdown"
         )
     except Exception as e:
         await update.message.reply_text(f"Failed to save goal: {e}")
@@ -218,23 +223,21 @@ async def cmd_goal(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Default handler — any text goes to Inbox."""
     oy_path = context.bot_data.get("oy_path", "")
-    text    = update.message.text or ""
+    text = update.message.text or ""
 
     if not text.strip():
         return
 
     try:
-        oy      = get_oy(oy_path)
+        oy = get_oy(oy_path)
         receipt = oy.inbox(text, source="User-stated", importance=6)
 
         if receipt.get("status") == "written":
             await update.message.reply_text(
-                f"📥 *Captured to Inbox*\n_{text[:100]}_",
-                parse_mode="Markdown"
+                f"📥 *Captured to Inbox*\n_{text[:100]}_", parse_mode="Markdown"
             )
         else:
-            await update.message.reply_text(
-                f"Saved ({receipt.get('status', 'ok')})")
+            await update.message.reply_text(f"Saved ({receipt.get('status', 'ok')})")
     except Exception as e:
         await update.message.reply_text(f"Could not save: {e}")
 
@@ -245,19 +248,20 @@ async def handle_error(update: object, context: ContextTypes.DEFAULT_TYPE):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="OpenYantra Telegram Bot v2.3"
-    )
+    parser = argparse.ArgumentParser(description="OpenYantra Telegram Bot v2.3")
     parser.add_argument(
-        "--file", "-f",
+        "--file",
+        "-f",
         default=str(Path.home() / "openyantra" / "chitrapat.ods"),
-        help="Path to chitrapat.ods"
+        help="Path to chitrapat.ods",
     )
     parser.add_argument(
-        "--token", "-t",
+        "--token",
+        "-t",
         default="",
-        help="Telegram bot token (or set TELEGRAM_BOT_TOKEN env var)"
+        help="Telegram bot token (or set TELEGRAM_BOT_TOKEN env var)",
     )
     args = parser.parse_args()
 
@@ -289,18 +293,17 @@ def main():
     app.bot_data["oy_path"] = str(oy_path)
 
     # Commands
-    app.add_handler(CommandHandler("start",  cmd_start))
-    app.add_handler(CommandHandler("help",   cmd_help))
+    app.add_handler(CommandHandler("start", cmd_start))
+    app.add_handler(CommandHandler("help", cmd_help))
     app.add_handler(CommandHandler("health", cmd_health))
-    app.add_handler(CommandHandler("loops",  cmd_loops))
+    app.add_handler(CommandHandler("loops", cmd_loops))
     app.add_handler(CommandHandler("digest", cmd_digest))
-    app.add_handler(CommandHandler("loop",   cmd_loop))
-    app.add_handler(CommandHandler("task",   cmd_task))
-    app.add_handler(CommandHandler("goal",   cmd_goal))
+    app.add_handler(CommandHandler("loop", cmd_loop))
+    app.add_handler(CommandHandler("task", cmd_task))
+    app.add_handler(CommandHandler("goal", cmd_goal))
 
     # Default — any text to Inbox
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,
-                                   handle_message))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_error_handler(handle_error)
 
     app.run_polling(allowed_updates=Update.ALL_TYPES)

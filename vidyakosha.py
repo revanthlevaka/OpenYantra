@@ -53,29 +53,33 @@ import pandas as pd
 
 # ── Embedding backends ────────────────────────────────────────────────────────
 
+
 class TFIDFEmbedder:
     """
     Pure scikit-learn TF-IDF + SVD embedder. Zero extra dependencies.
     Dimension auto-sized to min(384, n_features) to avoid corpus-size errors.
     """
+
     TARGET_DIM = 384
 
     def __init__(self):
         from sklearn.feature_extraction.text import TfidfVectorizer
-        self._tfidf   = TfidfVectorizer(
+
+        self._tfidf = TfidfVectorizer(
             max_features=8000,
             ngram_range=(1, 2),
             sublinear_tf=True,
             strip_accents="unicode",
         )
-        self._svd     = None
-        self._dim     = self.TARGET_DIM
-        self._fitted  = False
-        self._corpus  = []
-        self._lock    = threading.Lock()
+        self._svd = None
+        self._dim = self.TARGET_DIM
+        self._fitted = False
+        self._corpus = []
+        self._lock = threading.Lock()
 
     def fit(self, texts: list[str]):
         from sklearn.decomposition import TruncatedSVD
+
         with self._lock:
             self._corpus = [t for t in texts if t and t.strip()]
             if not self._corpus:
@@ -101,7 +105,8 @@ class TFIDFEmbedder:
         return vecs / norms
 
     @property
-    def dim(self): return self._dim
+    def dim(self):
+        return self._dim
 
 
 class SentenceTransformerEmbedder:
@@ -110,10 +115,12 @@ class SentenceTransformerEmbedder:
     Install: pip install sentence-transformers
     Falls back gracefully to TFIDFEmbedder if not available.
     """
+
     DIM = 384
 
     def __init__(self):
         from sentence_transformers import SentenceTransformer
+
         self._model = SentenceTransformer("all-MiniLM-L6-v2")
 
     def fit(self, texts: list[str]):
@@ -122,12 +129,14 @@ class SentenceTransformerEmbedder:
     def encode(self, texts: list[str]) -> np.ndarray:
         if not texts:
             return np.zeros((0, self.DIM), dtype=np.float32)
-        vecs = self._model.encode(texts, show_progress_bar=False,
-                                  normalize_embeddings=True)
+        vecs = self._model.encode(
+            texts, show_progress_bar=False, normalize_embeddings=True
+        )
         return vecs.astype(np.float32)
 
     @property
-    def dim(self): return self.DIM
+    def dim(self):
+        return self.DIM
 
 
 def get_embedder(prefer: str = "auto") -> TFIDFEmbedder | SentenceTransformerEmbedder:
@@ -156,20 +165,23 @@ def get_embedder(prefer: str = "auto") -> TFIDFEmbedder | SentenceTransformerEmb
 
 # ── BM25 (keyword search) ─────────────────────────────────────────────────────
 
+
 class BM25Index:
     """
     Pure Python BM25 implementation. No extra dependencies.
     Complements vector search for exact/partial keyword matches.
     """
+
     def __init__(self, k1: float = 1.5, b: float = 0.75):
         self.k1 = k1
-        self.b  = b
-        self._docs:   list[list[str]] = []
-        self._idf:    dict[str, float] = {}
-        self._avgdl:  float = 0.0
+        self.b = b
+        self._docs: list[list[str]] = []
+        self._idf: dict[str, float] = {}
+        self._avgdl: float = 0.0
 
     def fit(self, corpus: list[str]):
         import math
+
         self._docs = [doc.lower().split() for doc in corpus]
         N = len(self._docs)
         self._avgdl = sum(len(d) for d in self._docs) / max(N, 1)
@@ -184,8 +196,8 @@ class BM25Index:
 
     def score(self, query: str, doc_idx: int) -> float:
         terms = query.lower().split()
-        doc   = self._docs[doc_idx]
-        dl    = len(doc)
+        doc = self._docs[doc_idx]
+        dl = len(doc)
         score = 0.0
         tf_map: dict[str, int] = {}
         for t in doc:
@@ -193,7 +205,7 @@ class BM25Index:
         for term in terms:
             if term not in self._idf:
                 continue
-            tf  = tf_map.get(term, 0)
+            tf = tf_map.get(term, 0)
             idf = self._idf[term]
             num = tf * (self.k1 + 1)
             den = tf + self.k1 * (1 - self.b + self.b * dl / max(self._avgdl, 1))
@@ -208,12 +220,24 @@ class BM25Index:
 
 # ── Row registry ──────────────────────────────────────────────────────────────
 
+
 def _row_to_text(sheet: str, row: dict) -> str:
     """Convert a sheet row into a searchable text string."""
     parts = [f"[{sheet}]"]
     for k, v in row.items():
-        if v and str(v).strip() and k not in ("Confidence", "Source", "Last Updated",
-                                               "Signature", "Mudra", "Samay"):
+        if (
+            v
+            and str(v).strip()
+            and k
+            not in (
+                "Confidence",
+                "Source",
+                "Last Updated",
+                "Signature",
+                "Mudra",
+                "Samay",
+            )
+        ):
             parts.append(f"{k}: {v}")
     return " ".join(parts)
 
@@ -230,8 +254,14 @@ def _row_id(sheet: str, row: dict) -> str:
 # ══════════════════════════════════════════════════════════════════════════════
 
 INDEXABLE_SHEETS = [
-    "👤 Identity", "🎯 Goals", "🚀 Projects", "👥 People",
-    "💡 Preferences", "🧠 Beliefs", "✅ Tasks", "🔓 Open Loops",
+    "👤 Identity",
+    "🎯 Goals",
+    "🚀 Projects",
+    "👥 People",
+    "💡 Preferences",
+    "🧠 Beliefs",
+    "✅ Tasks",
+    "🔓 Open Loops",
 ]
 
 SNAPSHOT_MODES = {"per-session", "live", "none"}
@@ -260,23 +290,23 @@ class VidyaKosha:
     """
 
     def __init__(self, yantra_dir: str | Path, embedder_pref: str = "auto"):
-        self.dir      = Path(yantra_dir).expanduser()
+        self.dir = Path(yantra_dir).expanduser()
         self.dir.mkdir(parents=True, exist_ok=True)
 
-        self._embedder   = get_embedder(embedder_pref)
-        self._lock       = threading.RLock()
+        self._embedder = get_embedder(embedder_pref)
+        self._lock = threading.RLock()
 
         # Paths
-        self._faiss_path    = self.dir / "vidyakosha.faiss"
-        self._bm25_path     = self.dir / "vidyakosha_bm25.pkl"
+        self._faiss_path = self.dir / "vidyakosha.faiss"
+        self._bm25_path = self.dir / "vidyakosha_bm25.pkl"
         self._manifest_path = self.dir / "vidyakosha_manifest.json"
-        self._snapshot_dir  = self.dir / "pratibimba"
+        self._snapshot_dir = self.dir / "pratibimba"
         self._snapshot_dir.mkdir(exist_ok=True)
 
         # In-memory state
-        self._index:    Optional[faiss.IndexFlatIP] = None
-        self._bm25:     Optional[BM25Index]          = None
-        self._registry: list[dict]                   = []  # row metadata
+        self._index: Optional[faiss.IndexFlatIP] = None
+        self._bm25: Optional[BM25Index] = None
+        self._registry: list[dict] = []  # row metadata
 
         self._load()
 
@@ -298,23 +328,24 @@ class VidyaKosha:
 
             for sheet in INDEXABLE_SHEETS:
                 try:
-                    df = pd.read_excel(str(path), sheet_name=sheet,
-                                       engine="odf", header=0, dtype=str)
+                    df = pd.read_excel(
+                        str(path), sheet_name=sheet, engine="odf", header=0, dtype=str
+                    )
                     df = df.where(pd.notna(df), None)
                     for _, row in df.iterrows():
                         rec = row.to_dict()
                         if not any(v for v in rec.values() if v and str(v).strip()):
                             continue
                         text = _row_to_text(sheet, rec)
-                        rid  = _row_id(sheet, rec)
+                        rid = _row_id(sheet, rec)
                         primary = str(list(rec.values())[0]) if rec else ""
                         meta = {
-                            "id":            rid,
-                            "sheet":         sheet,
+                            "id": rid,
+                            "sheet": sheet,
                             "primary_value": primary,
-                            "text":          text,
-                            "row":           rec,
-                            "indexed_at":    datetime.utcnow().isoformat(),
+                            "text": text,
+                            "row": rec,
+                            "indexed_at": datetime.utcnow().isoformat(),
                         }
                         rows.append(meta)
                         texts.append(text)
@@ -332,7 +363,7 @@ class VidyaKosha:
 
             # Build FAISS index
             vecs = self._embedder.encode(texts)
-            dim  = self._embedder.dim
+            dim = self._embedder.dim
             self._index = faiss.IndexFlatIP(dim)
             self._index.add(vecs)
 
@@ -343,8 +374,10 @@ class VidyaKosha:
             self._registry = registry
             self._save()
 
-            print(f"[VidyaKosha] Synced — {len(texts)} rows indexed across "
-                  f"{len(INDEXABLE_SHEETS)} sheets")
+            print(
+                f"[VidyaKosha] Synced — {len(texts)} rows indexed across "
+                f"{len(INDEXABLE_SHEETS)} sheets"
+            )
             return len(texts)
 
     def query(
@@ -389,10 +422,12 @@ class VidyaKosha:
 
         # Search full index then filter
         k_search = min(len(registry), top_k * 4)
-        D, I = self._index.search(query_vec, k_search)
-        vec_hits: dict[int, float] = {int(idx): float(score)
-                                       for idx, score in zip(I[0], D[0])
-                                       if idx in indices and score > 0}
+        distances, indices_arr = self._index.search(query_vec, k_search)
+        vec_hits: dict[int, float] = {
+            int(idx): float(score)
+            for idx, score in zip(indices_arr[0], distances[0])
+            if idx in indices and score > 0
+        }
 
         # BM25 search
         bm25_hits: dict[int, float] = {}
@@ -403,11 +438,12 @@ class VidyaKosha:
 
         # Normalise scores to [0, 1]
         def normalise(scores: dict[int, float]) -> dict[int, float]:
-            if not scores: return {}
+            if not scores:
+                return {}
             mx = max(scores.values())
-            return {k: v/mx for k, v in scores.items()} if mx > 0 else scores
+            return {k: v / mx for k, v in scores.items()} if mx > 0 else scores
 
-        vec_norm  = normalise(vec_hits)
+        vec_norm = normalise(vec_hits)
         bm25_norm = normalise(bm25_hits)
 
         # Hybrid score
@@ -426,9 +462,9 @@ class VidyaKosha:
             if idx >= len(registry):
                 continue
             rec = registry[idx].copy()
-            rec["score"]        = round(hs, 4)
+            rec["score"] = round(hs, 4)
             rec["vector_score"] = round(vs, 4)
-            rec["bm25_score"]   = round(bs, 4)
+            rec["bm25_score"] = round(bs, 4)
             results.append(rec)
 
         return results
@@ -440,14 +476,16 @@ class VidyaKosha:
         """
         with self._lock:
             snap_path = self._snapshot_dir / f"{agent_name}.snapshot"
-            snapshot  = {
-                "agent":      agent_name,
-                "taken_at":   datetime.utcnow().isoformat(),
-                "registry":   self._registry,
+            snapshot = {
+                "agent": agent_name,
+                "taken_at": datetime.utcnow().isoformat(),
+                "registry": self._registry,
             }
             snap_path.write_text(json.dumps(snapshot, indent=2, default=str))
-            print(f"[VidyaKosha] Pratibimba taken for {agent_name} "
-                  f"({len(self._registry)} rows)")
+            print(
+                f"[VidyaKosha] Pratibimba taken for {agent_name} "
+                f"({len(self._registry)} rows)"
+            )
 
     def release_snapshot(self, agent_name: str):
         """Release a Pratibimba snapshot after the agent's session ends."""
@@ -474,12 +512,12 @@ class VidyaKosha:
     def stats(self) -> dict:
         """Return index statistics."""
         return {
-            "total_rows":       len(self._registry),
-            "sheets_indexed":   list({r["sheet"] for r in self._registry}),
-            "embedder":         type(self._embedder).__name__,
-            "embedding_dim":    self._embedder.dim,
-            "faiss_index":      str(self._faiss_path) if self._faiss_path.exists() else None,
-            "snapshots":        [p.stem for p in self._snapshot_dir.glob("*.snapshot")],
+            "total_rows": len(self._registry),
+            "sheets_indexed": list({r["sheet"] for r in self._registry}),
+            "embedder": type(self._embedder).__name__,
+            "embedding_dim": self._embedder.dim,
+            "faiss_index": str(self._faiss_path) if self._faiss_path.exists() else None,
+            "snapshots": [p.stem for p in self._snapshot_dir.glob("*.snapshot")],
         }
 
     # ── Internal ───────────────────────────────────────────────────────────────
@@ -504,9 +542,9 @@ class VidyaKosha:
             with open(self._bm25_path, "wb") as f:
                 pickle.dump(self._bm25, f)
         manifest = {
-            "rows":       len(self._registry),
+            "rows": len(self._registry),
             "updated_at": datetime.utcnow().isoformat(),
-            "embedder":   type(self._embedder).__name__,
+            "embedder": type(self._embedder).__name__,
         }
         self._manifest_path.write_text(json.dumps(manifest, indent=2))
         # Save registry separately (large)
@@ -524,13 +562,16 @@ class VidyaKosha:
             reg_path = self.dir / "vidyakosha_registry.json"
             if reg_path.exists():
                 self._registry = json.loads(reg_path.read_text())
-                print(f"[VidyaKosha] Loaded existing index — "
-                      f"{len(self._registry)} rows")
+                print(
+                    f"[VidyaKosha] Loaded existing index — "
+                    f"{len(self._registry)} rows"
+                )
         except Exception as e:
             print(f"[VidyaKosha] Could not load existing index: {e}")
 
 
 # ── OpenYantra integration hook ───────────────────────────────────────────────
+
 
 def get_snapshot_mode(agent_name: str, chitrapat_path: str | Path) -> str:
     """
@@ -538,8 +579,13 @@ def get_snapshot_mode(agent_name: str, chitrapat_path: str | Path) -> str:
     Default: "live"
     """
     try:
-        df = pd.read_excel(str(chitrapat_path), sheet_name="⚙️ Agent Config",
-                           engine="odf", header=0, dtype=str)
+        df = pd.read_excel(
+            str(chitrapat_path),
+            sheet_name="⚙️ Agent Config",
+            engine="odf",
+            header=0,
+            dtype=str,
+        )
         for _, row in df.iterrows():
             if row.get("Agent") in (agent_name, "ALL"):
                 instr = str(row.get("Instruction", "")).lower()

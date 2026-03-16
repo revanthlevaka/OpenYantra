@@ -49,10 +49,12 @@ sys.path.insert(0, str(Path(__file__).parent))
 try:
     from openyantra import OpenYantra
 except ImportError:
-    print("openyantra.py not found."); sys.exit(1)
+    print("openyantra.py not found.")
+    sys.exit(1)
 
 
 # ── SMTP handler ──────────────────────────────────────────────────────────────
+
 
 def _extract_text(msg) -> tuple[str, str]:
     """Extract subject and body text from email message."""
@@ -89,9 +91,9 @@ class YantraMailHandler:
     async def handle_DATA(self, server, session, envelope):
         try:
             raw_msg = envelope.content.decode("utf-8", errors="replace")
-            msg     = email.message_from_string(raw_msg)
+            msg = email.message_from_string(raw_msg)
             subject, body = _extract_text(msg)
-            sender  = envelope.mail_from or "unknown"
+            sender = envelope.mail_from or "unknown"
 
             # Build capture text
             if body:
@@ -101,8 +103,8 @@ class YantraMailHandler:
 
             receipt = self.oy.inbox(
                 capture,
-                source    = "Agent-observed",
-                importance = 6,
+                source="Agent-observed",
+                importance=6,
             )
             ts = datetime.utcnow().strftime("%H:%M:%S")
             status = receipt.get("status", "unknown")
@@ -130,7 +132,7 @@ def run_smtp_server(oy_path: str, host: str = "localhost", port: int = 2525):
         print(f"Chitrapat not found at {path}. Run: yantra bootstrap")
         sys.exit(1)
 
-    oy      = OpenYantra(str(path), agent_name="YantraMail")
+    oy = OpenYantra(str(path), agent_name="YantraMail")
     handler = YantraMailHandler(oy)
 
     print(f"\n{'='*55}")
@@ -163,8 +165,7 @@ def _run_basic_smtp(oy_path: str, host: str, port: int):
     import smtpd
     import asyncore
 
-    path = Path(oy_path).expanduser()
-    oy   = OpenYantra(str(oy_path), agent_name="YantraMail")
+    oy = OpenYantra(str(Path(oy_path).expanduser()), agent_name="YantraMail")
 
     class BasicHandler(smtpd.SMTPServer):
         def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
@@ -177,7 +178,7 @@ def _run_basic_smtp(oy_path: str, host: str, port: int):
             except Exception as e:
                 print(f"Error: {e}")
 
-    server = BasicHandler((host, port), None)
+    BasicHandler((host, port), None)
     print(f"  Basic SMTP server on {host}:{port}")
     print("  Waiting for emails... (Ctrl+C to stop)\n")
     try:
@@ -187,12 +188,9 @@ def _run_basic_smtp(oy_path: str, host: str, port: int):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="OpenYantra Email-to-Inbox v2.8"
-    )
+    parser = argparse.ArgumentParser(description="OpenYantra Email-to-Inbox v2.8")
     parser.add_argument(
-        "--file", "-f",
-        default=str(Path.home() / "openyantra" / "chitrapat.ods")
+        "--file", "-f", default=str(Path.home() / "openyantra" / "chitrapat.ods")
     )
     parser.add_argument("--port", "-p", type=int, default=2525)
     parser.add_argument("--host", default="localhost")

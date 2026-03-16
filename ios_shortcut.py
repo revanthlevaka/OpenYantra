@@ -43,9 +43,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 try:
     from openyantra import OpenYantra
 except ImportError:
-    print("openyantra.py not found."); sys.exit(1)
+    print("openyantra.py not found.")
+    sys.exit(1)
 
 # ── Request handler ───────────────────────────────────────────────────────────
+
 
 class ShortcutHandler(BaseHTTPRequestHandler):
 
@@ -54,49 +56,60 @@ class ShortcutHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in ("/inbox", "/capture", "/"):
-            self.send_response(404); self.end_headers()
+            self.send_response(404)
+            self.end_headers()
             self.wfile.write(b'{"error": "Use /inbox"}')
             return
 
         try:
-            length  = int(self.headers.get("Content-Length", 0))
-            raw     = self.rfile.read(length)
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length)
             payload = json.loads(raw)
-            text    = payload.get("text", "").strip()
-            source  = payload.get("source", "iOS Shortcut")
+            text = payload.get("text", "").strip()
+            source = payload.get("source", "iOS Shortcut")
             importance = int(payload.get("importance", 6))
 
             if not text:
-                self.send_response(400); self.end_headers()
+                self.send_response(400)
+                self.end_headers()
                 self.wfile.write(b'{"error": "text required"}')
                 return
 
-            oy      = self.server.oy
+            oy = self.server.oy
             receipt = oy.inbox(text, source=source, importance=importance)
-            status  = receipt.get("status", "unknown")
+            status = receipt.get("status", "unknown")
 
             ts = datetime.utcnow().strftime("%H:%M:%S")
-            print(f"[{ts}] iOS capture: {text[:60]}{'...' if len(text)>60 else ''} → {status}")
+            print(
+                f"[{ts}] iOS capture: {text[:60]}{'...' if len(text)>60 else ''} → {status}"
+            )
 
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": status,
-                "message": "Captured to Inbox" if status == "written" else status,
-                "timestamp": datetime.utcnow().isoformat(),
-            }).encode())
+            self.wfile.write(
+                json.dumps(
+                    {
+                        "status": status,
+                        "message": (
+                            "Captured to Inbox" if status == "written" else status
+                        ),
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                ).encode()
+            )
 
         except Exception as e:
-            self.send_response(500); self.end_headers()
+            self.send_response(500)
+            self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
 
     def do_GET(self):
         """Health check endpoint."""
         if self.path == "/health":
             oy = self.server.oy
-            h  = oy.health_check()
+            h = oy.health_check()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -105,7 +118,9 @@ class ShortcutHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/plain")
             self.end_headers()
-            self.wfile.write(b"OpenYantra iOS Shortcut Server v2.8 -- POST /inbox to capture")
+            self.wfile.write(
+                b"OpenYantra iOS Shortcut Server v2.8 -- POST /inbox to capture"
+            )
 
     def do_OPTIONS(self):
         """CORS preflight."""
@@ -117,6 +132,7 @@ class ShortcutHandler(BaseHTTPRequestHandler):
 
 
 # ── Server ────────────────────────────────────────────────────────────────────
+
 
 class ShortcutServer(HTTPServer):
     def __init__(self, *args, oy: OpenYantra, **kwargs):
@@ -151,6 +167,7 @@ def print_shortcut_instructions(ip: str, port: int):
     print(f"  │    URL:    http://{ip}:{port}/inbox  │")
     print("  │    Method: POST                               │")
     print("  │    Header: Content-Type = application/json    │")
+    print('  │    Body:   {"text": [Input]}               │')
     print("  │    Body:   {\"text\": [Input]}               │")
     print("  │ 5. Add to Home Screen as widget               │")
     print("  └─────────────────────────────────────────────┘")
@@ -160,16 +177,16 @@ def print_shortcut_instructions(ip: str, port: int):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="OpenYantra iOS Shortcut Server v2.8"
-    )
+    parser = argparse.ArgumentParser(description="OpenYantra iOS Shortcut Server v2.8")
     parser.add_argument(
-        "--file", "-f",
-        default=str(Path.home() / "openyantra" / "chitrapat.ods")
+        "--file", "-f", default=str(Path.home() / "openyantra" / "chitrapat.ods")
     )
     parser.add_argument("--port", "-p", type=int, default=7332)
-    parser.add_argument("--host", default="0.0.0.0",
-                        help="0.0.0.0 = accessible from iPhone on same WiFi")
+    parser.add_argument(
+        "--host",
+        default="0.0.0.0",
+        help="0.0.0.0 = accessible from iPhone on same WiFi",
+    )
     args = parser.parse_args()
 
     path = Path(args.file).expanduser()
@@ -177,10 +194,9 @@ def main():
         print(f"Chitrapat not found at {path}. Run: yantra bootstrap")
         sys.exit(1)
 
-    oy     = OpenYantra(str(path), agent_name="iOSShortcut")
-    ip     = get_local_ip()
-    server = ShortcutServer((args.host, args.port),
-                             ShortcutHandler, oy=oy)
+    oy = OpenYantra(str(path), agent_name="iOSShortcut")
+    ip = get_local_ip()
+    server = ShortcutServer((args.host, args.port), ShortcutHandler, oy=oy)
 
     print_shortcut_instructions(ip, args.port)
 
