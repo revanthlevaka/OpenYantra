@@ -34,7 +34,6 @@ import argparse
 import json
 import socket
 import sys
-import threading
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -139,25 +138,25 @@ def get_local_ip() -> str:
 
 def print_shortcut_instructions(ip: str, port: int):
     print(f"\n{'='*60}")
-    print(f"  OpenYantra iOS Shortcut Server v2.8")
+    print("  OpenYantra iOS Shortcut Server v2.8")
     print(f"{'='*60}")
     print(f"\n  Server URL: http://{ip}:{port}/inbox")
-    print(f"\n  iPhone Shortcut setup:")
-    print(f"  ┌─────────────────────────────────────────────┐")
-    print(f"  │ 1. Open Shortcuts app on iPhone              │")
-    print(f"  │ 2. Tap + → New Shortcut                      │")
-    print(f"  │ 3. Add action: Ask for Input                  │")
-    print(f"  │    (or use Share Sheet for text selection)    │")
-    print(f"  │ 4. Add action: Get Contents of URL           │")
+    print("\n  iPhone Shortcut setup:")
+    print("  ┌─────────────────────────────────────────────┐")
+    print("  │ 1. Open Shortcuts app on iPhone              │")
+    print("  │ 2. Tap + → New Shortcut                      │")
+    print("  │ 3. Add action: Ask for Input                  │")
+    print("  │    (or use Share Sheet for text selection)    │")
+    print("  │ 4. Add action: Get Contents of URL           │")
     print(f"  │    URL:    http://{ip}:{port}/inbox  │")
-    print(f"  │    Method: POST                               │")
-    print(f"  │    Header: Content-Type = application/json    │")
-    print(f"  │    Body:   {{\"text\": [Input]}}               │")
-    print(f"  │ 5. Add to Home Screen as widget               │")
-    print(f"  └─────────────────────────────────────────────┘")
-    print(f"\n  Mac must be on the same WiFi as iPhone.")
+    print("  │    Method: POST                               │")
+    print("  │    Header: Content-Type = application/json    │")
+    print("  │    Body:   {\"text\": [Input]}               │")
+    print("  │ 5. Add to Home Screen as widget               │")
+    print("  └─────────────────────────────────────────────┘")
+    print("\n  Mac must be on the same WiFi as iPhone.")
     print(f"  Health check: http://{ip}:{port}/health")
-    print(f"\n  Waiting for captures... (Ctrl+C to stop)\n")
+    print("\n  Waiting for captures... (Ctrl+C to stop)\n")
 
 
 def main():

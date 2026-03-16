@@ -147,7 +147,7 @@ class WriteRequest:
         assert operation  in OPERATIONS,   f"operation must be one of {OPERATIONS}"
         assert confidence in CONFIDENCE_V, f"confidence must be one of {CONFIDENCE_V}"
         assert source     in SOURCE,       f"source must be one of {SOURCE}"
-        assert 1 <= importance <= 10,      f"importance must be 1-10"
+        assert 1 <= importance <= 10,      "importance must be 1-10"
 
         self.requesting_agent = requesting_agent
         self.sheet            = sheet
@@ -1161,7 +1161,8 @@ class OpenYantra:
 
     def _quarantine(self, req: WriteRequest, scan) -> None:
         """Move blocked write to Quarantine sheet."""
-        import json as _json, pandas as _pd
+        import json as _json
+        import pandas as _pd
         try:
             try:
                 df = _pd.read_excel(str(self.path), sheet_name=SHEET_QUARANTINE,
@@ -1392,11 +1393,11 @@ class OpenYantra:
                         lines.append(f"     {t.get('Task','?')[:55]}")
             elif format == "telegram":
                 if overdue:
-                    lines.append(f"*⚠️ Overdue:*")
+                    lines.append("*⚠️ Overdue:*")
                     for t in overdue[:3]:
                         lines.append(f"• {t.get('Task','?')[:50]}")
                 if due_today:
-                    lines.append(f"*✅ Due today:*")
+                    lines.append("*✅ Due today:*")
                     for t in due_today[:3]:
                         lines.append(f"• {t.get('Task','?')[:50]}")
             lines.append("")
@@ -1415,7 +1416,7 @@ class OpenYantra:
                         f"     {p.get('Project','?')[:45]} "
                         f"→ {p.get('Next Step','not set')[:35]}")
             elif format == "telegram":
-                lines.append(f"*🚀 Stale Projects:*")
+                lines.append("*🚀 Stale Projects:*")
                 for p in stale[:2]:
                     lines.append(f"• {p.get('Project','?')[:45]}")
             lines.append("")
@@ -1460,7 +1461,7 @@ class OpenYantra:
             if suggestion:
                 any_content = True
                 if format == "terminal":
-                    lines.append(f"  💡  Suggestion:")
+                    lines.append("  💡  Suggestion:")
                     lines.append(f"     {suggestion}")
                 elif format == "telegram":
                     lines.append(f"*💡 Suggestion:*\n_{suggestion}_")
@@ -1480,7 +1481,7 @@ class OpenYantra:
             memory = random.choice(past_pool[:10])
             any_content = True
             if format == "terminal":
-                lines.append(f"  🕰️   On this day (past memory):")
+                lines.append("  🕰️   On this day (past memory):")
                 lines.append(f"     \"{memory['val'][:80]}\"")
             elif format == "telegram":
                 lines.append(
@@ -1508,8 +1509,8 @@ class OpenYantra:
             streak_str = f"  🔥  Streak: {streak} day{'s' if streak!=1 else ''}" if streak > 0 else ""
             if streak_str:
                 lines.append(streak_str)
-            lines.append(f"  ─────────────────────────────────────────────────")
-            lines.append(f"  yantra ui → http://localhost:7331")
+            lines.append("  ─────────────────────────────────────────────────")
+            lines.append("  yantra ui → http://localhost:7331")
             lines.append(f"{'='*58}\n")
         elif format == "telegram":
             if streak > 0:
@@ -1523,7 +1524,6 @@ class OpenYantra:
         Checks if brief has been shown today. Returns True if shown.
         Uses a lightweight marker file so it only fires once per day.
         """
-        import tempfile
         from datetime import date as _d
 
         marker = self.path.parent / f".brief_{_d.today().isoformat()}"
@@ -1816,7 +1816,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         if hint:
             print(f"  {hint}")
         try:
-            return input(f"  → ").strip()
+            return input("  → ").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
@@ -1827,12 +1827,12 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         return [x.strip() for x in raw.replace(";", ",").split(",") if x.strip()]
 
     # ── Q1: The pain point ──────────────────────────────────────────────────
-    print(f"\n  Q1 — Your AI Memory Pain Point")
+    print("\n  Q1 — Your AI Memory Pain Point")
     pain = ask("What does your AI always forget that you wish it remembered?", 1,
                "This tells me where to focus most. (e.g. 'my current projects', 'my preferences')")
 
     # ── Q2: Identity ────────────────────────────────────────────────────────
-    print(f"\n  Q2 — Who you are")
+    print("\n  Q2 — Who you are")
     name       = ask("Your name:", 2)
     occupation = ask("Your occupation / role:", 2)
     location   = ask("Where are you based? (city, country)", 2)
@@ -1843,7 +1843,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         oy.update_identity("Primary Language", language)
 
     # ── Q3: Life domains ────────────────────────────────────────────────────
-    print(f"\n  Q3 — Life Domains")
+    print("\n  Q3 — Life Domains")
     domains = multi(
         "What are your 3–5 most important life areas right now?", 3,
         "(e.g. career, health, creative work, family, learning — comma separated)")
@@ -1857,7 +1857,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         ))
 
     # ── Q4: Active projects ─────────────────────────────────────────────────
-    print(f"\n  Q4 — Active Projects")
+    print("\n  Q4 — Active Projects")
     print("  Tell me about your top projects. I'll ask for each one.")
     for i in range(1, 4):
         project = ask(f"Active project {i} name (or Enter to skip):", 4)
@@ -1869,7 +1869,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
                        next_step=nextstep, importance=8)
 
     # ── Q5: Goals ───────────────────────────────────────────────────────────
-    print(f"\n  Q5 — Goals")
+    print("\n  Q5 — Goals")
     long_goal  = ask("Your most important long-term goal:", 5,
                      "(e.g. 'complete my debut feature film', 'launch my startup')")
     short_goal = ask("A short-term goal you're working on right now:", 5)
@@ -1889,7 +1889,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
             ))
 
     # ── Q6: People ──────────────────────────────────────────────────────────
-    print(f"\n  Q6 — Your People")
+    print("\n  Q6 — Your People")
     print("  Tell me about important people in your work and life.")
     for i in range(1, 4):
         person = ask(f"Important person {i} name (or Enter to skip):", 6)
@@ -1910,7 +1910,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
             )
 
     # ── Q7: Preferences ─────────────────────────────────────────────────────
-    print(f"\n  Q7 — Preferences & Rules")
+    print("\n  Q7 — Preferences & Rules")
     comm_style = ask("Communication style? (direct / formal / casual / thoughtful)", 7)
     tools_pref = ask("Preferred tools or software?", 7,
                      "(e.g. 'VS Code', 'Notion', 'LibreOffice', 'terminal')")
@@ -1931,7 +1931,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         oy.update_identity("Working Hours", work_hours)
 
     # ── Q8: Anti-goals ──────────────────────────────────────────────────────
-    print(f"\n  Q8 — Anti-Goals (what to avoid)")
+    print("\n  Q8 — Anti-Goals (what to avoid)")
     anti = ask("What should your AI never suggest or do?", 8,
                "(e.g. 'never suggest phone calls', 'avoid enterprise tools', 'no social media')")
     if anti:
@@ -1943,7 +1943,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         ))
 
     # ── Q9: Beliefs ─────────────────────────────────────────────────────────
-    print(f"\n  Q9 — Beliefs & Principles")
+    print("\n  Q9 — Beliefs & Principles")
     principle = ask("What principle guides your most important decisions?", 9,
                     "(e.g. 'creative freedom over short-term money', 'build in public')")
     old_belief = ask("What belief did you hold 5 years ago that you no longer hold?", 9,
@@ -1962,7 +1962,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
             ))
 
     # ── Q10: Open loops ─────────────────────────────────────────────────────
-    print(f"\n  Q10 — Current Open Loops")
+    print("\n  Q10 — Current Open Loops")
     decision = ask("What decision are you currently second-guessing?", 10,
                    "(Unresolved decisions become Open Loops — the system's strongest feature)")
     recurring = ask("What problem keeps returning in your life?", 10)
@@ -1975,7 +1975,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
             oy.flush_open_loop(topic, ctx, priority="High", ttl_days=60, importance=8)
 
     # ── Q11: Reminder preference ────────────────────────────────────────────
-    print(f"\n  Q11 — How You Want to Be Reminded")
+    print("\n  Q11 — How You Want to Be Reminded")
     reminder = ask("How do you prefer to be reminded about pending items?", 11,
                    "(e.g. 'morning digest', 'Telegram bot', 'dashboard', 'weekly summary')")
     if reminder:
@@ -1987,7 +1987,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         ))
 
     # ── Q12: The aha moment — sheet preview ─────────────────────────────────
-    print(f"\n  Q12 — Verify")
+    print("\n  Q12 — Verify")
     ctx = oy.load_session_context()
 
     print("\n" + "="*62)
@@ -2021,7 +2021,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     print(f"\n  {'─'*58}")
     print(f"  Chitrapat: {oy.path}")
     print(f"  Open it:   libreoffice '{oy.path}'")
-    print(f"  Dashboard: yantra ui")
+    print("  Dashboard: yantra ui")
     print("="*62 + "\n")
     return oy
 # ══════════════════════════════════════════════════════════════════════════════

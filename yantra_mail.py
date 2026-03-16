@@ -134,19 +134,19 @@ def run_smtp_server(oy_path: str, host: str = "localhost", port: int = 2525):
     handler = YantraMailHandler(oy)
 
     print(f"\n{'='*55}")
-    print(f"  OpenYantra Email-to-Inbox v2.8")
+    print("  OpenYantra Email-to-Inbox v2.8")
     print(f"{'='*55}")
     print(f"\n  SMTP server: {host}:{port}")
-    print(f"  Address:     yantra@localhost")
-    print(f"\n  Send any email to yantra@localhost → saved to Inbox")
-    print(f"\n  Quick test:")
-    print(f"    python -c \"")
-    print(f"    import smtplib")
+    print("  Address:     yantra@localhost")
+    print("\n  Send any email to yantra@localhost → saved to Inbox")
+    print("\n  Quick test:")
+    print("    python -c \"")
+    print("    import smtplib")
     print(f"    s = smtplib.SMTP('localhost', {port})")
-    print(f"    s.sendmail('me@test.com', 'yantra@localhost',")
-    print(f"               'Subject: My thought\\n\\nThis lands in Inbox.')")
-    print(f"    s.quit()\"")
-    print(f"\n  Waiting for emails... (Ctrl+C to stop)\n")
+    print("    s.sendmail('me@test.com', 'yantra@localhost',")
+    print("               'Subject: My thought\\n\\nThis lands in Inbox.')")
+    print("    s.quit()\"")
+    print("\n  Waiting for emails... (Ctrl+C to stop)\n")
 
     controller = Controller(handler, hostname=host, port=port)
     controller.start()
@@ -179,7 +179,7 @@ def _run_basic_smtp(oy_path: str, host: str, port: int):
 
     server = BasicHandler((host, port), None)
     print(f"  Basic SMTP server on {host}:{port}")
-    print(f"  Waiting for emails... (Ctrl+C to stop)\n")
+    print("  Waiting for emails... (Ctrl+C to stop)\n")
     try:
         asyncore.loop()
     except KeyboardInterrupt:

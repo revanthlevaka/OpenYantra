@@ -280,10 +280,10 @@ def main():
         print("Run: yantra bootstrap")
         sys.exit(1)
 
-    print(f"\n[OpenYantra] Starting Telegram bot...")
+    print("\n[OpenYantra] Starting Telegram bot...")
     print(f"[OpenYantra] Chitrapat: {oy_path}")
-    print(f"[OpenYantra] Send any message to your bot to capture to Inbox")
-    print(f"[OpenYantra] Press Ctrl+C to stop\n")
+    print("[OpenYantra] Send any message to your bot to capture to Inbox")
+    print("[OpenYantra] Press Ctrl+C to stop\n")
 
     app = Application.builder().token(token).build()
     app.bot_data["oy_path"] = str(oy_path)
