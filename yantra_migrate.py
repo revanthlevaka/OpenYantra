@@ -15,7 +15,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import shutil
 import sys
 from datetime import datetime
@@ -165,23 +164,23 @@ def run_migration(path: str, dry_run: bool = False) -> dict:
     from_version = detect_version(str(file_path))
 
     print(f"\n{'='*55}")
-    print(f"  OpenYantra Migration Tool v2.8")
+    print("  OpenYantra Migration Tool v2.8")
     print(f"{'='*55}")
     print(f"\n  File:         {file_path}")
     print(f"  Detected:     v{from_version}")
-    print(f"  Target:       v2.8")
+    print("  Target:       v2.8")
 
     if from_version in ("2.4+",):
-        print(f"\n  ✓ Already at v2.4+ schema — checking for v2.8 additions...")
+        print("\n  ✓ Already at v2.4+ schema — checking for v2.8 additions...")
 
     if dry_run:
-        print(f"\n  DRY RUN — no changes will be made\n")
+        print("\n  DRY RUN — no changes will be made\n")
 
     # Build plan
     plan = build_migration_plan(from_version)
 
     if not plan:
-        print(f"\n  ✓ Schema is current — no migration needed.\n")
+        print("\n  ✓ Schema is current — no migration needed.\n")
         return {"status": "current", "changes": []}
 
     print(f"\n  Migration plan ({len(plan)} steps):")

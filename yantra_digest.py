@@ -112,13 +112,13 @@ def generate_digest(oy_path: str, format: str = "terminal") -> str:
 
     if stale:
         if format == "terminal":
-            sections.append(f"\n  🚀  Stale Projects (no update in 7+ days):")
+            sections.append("\n  🚀  Stale Projects (no update in 7+ days):")
             for p in stale[:3]:
                 name      = p.get("Project", "?")[:50]
                 next_step = p.get("Next Step", "no next step set")[:50]
                 sections.append(f"     {name} → {next_step}")
         elif format == "telegram":
-            lines = [f"\n🚀 *Stale Projects* (7+ days):"]
+            lines = ["\n🚀 *Stale Projects* (7+ days):"]
             for p in stale[:3]:
                 lines.append(f"• {p.get('Project','?')[:40]}")
             sections.append("\n".join(lines))
@@ -186,12 +186,12 @@ def generate_digest(oy_path: str, format: str = "terminal") -> str:
 
     if old_tasks:
         if format == "terminal":
-            sections.append(f"\n  ✅  Tasks to confirm:")
+            sections.append("\n  ✅  Tasks to confirm:")
             for t in old_tasks[:3]:
                 task = str(t.get("Task",""))[:55]
                 sections.append(f"     Still pending? → {task}")
         elif format == "telegram":
-            lines = [f"\n✅ *Tasks to confirm:*"]
+            lines = ["\n✅ *Tasks to confirm:*"]
             for t in old_tasks[:3]:
                 lines.append(f"• {t.get('Task','?')[:50]}")
             sections.append("\n".join(lines))
@@ -237,7 +237,7 @@ def generate_digest(oy_path: str, format: str = "terminal") -> str:
         )
     elif format == "telegram":
         sections.append(
-            f"\n_Open `yantra ui` to take action._"
+            "\n_Open `yantra ui` to take action._"
         )
 
     return "\n".join(sections)

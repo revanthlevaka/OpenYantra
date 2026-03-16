@@ -3,9 +3,10 @@ examples/bootstrap.py — Chitragupta Puja quickstart v2.2
 Run once: python examples/bootstrap.py
 Or use the CLI: yantra bootstrap
 """
-import sys, os
+import sys
+import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from openyantra import OpenYantra, run_bootstrap_interview
+from openyantra import run_bootstrap_interview
 
 # Option 1: Terminal interview (recommended)
 run_bootstrap_interview("~/openyantra/chitrapat.ods")
