@@ -168,6 +168,7 @@ def print_shortcut_instructions(ip: str, port: int):
     print("  │    Method: POST                               │")
     print("  │    Header: Content-Type = application/json    │")
     print('  │    Body:   {"text": [Input]}               │')
+    print("  │    Body:   {\"text\": [Input]}               │")
     print("  │ 5. Add to Home Screen as widget               │")
     print("  └─────────────────────────────────────────────┘")
     print("\n  Mac must be on the same WiFi as iPhone.")

@@ -180,6 +180,8 @@ class WriteRequest:
         assert confidence in CONFIDENCE_V, f"confidence must be one of {CONFIDENCE_V}"
         assert source in SOURCE, f"source must be one of {SOURCE}"
         assert 1 <= importance <= 10, "importance must be 1-10"
+        assert source     in SOURCE,       f"source must be one of {SOURCE}"
+        assert 1 <= importance <= 10,      "importance must be 1-10"
 
         self.requesting_agent = requesting_agent
         self.sheet = sheet
@@ -1515,7 +1517,6 @@ class OpenYantra:
         """Move blocked write to Quarantine sheet."""
         import json as _json
         import pandas as _pd
-
         try:
             try:
                 df = _pd.read_excel(
@@ -2285,6 +2286,14 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     # ── Q2: Identity ────────────────────────────────────────────────────────
     print("\n  Q2 — Who you are")
     name = ask("Your name:", 2)
+
+    pain = ask("What does your AI always forget that you wish it remembered?", 1,
+               "This tells me where to focus most. (e.g. 'my current projects', 'my preferences')")
+
+    # ── Q2: Identity ────────────────────────────────────────────────────────
+    print("\n  Q2 — Who you are")
+    name       = ask("Your name:", 2)
+
     occupation = ask("Your occupation / role:", 2)
     location = ask("Where are you based? (city, country)", 2)
     language = ask("Primary language (default: English):", 2)
@@ -2330,14 +2339,16 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         oy.add_project(
             project, domain=domain or "Work", next_step=nextstep, importance=8
         )
-
     # ── Q5: Goals ───────────────────────────────────────────────────────────
     print("\n  Q5 — Goals")
+
     long_goal = ask(
         "Your most important long-term goal:",
         5,
         "(e.g. 'complete my debut feature film', 'launch my startup')",
     )
+    long_goal  = ask("Your most important long-term goal:", 5,
+                     "(e.g. 'complete my debut feature film', 'launch my startup')")
     short_goal = ask("A short-term goal you're working on right now:", 5)
     success = ask(
         f"How will you know you've achieved '{long_goal or 'your goal'}'?",
@@ -2436,6 +2447,8 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         8,
         "(e.g. 'never suggest phone calls', 'avoid enterprise tools', 'no social media')",
     )
+    anti = ask("What should your AI never suggest or do?", 8,
+               "(e.g. 'never suggest phone calls', 'avoid enterprise tools', 'no social media')")
     if anti:
         oy.request_write(
             WriteRequest(
@@ -2466,7 +2479,10 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         9,
         "(This seeds your belief evolution history)",
     )
-
+    principle = ask("What principle guides your most important decisions?", 9,
+                    "(e.g. 'creative freedom over short-term money', 'build in public')")
+    old_belief = ask("What belief did you hold 5 years ago that you no longer hold?", 9,
+                     "(This seeds your belief evolution history)")
     for topic, position in [
         ("Decision principle", principle),
         ("Past belief (evolved)", old_belief),
@@ -2496,6 +2512,8 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         10,
         "(Unresolved decisions become Open Loops — the system's strongest feature)",
     )
+    decision = ask("What decision are you currently second-guessing?", 10,
+                   "(Unresolved decisions become Open Loops — the system's strongest feature)")
     recurring = ask("What problem keeps returning in your life?", 10)
 
     for topic, ctx in [
@@ -2512,6 +2530,8 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         11,
         "(e.g. 'morning digest', 'Telegram bot', 'dashboard', 'weekly summary')",
     )
+    reminder = ask("How do you prefer to be reminded about pending items?", 11,
+                   "(e.g. 'morning digest', 'Telegram bot', 'dashboard', 'weekly summary')")
     if reminder:
         oy.request_write(
             WriteRequest(
@@ -2567,6 +2587,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     print(f"  Open it:   libreoffice '{oy.path}'")
     print("  Dashboard: yantra ui")
     print("=" * 62 + "\n")
+    print("="*62 + "\n")
     return oy
 
 

@@ -48,6 +48,11 @@ def post_compact_hook(payload: dict) -> dict:
                 context=loop.get(unresolved_key, ""),
             )
             for loop in ctx["open_loops"]
+                priority=l.get("Priority", "?"),
+                topic=l.get("Topic", "?"),
+                context=l.get(unresolved_key, ""),
+            )
+            for l in ctx["open_loops"]
         )
         payload["new_context"] = payload.get("new_context", "") + (
             f"\n\n[OpenYantra: Anishtha restored after compaction]\n{loops_text}"
