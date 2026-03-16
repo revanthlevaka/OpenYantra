@@ -518,19 +518,19 @@ def run_security_audit(oy_path: str) -> None:
     raksha = Raksha()
 
     print(f"\n{'═'*60}")
-    print(f"  🔒  OpenYantra Security Audit v2.4")
+    print("  🔒  OpenYantra Security Audit v2.4")
     print(f"  Chitrapat: {path}")
     print(f"  Scanned:   {datetime.utcnow().isoformat(timespec='seconds')} UTC")
     print(f"{'═'*60}")
 
     if not path.exists():
-        print(f"\n  ✗ Chitrapat not found. Run: yantra bootstrap\n")
+        print("\n  ✗ Chitrapat not found. Run: yantra bootstrap\n")
         return
 
     findings = raksha.audit_chitrapat(str(path))
 
     if not findings:
-        print(f"\n  ✓ No threats detected — Chitrapat is clean")
+        print("\n  ✓ No threats detected — Chitrapat is clean")
         print(f"  ✓ All {_count_rows(str(path))} rows scanned")
         print(f"{'═'*60}\n")
         return
@@ -569,7 +569,7 @@ def run_security_audit(oy_path: str) -> None:
           f"(critical={len(critical)}, "
           f"confirmed={len(confirmed)}, "
           f"suspicious={len(suspicious)})")
-    print(f"  Review quarantined items: yantra ui → Security tab")
+    print("  Review quarantined items: yantra ui → Security tab")
     print(f"{'═'*60}\n")
 
 

@@ -35,6 +35,7 @@ except ImportError:
 # VidyaKosha — graceful fallback
 try:
     from vidyakosha import VidyaKosha as _VK, get_snapshot_mode as _get_snap_mode
+
     _VIDYAKOSHA_AVAILABLE = True
 except ImportError:
     _VIDYAKOSHA_AVAILABLE = False
@@ -44,9 +45,11 @@ except ImportError:
 # Raksha security engine — graceful fallback
 try:
     from yantra_security import (
-        Raksha, ScanResult, ThreatLevel, TrustTier,
-        get_raksha, run_security_audit
+        Raksha,
+        TrustTier,
+        get_raksha,
     )
+
     _RAKSHA_AVAILABLE = True
 except ImportError:
     _RAKSHA_AVAILABLE = False
@@ -55,40 +58,50 @@ except ImportError:
 # ── Controlled vocabulary ──────────────────────────────────────────────────────
 
 PROJECT_STATUS = {"Active", "Paused", "Completed", "Cancelled"}
-TASK_STATUS    = {"Pending", "In Progress", "Done", "Blocked"}
-GOAL_STATUS    = {"Active", "In Progress", "Achieved", "Abandoned"}
-PRIORITY       = {"Critical", "High", "Medium", "Low"}
-RESOLVED       = {"Yes", "No"}
-STRENGTH       = {"Strong", "Mild", "Uncertain"}
-CONFIDENCE_V   = {"High", "Medium", "Low", "Inferred"}
-SENTIMENT      = {"Positive", "Neutral", "Negative", "Complex"}
-SOURCE         = {"User-stated", "Agent-observed", "Agent-inferred", "System"}
-OPERATIONS     = {"add", "update", "resolve", "archive", "delete", "inbox"}
+TASK_STATUS = {"Pending", "In Progress", "Done", "Blocked"}
+GOAL_STATUS = {"Active", "In Progress", "Achieved", "Abandoned"}
+PRIORITY = {"Critical", "High", "Medium", "Low"}
+RESOLVED = {"Yes", "No"}
+STRENGTH = {"Strong", "Mild", "Uncertain"}
+CONFIDENCE_V = {"High", "Medium", "Low", "Inferred"}
+SENTIMENT = {"Positive", "Neutral", "Negative", "Complex"}
+SOURCE = {"User-stated", "Agent-observed", "Agent-inferred", "System"}
+OPERATIONS = {"add", "update", "resolve", "archive", "delete", "inbox"}
 
 # ── Canonical sheet names ──────────────────────────────────────────────────────
 
-SHEET_INDEX        = "🗂 INDEX"
-SHEET_IDENTITY     = "👤 Identity"
-SHEET_GOALS        = "🎯 Goals"
-SHEET_PROJECTS     = "🚀 Projects"
-SHEET_PEOPLE       = "👥 People"
-SHEET_PREFERENCES  = "💡 Preferences"
-SHEET_BELIEFS      = "🧠 Beliefs"
-SHEET_TASKS        = "✅ Tasks"
-SHEET_OPEN_LOOPS   = "🔓 Open Loops"
-SHEET_SESSION_LOG  = "📅 Session Log"
+SHEET_INDEX = "🗂 INDEX"
+SHEET_IDENTITY = "👤 Identity"
+SHEET_GOALS = "🎯 Goals"
+SHEET_PROJECTS = "🚀 Projects"
+SHEET_PEOPLE = "👥 People"
+SHEET_PREFERENCES = "💡 Preferences"
+SHEET_BELIEFS = "🧠 Beliefs"
+SHEET_TASKS = "✅ Tasks"
+SHEET_OPEN_LOOPS = "🔓 Open Loops"
+SHEET_SESSION_LOG = "📅 Session Log"
 SHEET_AGENT_CONFIG = "⚙️ Agent Config"
-SHEET_LEDGER       = "📒 Agrasandhanī"
-SHEET_INBOX        = "📥 Inbox"           # NEW v2.1
-SHEET_CORRECTIONS  = "✏️ Corrections"     # NEW v2.1
-SHEET_QUARANTINE   = "🔒 Quarantine"       # NEW v2.4 — blocked writes
-SHEET_SECURITY_LOG = "🛡️ Security Log"     # NEW v2.4 — threat audit trail
+SHEET_LEDGER = "📒 Agrasandhanī"
+SHEET_INBOX = "📥 Inbox"  # NEW v2.1
+SHEET_CORRECTIONS = "✏️ Corrections"  # NEW v2.1
+SHEET_QUARANTINE = "🔒 Quarantine"  # NEW v2.4 — blocked writes
+SHEET_SECURITY_LOG = "🛡️ Security Log"  # NEW v2.4 — threat audit trail
 
 ALL_SHEETS = [
-    SHEET_INDEX, SHEET_IDENTITY, SHEET_GOALS, SHEET_PROJECTS,
-    SHEET_PEOPLE, SHEET_PREFERENCES, SHEET_BELIEFS, SHEET_TASKS,
-    SHEET_OPEN_LOOPS, SHEET_SESSION_LOG, SHEET_AGENT_CONFIG,
-    SHEET_LEDGER, SHEET_INBOX, SHEET_CORRECTIONS,
+    SHEET_INDEX,
+    SHEET_IDENTITY,
+    SHEET_GOALS,
+    SHEET_PROJECTS,
+    SHEET_PEOPLE,
+    SHEET_PREFERENCES,
+    SHEET_BELIEFS,
+    SHEET_TASKS,
+    SHEET_OPEN_LOOPS,
+    SHEET_SESSION_LOG,
+    SHEET_AGENT_CONFIG,
+    SHEET_LEDGER,
+    SHEET_INBOX,
+    SHEET_CORRECTIONS,
 ]
 
 TODAY = date.today().isoformat()
@@ -96,10 +109,19 @@ TODAY = date.today().isoformat()
 # ── Admission rules ────────────────────────────────────────────────────────────
 
 NOISE_PATTERNS = [
-    "user said thanks", "user greeted", "user said hello",
-    "user said goodbye", "user said ok", "acknowledged",
-    "noted", "understood", "sure", "great", "awesome",
+    "user said thanks",
+    "user greeted",
+    "user said hello",
+    "user said goodbye",
+    "user said ok",
+    "acknowledged",
+    "noted",
+    "understood",
+    "sure",
+    "great",
+    "awesome",
 ]
+
 
 def _is_worth_remembering(fields: dict, sheet: str) -> tuple[bool, str]:
     """
@@ -117,8 +139,9 @@ def _is_worth_remembering(fields: dict, sheet: str) -> tuple[bool, str]:
             return False, f"noise pattern: '{pattern}'"
 
     # Require minimum content
-    meaningful = [v for v in fields.values()
-                  if v and str(v).strip() and len(str(v)) > 3]
+    meaningful = [
+        v for v in fields.values() if v and str(v).strip() and len(str(v)) > 3
+    ]
     if len(meaningful) < 1:
         return False, "insufficient content"
 
@@ -137,29 +160,38 @@ def _is_worth_remembering(fields: dict, sheet: str) -> tuple[bool, str]:
 # WriteRequest (Karma-Lekha)
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 class WriteRequest:
     """Karma-Lekha — a deed submitted to Chitragupta for recording."""
 
-    def __init__(self, requesting_agent: str, sheet: str, operation: str,
-                 fields: dict, row_identifier: Optional[str] = None,
-                 confidence: str = "High", source: str = "Agent-observed",
-                 session_id: Optional[str] = None, importance: int = 5):
-        assert operation  in OPERATIONS,   f"operation must be one of {OPERATIONS}"
+    def __init__(
+        self,
+        requesting_agent: str,
+        sheet: str,
+        operation: str,
+        fields: dict,
+        row_identifier: Optional[str] = None,
+        confidence: str = "High",
+        source: str = "Agent-observed",
+        session_id: Optional[str] = None,
+        importance: int = 5,
+    ):
+        assert operation in OPERATIONS, f"operation must be one of {OPERATIONS}"
         assert confidence in CONFIDENCE_V, f"confidence must be one of {CONFIDENCE_V}"
-        assert source     in SOURCE,       f"source must be one of {SOURCE}"
-        assert 1 <= importance <= 10,      f"importance must be 1-10"
+        assert source in SOURCE, f"source must be one of {SOURCE}"
+        assert 1 <= importance <= 10, "importance must be 1-10"
 
         self.requesting_agent = requesting_agent
-        self.sheet            = sheet
-        self.operation        = operation
-        self.fields           = {**fields, "Importance": str(importance)}
-        self.row_identifier   = row_identifier
-        self.confidence       = confidence
-        self.source           = source
-        self.session_id       = session_id or TODAY
-        self.importance       = importance
-        self.timestamp        = datetime.utcnow().isoformat()
-        self.request_id       = self._make_id()
+        self.sheet = sheet
+        self.operation = operation
+        self.fields = {**fields, "Importance": str(importance)}
+        self.row_identifier = row_identifier
+        self.confidence = confidence
+        self.source = source
+        self.session_id = session_id or TODAY
+        self.importance = importance
+        self.timestamp = datetime.utcnow().isoformat()
+        self.request_id = self._make_id()
 
     def _make_id(self) -> str:
         payload = f"{self.requesting_agent}{self.sheet}{self.timestamp}"
@@ -167,27 +199,34 @@ class WriteRequest:
 
     def to_dict(self) -> dict:
         return {
-            "request_id": self.request_id, "requesting_agent": self.requesting_agent,
-            "sheet": self.sheet, "operation": self.operation,
-            "row_identifier": self.row_identifier, "fields": self.fields,
-            "confidence": self.confidence, "source": self.source,
-            "importance": self.importance, "session_id": self.session_id,
+            "request_id": self.request_id,
+            "requesting_agent": self.requesting_agent,
+            "sheet": self.sheet,
+            "operation": self.operation,
+            "row_identifier": self.row_identifier,
+            "fields": self.fields,
+            "confidence": self.confidence,
+            "source": self.source,
+            "importance": self.importance,
+            "session_id": self.session_id,
             "timestamp": self.timestamp,
         }
 
     @classmethod
     def from_dict(cls, d: dict) -> "WriteRequest":
         req = cls(
-            requesting_agent = d["requesting_agent"], sheet = d["sheet"],
-            operation = d["operation"], fields = d["fields"],
-            row_identifier = d.get("row_identifier"),
-            confidence = d.get("confidence", "High"),
-            source = d.get("source", "Agent-observed"),
-            session_id = d.get("session_id"),
-            importance = d.get("importance", 5),
+            requesting_agent=d["requesting_agent"],
+            sheet=d["sheet"],
+            operation=d["operation"],
+            fields=d["fields"],
+            row_identifier=d.get("row_identifier"),
+            confidence=d.get("confidence", "High"),
+            source=d.get("source", "Agent-observed"),
+            session_id=d.get("session_id"),
+            importance=d.get("importance", 5),
         )
         req.request_id = d.get("request_id", req.request_id)
-        req.timestamp  = d.get("timestamp", req.timestamp)
+        req.timestamp = d.get("timestamp", req.timestamp)
         return req
 
 
@@ -195,38 +234,48 @@ class WriteRequest:
 # WriteQueue (Sanchitta)
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 class WriteQueue:
     """Sanchitta — accumulated karma awaiting reckoning. Crash-safe."""
 
     def __init__(self, queue_path: Path):
-        self.path  = queue_path
+        self.path = queue_path
         self._lock = threading.Lock()
         if not self.path.exists():
             self._save([])
 
     def _load(self) -> list[dict]:
-        try: return json.loads(self.path.read_text())
-        except Exception: return []
+        try:
+            return json.loads(self.path.read_text())
+        except Exception:
+            return []
 
     def _save(self, items: list[dict]):
         self.path.write_text(json.dumps(items, indent=2))
 
     def enqueue(self, req: WriteRequest):
         with self._lock:
-            items = self._load(); items.append(req.to_dict()); self._save(items)
+            items = self._load()
+            items.append(req.to_dict())
+            self._save(items)
 
     def dequeue_all(self) -> list[WriteRequest]:
         with self._lock:
-            items = self._load(); self._save([])
+            items = self._load()
+            self._save([])
             return [WriteRequest.from_dict(d) for d in items]
 
-    def peek(self) -> list[dict]: return self._load()
-    def is_empty(self) -> bool: return len(self._load()) == 0
+    def peek(self) -> list[dict]:
+        return self._load()
+
+    def is_empty(self) -> bool:
+        return len(self._load()) == 0
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # LedgerAgent (Chitragupta) — sole writer
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 class LedgerAgent:
     """
@@ -234,12 +283,13 @@ class LedgerAgent:
     v2.1: admission rules, dead man's switch, belief diffing support.
     """
 
-    def __init__(self, memory_path: Path, queue: WriteQueue,
-                 dead_switch_minutes: int = 30):
-        self.path              = memory_path
-        self.queue             = queue
-        self._lock             = threading.Lock()
-        self._last_write_time  = time.time()
+    def __init__(
+        self, memory_path: Path, queue: WriteQueue, dead_switch_minutes: int = 30
+    ):
+        self.path = memory_path
+        self.queue = queue
+        self._lock = threading.Lock()
+        self._last_write_time = time.time()
         self._dead_switch_mins = dead_switch_minutes
 
     def submit(self, req: WriteRequest) -> dict:
@@ -249,7 +299,8 @@ class LedgerAgent:
 
     def replay_queue(self) -> int:
         pending = self.queue.dequeue_all()
-        for req in pending: self._process(req)
+        for req in pending:
+            self._process(req)
         return len(pending)
 
     def is_alive(self) -> bool:
@@ -259,12 +310,19 @@ class LedgerAgent:
     def _process(self, req: WriteRequest) -> dict:
         with self._lock:
             # Admission gate (v2.1)
-            if req.sheet not in (SHEET_SESSION_LOG, SHEET_LEDGER,
-                                  SHEET_INBOX, SHEET_CORRECTIONS):
+            if req.sheet not in (
+                SHEET_SESSION_LOG,
+                SHEET_LEDGER,
+                SHEET_INBOX,
+                SHEET_CORRECTIONS,
+            ):
                 admit, reason = _is_worth_remembering(req.fields, req.sheet)
                 if not admit:
-                    return {"status": "filtered", "request_id": req.request_id,
-                            "reason": reason}
+                    return {
+                        "status": "filtered",
+                        "request_id": req.request_id,
+                        "reason": reason,
+                    }
 
             validation = self._validate(req)
             if validation["status"] == "rejected":
@@ -275,7 +333,8 @@ class LedgerAgent:
             if conflict:
                 self._log_audit(req, "conflict", str(conflict))
                 return {
-                    "status": "conflict", "request_id": req.request_id,
+                    "status": "conflict",
+                    "request_id": req.request_id,
                     "existing_value": conflict.get("existing"),
                     "requested_value": conflict.get("requested"),
                     "resolution": "pending_user",
@@ -288,9 +347,12 @@ class LedgerAgent:
             self._last_write_time = time.time()
 
             return {
-                "status": "written", "request_id": req.request_id,
-                "sheet": req.sheet, "operation": req.operation,
-                "timestamp": req.timestamp, "signature": mudra,
+                "status": "written",
+                "request_id": req.request_id,
+                "sheet": req.sheet,
+                "operation": req.operation,
+                "timestamp": req.timestamp,
+                "signature": mudra,
             }
 
     def _validate(self, req: WriteRequest) -> dict:
@@ -299,35 +361,48 @@ class LedgerAgent:
         if req.sheet == SHEET_LEDGER:
             return {"status": "rejected", "reason": "Agrasandhanī is system-managed"}
         vocab = {
-            "Status":     PROJECT_STATUS | TASK_STATUS | GOAL_STATUS,
-            "Priority":   PRIORITY, "Resolved?": RESOLVED,
-            "Strength":   STRENGTH, "Confidence": CONFIDENCE_V,
-            "Sentiment":  SENTIMENT,
+            "Status": PROJECT_STATUS | TASK_STATUS | GOAL_STATUS,
+            "Priority": PRIORITY,
+            "Resolved?": RESOLVED,
+            "Strength": STRENGTH,
+            "Confidence": CONFIDENCE_V,
+            "Sentiment": SENTIMENT,
         }
         for field, allowed in vocab.items():
             if field in req.fields and req.fields[field] not in allowed:
-                return {"status": "rejected",
-                        "reason": f"Invalid {field}: '{req.fields[field]}'"}
+                return {
+                    "status": "rejected",
+                    "reason": f"Invalid {field}: '{req.fields[field]}'",
+                }
         return {"status": "valid"}
 
     def _check_conflict(self, req: WriteRequest) -> Optional[dict]:
         if req.operation != "update" or not req.row_identifier:
             return None
         try:
-            df = pd.read_excel(str(self.path), sheet_name=req.sheet,
-                               engine="odf", header=0, dtype=str)
-            if df.empty: return None
+            df = pd.read_excel(
+                str(self.path), sheet_name=req.sheet, engine="odf", header=0, dtype=str
+            )
+            if df.empty:
+                return None
             match = df[df.iloc[:, 0].astype(str) == req.row_identifier]
-            if match.empty: return None
+            if match.empty:
+                return None
             row = match.iloc[0]
             for field, new_val in req.fields.items():
                 if field in row.index:
-                    if (str(row[field]) != str(new_val) and
-                            row.get("Confidence", "Low") == "High" and
-                            req.confidence != "High"):
-                        return {"field": field, "existing": str(row[field]),
-                                "requested": str(new_val)}
-        except Exception: pass
+                    if (
+                        str(row[field]) != str(new_val)
+                        and row.get("Confidence", "Low") == "High"
+                        and req.confidence != "High"
+                    ):
+                        return {
+                            "field": field,
+                            "existing": str(row[field]),
+                            "requested": str(new_val),
+                        }
+        except Exception:
+            pass
         return None
 
     def _seal(self, req: WriteRequest) -> str:
@@ -337,50 +412,72 @@ class LedgerAgent:
     def _commit(self, req: WriteRequest, mudra: str):
         try:
             try:
-                df = pd.read_excel(str(self.path), sheet_name=req.sheet,
-                                   engine="odf", header=0, dtype=str)
+                df = pd.read_excel(
+                    str(self.path),
+                    sheet_name=req.sheet,
+                    engine="odf",
+                    header=0,
+                    dtype=str,
+                )
             except Exception:
                 df = pd.DataFrame()
 
             now = datetime.utcnow().isoformat(timespec="seconds")
 
             if req.operation in ("add", "inbox"):
-                new_row = {**req.fields, "Confidence": req.confidence,
-                           "Source": req.source, "Added By": req.requesting_agent,
-                           "Last Updated": now}
+                new_row = {
+                    **req.fields,
+                    "Confidence": req.confidence,
+                    "Source": req.source,
+                    "Added By": req.requesting_agent,
+                    "Last Updated": now,
+                }
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
             elif req.operation == "update" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
-                        else pd.Series([], dtype=bool))
+                mask = (
+                    df.iloc[:, 0].astype(str) == req.row_identifier
+                    if not df.empty and len(df.columns) > 0
+                    else pd.Series([], dtype=bool)
+                )
                 if mask.any():
                     for f, v in req.fields.items():
-                        if f in df.columns: df.loc[mask, f] = v
+                        if f in df.columns:
+                            df.loc[mask, f] = v
                     if "Last Updated" in df.columns:
                         df.loc[mask, "Last Updated"] = now
                     if "Confidence" in df.columns:
                         df.loc[mask, "Confidence"] = req.confidence
                 else:
-                    new_row = {**req.fields, "Confidence": req.confidence,
-                               "Source": req.source, "Last Updated": now}
+                    new_row = {
+                        **req.fields,
+                        "Confidence": req.confidence,
+                        "Source": req.source,
+                        "Last Updated": now,
+                    }
                     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
             elif req.operation == "resolve" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
-                        else pd.Series([], dtype=bool))
-                if "Resolved?" in df.columns: df.loc[mask, "Resolved?"] = "Yes"
+                mask = (
+                    df.iloc[:, 0].astype(str) == req.row_identifier
+                    if not df.empty and len(df.columns) > 0
+                    else pd.Series([], dtype=bool)
+                )
+                if "Resolved?" in df.columns:
+                    df.loc[mask, "Resolved?"] = "Yes"
                 if "Resolution" in df.columns:
                     df.loc[mask, "Resolution"] = req.fields.get("Resolution", "")
                 if "Last Updated" in df.columns:
                     df.loc[mask, "Last Updated"] = now
 
             elif req.operation == "archive" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
-                        else pd.Series([], dtype=bool))
-                if "Status" in df.columns: df.loc[mask, "Status"] = "Archived"
+                mask = (
+                    df.iloc[:, 0].astype(str) == req.row_identifier
+                    if not df.empty and len(df.columns) > 0
+                    else pd.Series([], dtype=bool)
+                )
+                if "Status" in df.columns:
+                    df.loc[mask, "Status"] = "Archived"
                 if "Last Updated" in df.columns:
                     df.loc[mask, "Last Updated"] = now
 
@@ -396,43 +493,56 @@ class LedgerAgent:
                 if name != sheet_name:
                     try:
                         existing[name] = pd.read_excel(
-                            str(self.path), sheet_name=name,
-                            engine="odf", header=None)
+                            str(self.path), sheet_name=name, engine="odf", header=None
+                        )
                     except Exception:
                         existing[name] = pd.DataFrame()
-        except Exception: pass
+        except Exception:
+            pass
 
         with pd.ExcelWriter(str(self.path), engine="odf") as writer:
             for name, sdf in existing.items():
                 sdf.to_excel(writer, sheet_name=name, index=False, header=False)
             df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-    def _log_audit(self, req: WriteRequest, status: str,
-                   reason: str = "", signature: str = ""):
+    def _log_audit(
+        self, req: WriteRequest, status: str, reason: str = "", signature: str = ""
+    ):
         entry = {
-            "Timestamp": req.timestamp, "Request ID": req.request_id,
-            "Agent": req.requesting_agent, "Sheet": req.sheet,
-            "Operation": req.operation, "Row Identifier": req.row_identifier or "",
-            "Status": status, "Confidence": req.confidence,
-            "Source": req.source, "Importance": req.importance,
-            "Signature": signature, "Reason / Notes": reason,
+            "Timestamp": req.timestamp,
+            "Request ID": req.request_id,
+            "Agent": req.requesting_agent,
+            "Sheet": req.sheet,
+            "Operation": req.operation,
+            "Row Identifier": req.row_identifier or "",
+            "Status": status,
+            "Confidence": req.confidence,
+            "Source": req.source,
+            "Importance": req.importance,
+            "Signature": signature,
+            "Reason / Notes": reason,
         }
         try:
             try:
-                ledger_df = pd.read_excel(str(self.path),
-                                          sheet_name=SHEET_LEDGER,
-                                          engine="odf", header=0, dtype=str)
+                ledger_df = pd.read_excel(
+                    str(self.path),
+                    sheet_name=SHEET_LEDGER,
+                    engine="odf",
+                    header=0,
+                    dtype=str,
+                )
             except Exception:
                 ledger_df = pd.DataFrame(columns=list(entry.keys()))
-            ledger_df = pd.concat([ledger_df, pd.DataFrame([entry])],
-                                   ignore_index=True)
+            ledger_df = pd.concat([ledger_df, pd.DataFrame([entry])], ignore_index=True)
             self._write_sheet(SHEET_LEDGER, ledger_df)
-        except Exception: pass
+        except Exception:
+            pass
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # OpenYantra — public API v2.1
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 class OpenYantra:
     """
@@ -450,13 +560,13 @@ class OpenYantra:
 
     VERSION = "2.10"
 
-    def __init__(self, path: str | Path, agent_name: str = "Agent",
-                 dead_switch_minutes: int = 30):
-        self.path       = Path(path).expanduser()
+    def __init__(
+        self, path: str | Path, agent_name: str = "Agent", dead_switch_minutes: int = 30
+    ):
+        self.path = Path(path).expanduser()
         self.agent_name = agent_name
-        self._queue     = WriteQueue(self.path.parent / "sanchitta.json")
-        self._ledger    = LedgerAgent(self.path, self._queue,
-                                      dead_switch_minutes)
+        self._queue = WriteQueue(self.path.parent / "sanchitta.json")
+        self._ledger = LedgerAgent(self.path, self._queue, dead_switch_minutes)
         replayed = self._ledger.replay_queue()
         if replayed:
             print(f"[OpenYantra] Replayed {replayed} Karma-Lekha from Sanchitta.")
@@ -465,30 +575,43 @@ class OpenYantra:
         if _VIDYAKOSHA_AVAILABLE and self.path.exists():
             try:
                 self._vidyakosha = _VK(str(self.path.parent), embedder_pref="auto")
-            except Exception: pass
+            except Exception:
+                pass
 
         # Raksha — security engine (v2.4)
         self._raksha = get_raksha() if _RAKSHA_AVAILABLE else None
 
     # ── Bootstrap ──────────────────────────────────────────────────────────────
 
-    def bootstrap(self, user_name: str = "", occupation: str = "",
-                  location: str = ""):
+    def bootstrap(self, user_name: str = "", occupation: str = "", location: str = ""):
         if self.path.exists():
             print(f"[OpenYantra] Chitrapat already exists at {self.path}.")
             return
         self.path.parent.mkdir(parents=True, exist_ok=True)
         _build_ods_template(str(self.path))
-        for attr, val in {"Preferred Name": user_name, "Occupation": occupation,
-                          "Location": location}.items():
+        for attr, val in {
+            "Preferred Name": user_name,
+            "Occupation": occupation,
+            "Location": location,
+        }.items():
             if val:
-                self.request_write(WriteRequest(
-                    "System", SHEET_IDENTITY, "update", {"Value": val},
-                    row_identifier=attr, confidence="High",
-                    source="User-stated", importance=9))
-        self.log_session(["Chitragupta Puja — bootstrap"],
-                         [f"Chitrapat created — OpenYantra v{self.VERSION}"],
-                         [f"Identity: {user_name}" if user_name else "Identity stub"])
+                self.request_write(
+                    WriteRequest(
+                        "System",
+                        SHEET_IDENTITY,
+                        "update",
+                        {"Value": val},
+                        row_identifier=attr,
+                        confidence="High",
+                        source="User-stated",
+                        importance=9,
+                    )
+                )
+        self.log_session(
+            ["Chitragupta Puja — bootstrap"],
+            [f"Chitrapat created — OpenYantra v{self.VERSION}"],
+            [f"Identity: {user_name}" if user_name else "Identity stub"],
+        )
         print(f"[OpenYantra] Chitrapat created at {self.path}")
         print("[OpenYantra] Run `yantra ui` to open the browser dashboard.")
 
@@ -502,42 +625,44 @@ class OpenYantra:
         """
         # Raksha scan — check for injection before commit
         if self._raksha is not None:
-            scan = self._raksha.scan_write(
-                req.fields, req.requesting_agent, req.sheet)
+            scan = self._raksha.scan_write(req.fields, req.requesting_agent, req.sheet)
             if scan.should_block:
                 self._quarantine(req, scan)
                 return {
-                    "status":       "quarantined",
-                    "request_id":   req.request_id,
+                    "status": "quarantined",
+                    "request_id": req.request_id,
                     "threat_level": scan.threat_level.value,
-                    "threat_type":  scan.threat_type.value if scan.threat_type else None,
-                    "threats":      scan.threats_found,
-                    "message":      "Write blocked by Raksha. Review in Security tab.",
+                    "threat_type": scan.threat_type.value if scan.threat_type else None,
+                    "threats": scan.threats_found,
+                    "message": "Write blocked by Raksha. Review in Security tab.",
                 }
             elif scan.should_warn:
                 self._log_security(req, scan)
                 # Allow but flag — add security note to fields
                 req.fields["_security_flag"] = (
-                    f"SUSPICIOUS: {'; '.join(scan.threats_found[:2])}")
+                    f"SUSPICIOUS: {'; '.join(scan.threats_found[:2])}"
+                )
 
         receipt = self._ledger.submit(req)
         if receipt.get("status") == "written" and self._vidyakosha is not None:
             try:
                 # v2.7: O(1) incremental update — only changed row synced
-                row_text = " ".join(
-                    f"{k}: {v}" for k, v in req.fields.items() if v)
+                row_text = " ".join(f"{k}: {v}" for k, v in req.fields.items() if v)
                 if hasattr(self._vidyakosha, "incremental_update"):
                     self._vidyakosha.incremental_update(
-                        req.request_id, row_text, req.sheet)
+                        req.request_id, row_text, req.sheet
+                    )
                 else:
                     self._vidyakosha.sync(self.path)
-            except Exception: pass
+            except Exception:
+                pass
         return receipt
 
     # ── v2.1 new methods ───────────────────────────────────────────────────────
 
-    def inbox(self, text: str, source: str = "User-stated",
-              importance: int = 5) -> dict:
+    def inbox(
+        self, text: str, source: str = "User-stated", importance: int = 5
+    ) -> dict:
         """
         📥 Quick capture — dump anything to Inbox without categorisation.
         Chitragupta routes to correct sheet later via route_inbox().
@@ -546,19 +671,23 @@ class OpenYantra:
             oy.inbox("Priya mentioned the budget needs revision by Friday")
             oy.inbox("I want to learn Rust in 2026")
         """
-        return self.request_write(WriteRequest(
-            requesting_agent = self.agent_name,
-            sheet            = SHEET_INBOX,
-            operation        = "inbox",
-            fields           = {
-                "Content":    text,
-                "Captured":   datetime.utcnow().isoformat(timespec="seconds"),
-                "Routed?":    "No",
-                "Target Sheet": "",
-                "Notes":      "",
-            },
-            confidence = "High", source = source, importance = importance,
-        ))
+        return self.request_write(
+            WriteRequest(
+                requesting_agent=self.agent_name,
+                sheet=SHEET_INBOX,
+                operation="inbox",
+                fields={
+                    "Content": text,
+                    "Captured": datetime.utcnow().isoformat(timespec="seconds"),
+                    "Routed?": "No",
+                    "Target Sheet": "",
+                    "Notes": "",
+                },
+                confidence="High",
+                source=source,
+                importance=importance,
+            )
+        )
 
     def route_inbox(self, dry_run: bool = False) -> list[dict]:
         """
@@ -568,59 +697,78 @@ class OpenYantra:
         Returns list of routing decisions.
         """
         routing_log = []
-        inbox_rows  = self._read_sheet(SHEET_INBOX)
-        unrouted    = [r for r in inbox_rows if r.get("Routed?") == "No"]
+        inbox_rows = self._read_sheet(SHEET_INBOX)
+        unrouted = [r for r in inbox_rows if r.get("Routed?") == "No"]
 
         for row in unrouted:
-            content  = str(row.get("Content", "")).lower()
-            target   = _infer_sheet(content)
+            content = str(row.get("Content", "")).lower()
+            target = _infer_sheet(content)
             decision = {"content": row.get("Content"), "target": target}
 
             if not dry_run and target:
-                self.request_write(WriteRequest(
-                    requesting_agent = "Chitragupta",
-                    sheet            = target,
-                    operation        = "add",
-                    fields           = {"Notes": row.get("Content", ""),
-                                        "Source": "Routed from Inbox"},
-                    confidence       = "Low",
-                    source           = "Agent-inferred",
-                    importance       = max(1, min(10, int(row.get("Importance", 5) or 5))),
-                ))
+                self.request_write(
+                    WriteRequest(
+                        requesting_agent="Chitragupta",
+                        sheet=target,
+                        operation="add",
+                        fields={
+                            "Notes": row.get("Content", ""),
+                            "Source": "Routed from Inbox",
+                        },
+                        confidence="Low",
+                        source="Agent-inferred",
+                        importance=max(1, min(10, int(row.get("Importance", 5) or 5))),
+                    )
+                )
                 # Mark as routed
-                self.request_write(WriteRequest(
-                    "Chitragupta", SHEET_INBOX, "update",
-                    {"Routed?": "Yes", "Target Sheet": target or "Unknown"},
-                    row_identifier = str(row.get("Content", ""))[:50],
-                    confidence = "High", source = "System", importance = 5,
-                ))
+                self.request_write(
+                    WriteRequest(
+                        "Chitragupta",
+                        SHEET_INBOX,
+                        "update",
+                        {"Routed?": "Yes", "Target Sheet": target or "Unknown"},
+                        row_identifier=str(row.get("Content", ""))[:50],
+                        confidence="High",
+                        source="System",
+                        importance=5,
+                    )
+                )
                 decision["routed"] = True
             routing_log.append(decision)
         return routing_log
 
-    def propose_correction(self, sheet: str, row_identifier: str,
-                           field: str, new_value: str,
-                           reason: str = "") -> dict:
+    def propose_correction(
+        self,
+        sheet: str,
+        row_identifier: str,
+        field: str,
+        new_value: str,
+        reason: str = "",
+    ) -> dict:
         """
         Any agent proposes a correction — goes to Corrections sheet for approval.
         User reviews via `yantra ui` and approves/rejects.
         """
-        return self.request_write(WriteRequest(
-            requesting_agent = self.agent_name,
-            sheet            = SHEET_CORRECTIONS,
-            operation        = "add",
-            fields           = {
-                "Target Sheet":    sheet,
-                "Row Identifier":  row_identifier,
-                "Field":           field,
-                "Proposed Value":  new_value,
-                "Reason":          reason,
-                "Status":          "Pending",
-                "Proposed By":     self.agent_name,
-                "Proposed At":     datetime.utcnow().isoformat(timespec="seconds"),
-            },
-            confidence = "Medium", source = "Agent-inferred", importance = 6,
-        ))
+        return self.request_write(
+            WriteRequest(
+                requesting_agent=self.agent_name,
+                sheet=SHEET_CORRECTIONS,
+                operation="add",
+                fields={
+                    "Target Sheet": sheet,
+                    "Row Identifier": row_identifier,
+                    "Field": field,
+                    "Proposed Value": new_value,
+                    "Reason": reason,
+                    "Status": "Pending",
+                    "Proposed By": self.agent_name,
+                    "Proposed At": datetime.utcnow().isoformat(timespec="seconds"),
+                },
+                confidence="Medium",
+                source="Agent-inferred",
+                importance=6,
+            )
+        )
 
     def apply_corrections(self, approved_only: bool = True) -> int:
         """Apply approved corrections from the Corrections sheet."""
@@ -629,14 +777,18 @@ class OpenYantra:
         for c in corrections:
             if approved_only and c.get("Status") != "Approved":
                 continue
-            self.request_write(WriteRequest(
-                requesting_agent = "Chitragupta",
-                sheet            = c.get("Target Sheet", ""),
-                operation        = "update",
-                fields           = {c.get("Field", ""): c.get("Proposed Value", "")},
-                row_identifier   = c.get("Row Identifier", ""),
-                confidence       = "High", source = "User-stated", importance = 8,
-            ))
+            self.request_write(
+                WriteRequest(
+                    requesting_agent="Chitragupta",
+                    sheet=c.get("Target Sheet", ""),
+                    operation="update",
+                    fields={c.get("Field", ""): c.get("Proposed Value", "")},
+                    row_identifier=c.get("Row Identifier", ""),
+                    confidence="High",
+                    source="User-stated",
+                    importance=8,
+                )
+            )
             applied += 1
         return applied
 
@@ -648,8 +800,6 @@ class OpenYantra:
         """
         contradictions = []
         beliefs = self._read_sheet(SHEET_BELIEFS)
-        identity = self._read_sheet(SHEET_IDENTITY)
-
         # Simple contradiction detection: same topic, different positions
         by_topic: dict[str, list] = {}
         for row in beliefs:
@@ -660,15 +810,17 @@ class OpenYantra:
         for topic, rows in by_topic.items():
             if len(rows) > 1:
                 positions = [r.get("Position", "") for r in rows]
-                dates     = [r.get("Last Updated", "") for r in rows]
-                contradictions.append({
-                    "type":      "belief_evolution",
-                    "topic":     topic,
-                    "positions": positions,
-                    "dates":     dates,
-                    "message":   f"Topic '{topic}' has {len(rows)} different positions. "
-                                 f"Review and consolidate?",
-                })
+                dates = [r.get("Last Updated", "") for r in rows]
+                contradictions.append(
+                    {
+                        "type": "belief_evolution",
+                        "topic": topic,
+                        "positions": positions,
+                        "dates": dates,
+                        "message": f"Topic '{topic}' has {len(rows)} different positions. "
+                        f"Review and consolidate?",
+                    }
+                )
 
         return contradictions
 
@@ -678,27 +830,28 @@ class OpenYantra:
         Returns list of loops to archive or action.
         """
         expired = []
-        loops   = self._read_sheet(SHEET_OPEN_LOOPS)
-        cutoff  = datetime.utcnow() - timedelta(days=default_ttl_days)
+        loops = self._read_sheet(SHEET_OPEN_LOOPS)
 
         for loop in loops:
             if loop.get("Resolved?") == "Yes":
                 continue
             ttl_days = loop.get("TTL_Days", default_ttl_days)
-            opened   = loop.get("Opened", "")
+            opened = loop.get("Opened", "")
             try:
-                ttl    = int(ttl_days or default_ttl_days)
+                ttl = int(ttl_days or default_ttl_days)
                 opened_dt = datetime.fromisoformat(str(opened)[:10])
-                age_days  = (datetime.utcnow() - opened_dt).days
+                age_days = (datetime.utcnow() - opened_dt).days
                 if age_days > ttl:
-                    expired.append({
-                        "topic":     loop.get("Topic", ""),
-                        "age_days":  age_days,
-                        "ttl_days":  ttl,
-                        "message":   f"Open loop '{loop.get('Topic', '')}' is "
-                                     f"{age_days} days old (TTL: {ttl}). "
-                                     f"Resolve, delegate, or archive?",
-                    })
+                    expired.append(
+                        {
+                            "topic": loop.get("Topic", ""),
+                            "age_days": age_days,
+                            "ttl_days": ttl,
+                            "message": f"Open loop '{loop.get('Topic', '')}' is "
+                            f"{age_days} days old (TTL: {ttl}). "
+                            f"Resolve, delegate, or archive?",
+                        }
+                    )
             except Exception:
                 pass
         return expired
@@ -707,118 +860,234 @@ class OpenYantra:
         """System status and memory stats."""
         try:
             sheets_data = {}
-            for sheet in [SHEET_PROJECTS, SHEET_TASKS, SHEET_OPEN_LOOPS,
-                          SHEET_SESSION_LOG, SHEET_INBOX, SHEET_CORRECTIONS]:
+            for sheet in [
+                SHEET_PROJECTS,
+                SHEET_TASKS,
+                SHEET_OPEN_LOOPS,
+                SHEET_SESSION_LOG,
+                SHEET_INBOX,
+                SHEET_CORRECTIONS,
+            ]:
                 rows = self._read_sheet(sheet)
                 sheets_data[sheet] = len(rows)
 
-            open_loops    = sheets_data.get(SHEET_OPEN_LOOPS, 0)
-            inbox_pending = len([r for r in self._read_sheet(SHEET_INBOX)
-                                 if r.get("Routed?") == "No"])
-            corrections   = len([r for r in self._read_sheet(SHEET_CORRECTIONS)
-                                  if r.get("Status") == "Pending"])
-            stale_projects = len([r for r in self._read_sheet(SHEET_PROJECTS)
-                                   if r.get("Status") == "Active" and
-                                   r.get("Last Updated", "") < (
-                                       datetime.utcnow() - timedelta(days=30)
-                                   ).isoformat()[:10]])
+            open_loops = sheets_data.get(SHEET_OPEN_LOOPS, 0)
+            inbox_pending = len(
+                [r for r in self._read_sheet(SHEET_INBOX) if r.get("Routed?") == "No"]
+            )
+            corrections = len(
+                [
+                    r
+                    for r in self._read_sheet(SHEET_CORRECTIONS)
+                    if r.get("Status") == "Pending"
+                ]
+            )
+            stale_projects = len(
+                [
+                    r
+                    for r in self._read_sheet(SHEET_PROJECTS)
+                    if r.get("Status") == "Active"
+                    and r.get("Last Updated", "")
+                    < (datetime.utcnow() - timedelta(days=30)).isoformat()[:10]
+                ]
+            )
 
-            file_size_kb = (self.path.stat().st_size // 1024
-                            if self.path.exists() else 0)
+            file_size_kb = self.path.stat().st_size // 1024 if self.path.exists() else 0
 
             return {
-                "status":           "healthy" if self._ledger.is_alive() else "warning",
-                "version":          self.VERSION,
+                "status": "healthy" if self._ledger.is_alive() else "warning",
+                "version": self.VERSION,
                 "chitrapat_size_kb": file_size_kb,
-                "open_loops":       open_loops,
-                "inbox_pending":    inbox_pending,
+                "open_loops": open_loops,
+                "inbox_pending": inbox_pending,
                 "corrections_pending": corrections,
-                "stale_projects":   stale_projects,
+                "stale_projects": stale_projects,
                 "chitragupta_alive": self._ledger.is_alive(),
-                "vidyakosha":       "available" if _VIDYAKOSHA_AVAILABLE else "not installed",
-                "rows":             sheets_data,
+                "vidyakosha": "available" if _VIDYAKOSHA_AVAILABLE else "not installed",
+                "rows": sheets_data,
             }
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
     # ── Convenience write helpers ──────────────────────────────────────────────
 
-    def flush_open_loop(self, topic: str, context: str,
-                        priority: str = "Medium", related_project: str = "",
-                        ttl_days: int = 90, importance: int = 7) -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_OPEN_LOOPS, "add",
-            {"Topic": topic, "Context / What's Unresolved": context,
-             "Opened": TODAY, "Priority": priority,
-             "Related Project": related_project,
-             "Resolved?": "No", "Resolution": "", "TTL_Days": str(ttl_days)},
-            confidence="High", source="Agent-observed", importance=importance,
-        ))
+    def flush_open_loop(
+        self,
+        topic: str,
+        context: str,
+        priority: str = "Medium",
+        related_project: str = "",
+        ttl_days: int = 90,
+        importance: int = 7,
+    ) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_OPEN_LOOPS,
+                "add",
+                {
+                    "Topic": topic,
+                    "Context / What's Unresolved": context,
+                    "Opened": TODAY,
+                    "Priority": priority,
+                    "Related Project": related_project,
+                    "Resolved?": "No",
+                    "Resolution": "",
+                    "TTL_Days": str(ttl_days),
+                },
+                confidence="High",
+                source="Agent-observed",
+                importance=importance,
+            )
+        )
 
     def resolve_open_loop(self, topic: str, resolution: str = "") -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_OPEN_LOOPS, "resolve",
-            {"Resolution": resolution}, row_identifier=topic,
-            confidence="High", source="Agent-observed", importance=7,
-        ))
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_OPEN_LOOPS,
+                "resolve",
+                {"Resolution": resolution},
+                row_identifier=topic,
+                confidence="High",
+                source="Agent-observed",
+                importance=7,
+            )
+        )
 
-    def log_session(self, topics: list[str], decisions: list[str] = None,
-                    new_memory: list[str] = None,
-                    open_loops_created: int = 0, notes: str = "") -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_SESSION_LOG, "add",
-            {"Date": TODAY, "Topics Discussed": "; ".join(topics),
-             "Decisions Made": "; ".join(decisions or []),
-             "New Memory Added": "; ".join(new_memory or []),
-             "Open Loops Created": str(open_loops_created),
-             "Agent": self.agent_name, "Notes": notes},
-            confidence="High", source="System", importance=5,
-        ))
+    def log_session(
+        self,
+        topics: list[str],
+        decisions: list[str] = None,
+        new_memory: list[str] = None,
+        open_loops_created: int = 0,
+        notes: str = "",
+    ) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_SESSION_LOG,
+                "add",
+                {
+                    "Date": TODAY,
+                    "Topics Discussed": "; ".join(topics),
+                    "Decisions Made": "; ".join(decisions or []),
+                    "New Memory Added": "; ".join(new_memory or []),
+                    "Open Loops Created": str(open_loops_created),
+                    "Agent": self.agent_name,
+                    "Notes": notes,
+                },
+                confidence="High",
+                source="System",
+                importance=5,
+            )
+        )
 
-    def add_project(self, project: str, domain: str = "", status: str = "Active",
-                    priority: str = "High", key_decision: str = "",
-                    next_step: str = "", notes: str = "",
-                    importance: int = 7) -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_PROJECTS, "add",
-            {"Project": project, "Domain": domain, "Status": status,
-             "Priority": priority, "Key Decision Made": key_decision,
-             "Next Step": next_step, "Notes": notes},
-            confidence="High", source="User-stated", importance=importance,
-        ))
+    def add_project(
+        self,
+        project: str,
+        domain: str = "",
+        status: str = "Active",
+        priority: str = "High",
+        key_decision: str = "",
+        next_step: str = "",
+        notes: str = "",
+        importance: int = 7,
+    ) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_PROJECTS,
+                "add",
+                {
+                    "Project": project,
+                    "Domain": domain,
+                    "Status": status,
+                    "Priority": priority,
+                    "Key Decision Made": key_decision,
+                    "Next Step": next_step,
+                    "Notes": notes,
+                },
+                confidence="High",
+                source="User-stated",
+                importance=importance,
+            )
+        )
 
-    def add_task(self, task: str, project: str = "", priority: str = "Medium",
-                 deadline: str = "", status: str = "Pending",
-                 notes: str = "", importance: int = 6) -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_TASKS, "add",
-            {"Task": task, "Project": project, "Priority": priority,
-             "Deadline": deadline, "Status": status, "Notes": notes},
-            confidence="High", source="User-stated", importance=importance,
-        ))
+    def add_task(
+        self,
+        task: str,
+        project: str = "",
+        priority: str = "Medium",
+        deadline: str = "",
+        status: str = "Pending",
+        notes: str = "",
+        importance: int = 6,
+    ) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_TASKS,
+                "add",
+                {
+                    "Task": task,
+                    "Project": project,
+                    "Priority": priority,
+                    "Deadline": deadline,
+                    "Status": status,
+                    "Notes": notes,
+                },
+                confidence="High",
+                source="User-stated",
+                importance=importance,
+            )
+        )
 
-    def add_person(self, name: str, relationship: str = "", context: str = "",
-                   sentiment: str = "Neutral", notes: str = "",
-                   importance: int = 6) -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_PEOPLE, "add",
-            {"Name": name, "Relationship": relationship, "Context": context,
-             "Sentiment": sentiment, "Last Mentioned": TODAY, "Notes": notes},
-            confidence="Medium", source="Agent-observed", importance=importance,
-        ))
+    def add_person(
+        self,
+        name: str,
+        relationship: str = "",
+        context: str = "",
+        sentiment: str = "Neutral",
+        notes: str = "",
+        importance: int = 6,
+    ) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_PEOPLE,
+                "add",
+                {
+                    "Name": name,
+                    "Relationship": relationship,
+                    "Context": context,
+                    "Sentiment": sentiment,
+                    "Last Mentioned": TODAY,
+                    "Notes": notes,
+                },
+                confidence="Medium",
+                source="Agent-observed",
+                importance=importance,
+            )
+        )
 
-    def update_identity(self, attribute: str, value: str,
-                        importance: int = 8) -> dict:
-        return self.request_write(WriteRequest(
-            self.agent_name, SHEET_IDENTITY, "update", {"Value": value},
-            row_identifier=attribute, confidence="High",
-            source="User-stated", importance=importance,
-        ))
+    def update_identity(self, attribute: str, value: str, importance: int = 8) -> dict:
+        return self.request_write(
+            WriteRequest(
+                self.agent_name,
+                SHEET_IDENTITY,
+                "update",
+                {"Value": value},
+                row_identifier=attribute,
+                confidence="High",
+                source="User-stated",
+                importance=importance,
+            )
+        )
 
     # ── Read interface (Smarana) ───────────────────────────────────────────────
 
-    def _fast_read_sheet(self, sheet_name: str,
-                          cols: list[str] = None) -> list[dict]:
+    def _fast_read_sheet(self, sheet_name: str, cols: list[str] = None) -> list[dict]:
         """
         v2.9 — Partial ODS read. Only loads requested columns.
         Falls back to full read if partial read fails.
@@ -826,97 +1095,145 @@ class OpenYantra:
         """
         try:
             df = pd.read_excel(
-                str(self.path), sheet_name=sheet_name,
-                engine="odf", header=0, dtype=str,
+                str(self.path),
+                sheet_name=sheet_name,
+                engine="odf",
+                header=0,
+                dtype=str,
                 usecols=cols if cols else None,
             )
             return df.where(pd.notna(df), None).to_dict("records")
         except Exception:
             return self._read_sheet(sheet_name)
 
-
     def _read_sheet(self, sheet_name: str) -> list[dict]:
         try:
-            df = pd.read_excel(str(self.path), sheet_name=sheet_name,
-                               engine="odf", header=0, dtype=str)
+            df = pd.read_excel(
+                str(self.path), sheet_name=sheet_name, engine="odf", header=0, dtype=str
+            )
             return df.where(pd.notna(df), None).to_dict("records")
-        except Exception: return []
+        except Exception:
+            return []
 
     def load_session_context(self, agent_name: Optional[str] = None) -> dict:
         agent = agent_name or self.agent_name
-        id_map = {r.get("Attribute"): r.get("Value")
-                  for r in self._read_sheet(SHEET_IDENTITY) if r.get("Value")}
+        id_map = {
+            r.get("Attribute"): r.get("Value")
+            for r in self._read_sheet(SHEET_IDENTITY)
+            if r.get("Value")
+        }
         instructions = [
-            r.get("Instruction") for r in self._read_sheet(SHEET_AGENT_CONFIG)
+            r.get("Instruction")
+            for r in self._read_sheet(SHEET_AGENT_CONFIG)
             if r.get("Active") == "Yes"
-            and r.get("Agent") in (agent, "ALL") and r.get("Instruction")
+            and r.get("Agent") in (agent, "ALL")
+            and r.get("Instruction")
         ]
-        projects   = [r for r in self._read_sheet(SHEET_PROJECTS)
-                      if r.get("Status") == "Active"]
+        projects = [
+            r for r in self._read_sheet(SHEET_PROJECTS) if r.get("Status") == "Active"
+        ]
 
         # v2.1: filter open loops by importance + recency
-        all_loops  = [r for r in self._read_sheet(SHEET_OPEN_LOOPS)
-                      if r.get("Resolved?") == "No"]
+        all_loops = [
+            r for r in self._read_sheet(SHEET_OPEN_LOOPS) if r.get("Resolved?") == "No"
+        ]
         open_loops = sorted(
             all_loops,
             key=lambda r: (
                 -(int(r.get("Importance", 5) or 5)),
-                str(r.get("Opened", ""))
-            )
-        )[:15]  # max 15 loops in context to prevent bloat
+                str(r.get("Opened", "")),
+            ),
+        )[
+            :15
+        ]  # max 15 loops in context to prevent bloat
 
-        goals  = [r for r in self._read_sheet(SHEET_GOALS)
-                  if r.get("Status") in ("Active", "In Progress")]
-        tasks  = [r for r in self._read_sheet(SHEET_TASKS)
-                  if r.get("Status") not in ("Done", None)]
+        goals = [
+            r
+            for r in self._read_sheet(SHEET_GOALS)
+            if r.get("Status") in ("Active", "In Progress")
+        ]
+        tasks = [
+            r
+            for r in self._read_sheet(SHEET_TASKS)
+            if r.get("Status") not in ("Done", None)
+        ]
 
         # v2.1: surface pending corrections and inbox
-        corrections = [r for r in self._read_sheet(SHEET_CORRECTIONS)
-                       if r.get("Status") == "Pending"]
-        inbox_count = len([r for r in self._read_sheet(SHEET_INBOX)
-                           if r.get("Routed?") == "No"])
+        corrections = [
+            r
+            for r in self._read_sheet(SHEET_CORRECTIONS)
+            if r.get("Status") == "Pending"
+        ]
+        inbox_count = len(
+            [r for r in self._read_sheet(SHEET_INBOX) if r.get("Routed?") == "No"]
+        )
 
         return {
-            "identity": id_map, "agent_instructions": instructions,
-            "active_projects": projects, "open_loops": open_loops,
-            "active_goals": goals, "pending_tasks": tasks,
-            "pending_corrections": corrections, "inbox_pending": inbox_count,
+            "identity": id_map,
+            "agent_instructions": instructions,
+            "active_projects": projects,
+            "open_loops": open_loops,
+            "active_goals": goals,
+            "pending_tasks": tasks,
+            "pending_corrections": corrections,
+            "inbox_pending": inbox_count,
         }
 
-    def build_system_prompt_block(self,
-                                  agent_name: Optional[str] = None) -> str:
-        ctx    = self.load_session_context(agent_name)
+    def build_system_prompt_block(self, agent_name: Optional[str] = None) -> str:
+        ctx = self.load_session_context(agent_name)
         id_map = ctx["identity"]
 
-        user_line = " | ".join(filter(None, [
-            id_map.get("Preferred Name") or id_map.get("Full Name"),
-            id_map.get("Occupation"), id_map.get("Location"),
-        ])) or "Unknown user"
+        user_line = (
+            " | ".join(
+                filter(
+                    None,
+                    [
+                        id_map.get("Preferred Name") or id_map.get("Full Name"),
+                        id_map.get("Occupation"),
+                        id_map.get("Location"),
+                    ],
+                )
+            )
+            or "Unknown user"
+        )
 
-        projects_line = "; ".join(
-            f"{p.get('Project','?')} → {p.get('Next Step','?')}"
-            for p in ctx["active_projects"]) or "None"
+        projects_line = (
+            "; ".join(
+                f"{p.get('Project','?')} → {p.get('Next Step','?')}"
+                for p in ctx["active_projects"]
+            )
+            or "None"
+        )
 
-        loops_line = "; ".join(
-            "[{}] {} — {}".format(
-                l.get("Priority","?"), l.get("Topic","?"),
-                l.get("Context / What's Unresolved",""))
-            for l in ctx["open_loops"]) or "None"
+        loops_line = (
+            "; ".join(
+                "[{}] {} — {}".format(
+                    loop.get("Priority", "?"),
+                    loop.get("Topic", "?"),
+                    loop.get("Context / What's Unresolved", ""),
+                )
+                for loop in ctx["open_loops"]
+            )
+            or "None"
+        )
 
-        goals_line = "; ".join(
-            g.get("Goal","") for g in ctx["active_goals"]) or "None"
+        goals_line = "; ".join(g.get("Goal", "") for g in ctx["active_goals"]) or "None"
 
-        tasks_line = "; ".join(
-            t.get("Task","") for t in ctx["pending_tasks"]) or "None"
+        tasks_line = (
+            "; ".join(t.get("Task", "") for t in ctx["pending_tasks"]) or "None"
+        )
 
-        instructions_line = "\n  ".join(
-            str(i) for i in ctx["agent_instructions"]) or "None"
+        instructions_line = (
+            "\n  ".join(str(i) for i in ctx["agent_instructions"]) or "None"
+        )
 
         alerts = []
         if ctx["inbox_pending"] > 0:
             alerts.append(f"📥 {ctx['inbox_pending']} unrouted Inbox items")
         if ctx["pending_corrections"]:
-            alerts.append(f"✏️ {len(ctx['pending_corrections'])} corrections pending approval")
+            alerts.append(
+                f"✏️ {len(ctx['pending_corrections'])} corrections pending approval"
+            )
         alerts_line = " · ".join(alerts) if alerts else "None"
 
         return (
@@ -933,14 +1250,21 @@ class OpenYantra:
 
     def get_person(self, name: str) -> Optional[dict]:
         for r in self._read_sheet(SHEET_PEOPLE):
-            if str(r.get("Name","")).lower() == name.lower(): return r
+            if str(r.get("Name", "")).lower() == name.lower():
+                return r
         return None
 
     # ── VidyaKosha search ──────────────────────────────────────────────────────
 
-    def search(self, query: str, top_k: int = 5, sheets: list = None,
-               snapshot_mode: str = None, hybrid_alpha: float = 0.7,
-               importance_weight: float = 0.3) -> list[dict]:
+    def search(
+        self,
+        query: str,
+        top_k: int = 5,
+        sheets: list = None,
+        snapshot_mode: str = None,
+        hybrid_alpha: float = 0.7,
+        importance_weight: float = 0.3,
+    ) -> list[dict]:
         """
         VidyaKosha semantic search — v2.7: importance-weighted results.
 
@@ -958,13 +1282,18 @@ class OpenYantra:
             snapshot_mode = _get_snap_mode(self.agent_name, self.path)
 
         results = self._vidyakosha.query(
-            text=query, agent_name=self.agent_name, top_k=top_k * 3,
-            sheets=sheets, snapshot_mode=snapshot_mode or "live",
-            hybrid_alpha=hybrid_alpha)
+            text=query,
+            agent_name=self.agent_name,
+            top_k=top_k * 3,
+            sheets=sheets,
+            snapshot_mode=snapshot_mode or "live",
+            hybrid_alpha=hybrid_alpha,
+        )
 
         # v2.7 — re-rank by importance × relevance × recency
         if importance_weight > 0 and results:
             from datetime import datetime as _dt
+
             now = _dt.utcnow()
             for r in results:
                 raw_imp = r.get("importance") or r.get("Importance") or 5
@@ -974,7 +1303,9 @@ class OpenYantra:
                     imp = 0.5
 
                 # Recency decay — older entries score lower
-                last_updated = str(r.get("last_updated") or r.get("Last Updated") or "")[:10]
+                last_updated = str(
+                    r.get("last_updated") or r.get("Last Updated") or ""
+                )[:10]
                 try:
                     age_days = (now - _dt.fromisoformat(last_updated)).days
                     recency = max(0.1, 1.0 - (age_days / 365))
@@ -998,10 +1329,12 @@ class OpenYantra:
         return self.search(query, top_k=top_k, sheets=[SHEET_PEOPLE])
 
     def take_pratibimba(self):
-        if self._vidyakosha: self._vidyakosha.take_snapshot(self.agent_name)
+        if self._vidyakosha:
+            self._vidyakosha.take_snapshot(self.agent_name)
 
     def release_pratibimba(self):
-        if self._vidyakosha: self._vidyakosha.release_snapshot(self.agent_name)
+        if self._vidyakosha:
+            self._vidyakosha.release_snapshot(self.agent_name)
 
     # ── Security (Raksha) v2.4 ────────────────────────────────────────────────
 
@@ -1018,24 +1351,29 @@ class OpenYantra:
         cutoff = (_dt.utcnow() - _td(days=keep_days)).isoformat()[:10]
         sessions = self._read_sheet(SHEET_SESSION_LOG)
 
-        old   = [s for s in sessions if str(s.get("Date",""))[:10] < cutoff]
-        keep  = [s for s in sessions if str(s.get("Date",""))[:10] >= cutoff]
+        old = [s for s in sessions if str(s.get("Date", ""))[:10] < cutoff]
+        keep = [s for s in sessions if str(s.get("Date", ""))[:10] >= cutoff]
 
         if not old:
             return {"status": "nothing_to_archive", "old_sessions": 0}
 
-        year     = _dt.utcnow().year
+        year = _dt.utcnow().year
         arc_path = self.path.parent / f"chitrapat_sessions_{year}.ods"
 
         # Load or create archive file
         try:
-            arc_df = _pd.read_excel(str(arc_path), sheet_name=SHEET_SESSION_LOG,
-                                     engine="odf", header=0, dtype=str)
+            arc_df = _pd.read_excel(
+                str(arc_path),
+                sheet_name=SHEET_SESSION_LOG,
+                engine="odf",
+                header=0,
+                dtype=str,
+            )
         except Exception:
             arc_df = _pd.DataFrame()
 
-        old_df  = _pd.DataFrame(old)
-        arc_df  = _pd.concat([arc_df, old_df], ignore_index=True)
+        old_df = _pd.DataFrame(old)
+        arc_df = _pd.concat([arc_df, old_df], ignore_index=True)
 
         with _pd.ExcelWriter(str(arc_path), engine="odf") as writer:
             arc_df.to_excel(writer, sheet_name=SHEET_SESSION_LOG, index=False)
@@ -1045,12 +1383,11 @@ class OpenYantra:
         self._ledger._write_sheet(SHEET_SESSION_LOG, keep_df)
 
         return {
-            "status":       "archived",
-            "archived":     len(old),
-            "kept":         len(keep),
+            "status": "archived",
+            "archived": len(old),
+            "kept": len(keep),
             "archive_file": str(arc_path),
         }
-
 
     def verify_ledger_integrity(self) -> dict:
         """
@@ -1059,9 +1396,9 @@ class OpenYantra:
         Returns summary of valid, invalid, and missing signatures.
         CLI: yantra integrity
         """
-        ledger  = self._read_sheet(SHEET_LEDGER)
-        total   = len(ledger)
-        valid   = 0
+        ledger = self._read_sheet(SHEET_LEDGER)
+        total = len(ledger)
+        valid = 0
         invalid = []
         missing = []
 
@@ -1079,29 +1416,30 @@ class OpenYantra:
                 continue
 
             if not sig.startswith("sha256:"):
-                invalid.append({
-                    "request_id": entry.get("Request ID","?"),
-                    "issue": "Malformed signature",
-                })
+                invalid.append(
+                    {
+                        "request_id": entry.get("Request ID", "?"),
+                        "issue": "Malformed signature",
+                    }
+                )
                 continue
 
             valid += 1
 
         status = "clean" if not invalid else "tampered"
         return {
-            "status":    status,
-            "total":     total,
-            "valid":     valid,
-            "invalid":   len(invalid),
-            "missing":   len(missing),
-            "details":   invalid[:10],
-            "message":   (
+            "status": status,
+            "total": total,
+            "valid": valid,
+            "invalid": len(invalid),
+            "missing": len(missing),
+            "details": invalid[:10],
+            "message": (
                 f"All {total} ledger entries verified."
                 if status == "clean" and not missing
                 else f"{len(invalid)} invalid + {len(missing)} missing signatures detected."
             ),
         }
-
 
     def security_scan(self, text: str = None) -> dict:
         """Run security audit on Chitrapat or specific text. CLI: yantra security"""
@@ -1114,15 +1452,22 @@ class OpenYantra:
             findings = self._raksha.audit_chitrapat(str(self.path))
             return {
                 "total_findings": len(findings),
-                "critical":  len([f for f in findings if f["threat_level"]=="critical"]),
-                "confirmed": len([f for f in findings if f["threat_level"]=="confirmed"]),
-                "suspicious":len([f for f in findings if f["threat_level"]=="suspicious"]),
-                "findings":  findings,
+                "critical": len(
+                    [f for f in findings if f["threat_level"] == "critical"]
+                ),
+                "confirmed": len(
+                    [f for f in findings if f["threat_level"] == "confirmed"]
+                ),
+                "suspicious": len(
+                    [f for f in findings if f["threat_level"] == "suspicious"]
+                ),
+                "findings": findings,
             }
 
     def get_trust_tier(self, agent_name: str) -> str:
         """Return trust tier for an agent."""
-        if self._raksha: return self._raksha.get_trust_tier(agent_name).name
+        if self._raksha:
+            return self._raksha.get_trust_tier(agent_name).name
         return "UNKNOWN"
 
     def register_trusted_agent(self, agent_name: str, tier_name: str = "KNOWN_AGENT"):
@@ -1144,16 +1489,23 @@ class OpenYantra:
         for item in quarantined:
             if item.get("Request ID") == request_id:
                 import json as _json
+
                 try:
                     fields = _json.loads(item.get("Fields JSON", "{}"))
-                    sheet  = item.get("Target Sheet", "")
-                    op     = item.get("Operation", "add")
+                    sheet = item.get("Target Sheet", "")
+                    op = item.get("Operation", "add")
                     if sheet and fields:
-                        receipt = self._ledger.submit(WriteRequest(
-                            requesting_agent="User", sheet=sheet, operation=op,
-                            fields=fields, confidence="High",
-                            source="User-stated", importance=8,
-                        ))
+                        receipt = self._ledger.submit(
+                            WriteRequest(
+                                requesting_agent="User",
+                                sheet=sheet,
+                                operation=op,
+                                fields=fields,
+                                confidence="High",
+                                source="User-stated",
+                                importance=8,
+                            )
+                        )
                         return {"status": "released", "receipt": receipt}
                 except Exception as e:
                     return {"status": "error", "error": str(e)}
@@ -1161,46 +1513,67 @@ class OpenYantra:
 
     def _quarantine(self, req: WriteRequest, scan) -> None:
         """Move blocked write to Quarantine sheet."""
-        import json as _json, pandas as _pd
+        import json as _json
+        import pandas as _pd
+
         try:
             try:
-                df = _pd.read_excel(str(self.path), sheet_name=SHEET_QUARANTINE,
-                                    engine="odf", header=0, dtype=str)
+                df = _pd.read_excel(
+                    str(self.path),
+                    sheet_name=SHEET_QUARANTINE,
+                    engine="odf",
+                    header=0,
+                    dtype=str,
+                )
             except Exception:
                 df = _pd.DataFrame()
             entry = {
-                "Request ID": req.request_id, "Timestamp": req.timestamp,
-                "Agent": req.requesting_agent, "Target Sheet": req.sheet,
-                "Operation": req.operation, "Fields JSON": _json.dumps(req.fields),
+                "Request ID": req.request_id,
+                "Timestamp": req.timestamp,
+                "Agent": req.requesting_agent,
+                "Target Sheet": req.sheet,
+                "Operation": req.operation,
+                "Fields JSON": _json.dumps(req.fields),
                 "Threat Level": scan.threat_level.value,
                 "Threat Type": scan.threat_type.value if scan.threat_type else "",
                 "Threats Found": "; ".join(scan.threats_found[:3]),
-                "Status": "Quarantined", "Reviewed By": "", "Reviewed At": "",
+                "Status": "Quarantined",
+                "Reviewed By": "",
+                "Reviewed At": "",
             }
             df = _pd.concat([df, _pd.DataFrame([entry])], ignore_index=True)
             self._ledger._write_sheet(SHEET_QUARANTINE, df)
-        except Exception: pass
+        except Exception:
+            pass
 
     def _log_security(self, req: WriteRequest, scan) -> None:
         """Log suspicious (allowed) write to Security Log."""
         import pandas as _pd
+
         try:
             try:
-                df = _pd.read_excel(str(self.path), sheet_name=SHEET_SECURITY_LOG,
-                                    engine="odf", header=0, dtype=str)
+                df = _pd.read_excel(
+                    str(self.path),
+                    sheet_name=SHEET_SECURITY_LOG,
+                    engine="odf",
+                    header=0,
+                    dtype=str,
+                )
             except Exception:
                 df = _pd.DataFrame()
             entry = {
-                "Timestamp": req.timestamp, "Agent": req.requesting_agent,
-                "Sheet": req.sheet, "Threat Level": scan.threat_level.value,
+                "Timestamp": req.timestamp,
+                "Agent": req.requesting_agent,
+                "Sheet": req.sheet,
+                "Threat Level": scan.threat_level.value,
                 "Threat Type": scan.threat_type.value if scan.threat_type else "",
                 "Threats": "; ".join(scan.threats_found[:3]),
                 "Status": "Warned — allowed",
             }
             df = _pd.concat([df, _pd.DataFrame([entry])], ignore_index=True)
             self._ledger._write_sheet(SHEET_SECURITY_LOG, df)
-        except Exception: pass
-
+        except Exception:
+            pass
 
     def stats(self) -> dict:
         """
@@ -1209,14 +1582,23 @@ class OpenYantra:
         CLI: yantra stats
         """
         from datetime import datetime as _dt, timedelta as _td
+
         result = {}
 
         # Row counts per sheet
         sheet_counts = {}
         for sheet in [
-            SHEET_IDENTITY, SHEET_GOALS, SHEET_PROJECTS, SHEET_PEOPLE,
-            SHEET_PREFERENCES, SHEET_BELIEFS, SHEET_TASKS, SHEET_OPEN_LOOPS,
-            SHEET_SESSION_LOG, SHEET_INBOX, SHEET_CORRECTIONS,
+            SHEET_IDENTITY,
+            SHEET_GOALS,
+            SHEET_PROJECTS,
+            SHEET_PEOPLE,
+            SHEET_PREFERENCES,
+            SHEET_BELIEFS,
+            SHEET_TASKS,
+            SHEET_OPEN_LOOPS,
+            SHEET_SESSION_LOG,
+            SHEET_INBOX,
+            SHEET_CORRECTIONS,
         ]:
             rows = self._read_sheet(sheet)
             sheet_counts[sheet] = len(rows)
@@ -1226,14 +1608,26 @@ class OpenYantra:
         # Session activity — writes per day over last 30 days
         ledger = self._read_sheet(SHEET_LEDGER)
         cutoff_30 = (_dt.utcnow() - _td(days=30)).isoformat()[:10]
-        cutoff_7  = (_dt.utcnow() - _td(days=7)).isoformat()[:10]
+        cutoff_7 = (_dt.utcnow() - _td(days=7)).isoformat()[:10]
 
-        recent_30 = [r for r in ledger if str(r.get("Timestamp",""))[:10] >= cutoff_30 and r.get("Status") == "written"]
-        recent_7  = [r for r in ledger if str(r.get("Timestamp",""))[:10] >= cutoff_7  and r.get("Status") == "written"]
+        recent_30 = [
+            r
+            for r in ledger
+            if str(r.get("Timestamp", ""))[:10] >= cutoff_30
+            and r.get("Status") == "written"
+        ]
+        recent_7 = [
+            r
+            for r in ledger
+            if str(r.get("Timestamp", ""))[:10] >= cutoff_7
+            and r.get("Status") == "written"
+        ]
 
         result["writes_last_30_days"] = len(recent_30)
-        result["writes_last_7_days"]  = len(recent_7)
-        result["total_writes"]        = len([r for r in ledger if r.get("Status") == "written"])
+        result["writes_last_7_days"] = len(recent_7)
+        result["total_writes"] = len(
+            [r for r in ledger if r.get("Status") == "written"]
+        )
 
         # Top contributing agents
         agent_counts: dict[str, int] = {}
@@ -1241,7 +1635,9 @@ class OpenYantra:
             if r.get("Status") == "written":
                 agent = r.get("Agent", "Unknown")
                 agent_counts[agent] = agent_counts.get(agent, 0) + 1
-        result["writes_by_agent"] = dict(sorted(agent_counts.items(), key=lambda x: -x[1])[:5])
+        result["writes_by_agent"] = dict(
+            sorted(agent_counts.items(), key=lambda x: -x[1])[:5]
+        )
 
         # Most active sheets
         sheet_writes: dict[str, int] = {}
@@ -1249,16 +1645,18 @@ class OpenYantra:
             if r.get("Status") == "written":
                 sheet = r.get("Sheet", "Unknown")
                 sheet_writes[sheet] = sheet_writes.get(sheet, 0) + 1
-        result["writes_by_sheet"] = dict(sorted(sheet_writes.items(), key=lambda x: -x[1])[:5])
+        result["writes_by_sheet"] = dict(
+            sorted(sheet_writes.items(), key=lambda x: -x[1])[:5]
+        )
 
         # Open loop health
         all_loops = self._read_sheet(SHEET_OPEN_LOOPS)
         open_loops = [r for r in all_loops if r.get("Resolved?") == "No"]
         closed_loops = [r for r in all_loops if r.get("Resolved?") == "Yes"]
-        result["open_loops_total"]   = len(open_loops)
+        result["open_loops_total"] = len(open_loops)
         result["closed_loops_total"] = len(closed_loops)
-        result["loop_resolution_rate"] = (
-            round(len(closed_loops) / max(1, len(all_loops)) * 100, 1)
+        result["loop_resolution_rate"] = round(
+            len(closed_loops) / max(1, len(all_loops)) * 100, 1
         )
 
         # High importance items
@@ -1273,9 +1671,9 @@ class OpenYantra:
         )
         return result
 
-
-    def morning_brief(self, include_insight: bool = True,
-                      format: str = "terminal") -> str:
+    def morning_brief(
+        self, include_insight: bool = True, format: str = "terminal"
+    ) -> str:
         """
         v2.10 — Morning Briefing.
         The daily hook that prevents abandonment.
@@ -1295,21 +1693,25 @@ class OpenYantra:
         import random
         from datetime import datetime as _dt, timedelta as _td, date as _d
 
-        oy        = self
-        today     = _d.today().isoformat()
-        now       = _dt.utcnow()
-        ctx       = oy.load_session_context()
-        id_map    = ctx.get("identity", {})
-        name      = (id_map.get("Preferred Name") or
-                     id_map.get("Full Name") or "").split()[0] or "there"
+        oy = self
+        today = _d.today().isoformat()
+        now = _dt.utcnow()
+        ctx = oy.load_session_context()
+        id_map = ctx.get("identity", {})
+        name = (id_map.get("Preferred Name") or id_map.get("Full Name") or "").split()[
+            0
+        ] or "there"
 
         lines = []
 
         # ── Header ────────────────────────────────────────────────────────────
         hour = now.hour
-        if hour < 12:   greeting = "Good morning"
-        elif hour < 17: greeting = "Good afternoon"
-        else:           greeting = "Good evening"
+        if hour < 12:
+            greeting = "Good morning"
+        elif hour < 17:
+            greeting = "Good afternoon"
+        else:
+            greeting = "Good evening"
 
         if format == "terminal":
             lines.append(f"\n{'='*58}")
@@ -1327,23 +1729,24 @@ class OpenYantra:
         any_content = False
 
         # ── Urgent open loops ─────────────────────────────────────────────────
-        all_loops = [r for r in oy._read_sheet(SHEET_OPEN_LOOPS)
-                     if r.get("Resolved?") == "No"]
+        all_loops = [
+            r for r in oy._read_sheet(SHEET_OPEN_LOOPS) if r.get("Resolved?") == "No"
+        ]
 
         urgent = []
-        for l in all_loops:
-            opened   = str(l.get("Opened", ""))[:10]
-            ttl      = int(l.get("TTL_Days", 90) or 90)
-            imp      = int(l.get("Importance", 5) or 5)
-            priority = l.get("Priority", "Medium")
+        for loop in all_loops:
+            opened = str(loop.get("Opened", ""))[:10]
+            ttl = int(loop.get("TTL_Days", 90) or 90)
+            imp = int(loop.get("Importance", 5) or 5)
+            priority = loop.get("Priority", "Medium")
             try:
-                age      = (now - _dt.fromisoformat(opened)).days
+                age = (now - _dt.fromisoformat(opened)).days
                 days_left = ttl - age
             except Exception:
                 days_left = ttl
 
-            score = (10 - days_left/10) + imp
-            urgent.append({**l, "_days_left": days_left, "_score": score})
+            score = (10 - days_left / 10) + imp
+            urgent.append({**loop, "_days_left": days_left, "_score": score})
 
         urgent.sort(key=lambda x: -x["_score"])
 
@@ -1351,25 +1754,29 @@ class OpenYantra:
             any_content = True
             if format == "terminal":
                 lines.append(f"  🔓  Open Loops ({len(all_loops)} total):")
-                for l in urgent[:4]:
-                    topic     = l.get("Topic", "?")[:52]
-                    priority  = l.get("Priority", "?")
-                    days_left = l["_days_left"]
-                    ttl_str   = f"  ({days_left}d left)" if days_left < 14 else ""
+                for loop in urgent[:4]:
+                    topic = loop.get("Topic", "?")[:52]
+                    priority = loop.get("Priority", "?")
+                    days_left = loop["_days_left"]
+                    ttl_str = f"  ({days_left}d left)" if days_left < 14 else ""
                     lines.append(f"     [{priority:8}] {topic}{ttl_str}")
             elif format == "telegram":
                 lines.append(f"*🔓 Open Loops* ({len(all_loops)} total):")
-                for l in urgent[:4]:
-                    days_left = l["_days_left"]
-                    ttl_str   = f" _{days_left}d left_" if days_left < 14 else ""
+                for loop in urgent[:4]:
+                    days_left = loop["_days_left"]
+                    ttl_str = f" _{days_left}d left_" if days_left < 14 else ""
                     lines.append(
-                        f"• [{l.get('Priority','?')}] "
-                        f"{l.get('Topic','?')[:48]}{ttl_str}")
+                        f"• [{loop.get('Priority','?')}] "
+                        f"{loop.get('Topic','?')[:48]}{ttl_str}"
+                    )
             lines.append("")
 
         # ── Tasks due / overdue ───────────────────────────────────────────────
-        tasks = [r for r in oy._read_sheet(SHEET_TASKS)
-                 if r.get("Status") not in ("Done", None, "nan")]
+        tasks = [
+            r
+            for r in oy._read_sheet(SHEET_TASKS)
+            if r.get("Status") not in ("Done", None, "nan")
+        ]
 
         overdue, due_today = [], []
         for t in tasks:
@@ -1392,20 +1799,23 @@ class OpenYantra:
                         lines.append(f"     {t.get('Task','?')[:55]}")
             elif format == "telegram":
                 if overdue:
-                    lines.append(f"*⚠️ Overdue:*")
+                    lines.append("*⚠️ Overdue:*")
                     for t in overdue[:3]:
                         lines.append(f"• {t.get('Task','?')[:50]}")
                 if due_today:
-                    lines.append(f"*✅ Due today:*")
+                    lines.append("*✅ Due today:*")
                     for t in due_today[:3]:
                         lines.append(f"• {t.get('Task','?')[:50]}")
             lines.append("")
 
         # ── Stale projects ────────────────────────────────────────────────────
         cutoff_7 = (now - _td(days=7)).isoformat()[:10]
-        stale = [p for p in oy._read_sheet(SHEET_PROJECTS)
-                 if p.get("Status") == "Active"
-                 and str(p.get("Last Updated", ""))[:10] < cutoff_7]
+        stale = [
+            p
+            for p in oy._read_sheet(SHEET_PROJECTS)
+            if p.get("Status") == "Active"
+            and str(p.get("Last Updated", ""))[:10] < cutoff_7
+        ]
         if stale:
             any_content = True
             if format == "terminal":
@@ -1413,27 +1823,31 @@ class OpenYantra:
                 for p in stale[:2]:
                     lines.append(
                         f"     {p.get('Project','?')[:45]} "
-                        f"→ {p.get('Next Step','not set')[:35]}")
+                        f"→ {p.get('Next Step','not set')[:35]}"
+                    )
             elif format == "telegram":
-                lines.append(f"*🚀 Stale Projects:*")
+                lines.append("*🚀 Stale Projects:*")
                 for p in stale[:2]:
                     lines.append(f"• {p.get('Project','?')[:45]}")
             lines.append("")
 
         # ── Inbox pending ─────────────────────────────────────────────────────
-        inbox_pending = [r for r in oy._read_sheet(SHEET_INBOX)
-                         if r.get("Routed?") == "No"]
+        inbox_pending = [
+            r for r in oy._read_sheet(SHEET_INBOX) if r.get("Routed?") == "No"
+        ]
         if inbox_pending:
             any_content = True
             count = len(inbox_pending)
             if format == "terminal":
-                lines.append(f"  📥  Inbox: {count} item{'s' if count>1 else ''} unrouted")
+                lines.append(
+                    f"  📥  Inbox: {count} item{'s' if count>1 else ''} unrouted"
+                )
                 for i in inbox_pending[:2]:
-                    lines.append(
-                        f"     {str(i.get('Content',''))[:58]}")
+                    lines.append(f"     {str(i.get('Content',''))[:58]}")
             elif format == "telegram":
                 lines.append(
-                    f"*📥 Inbox:* {count} item{'s' if count>1 else ''} unrouted")
+                    f"*📥 Inbox:* {count} item{'s' if count>1 else ''} unrouted"
+                )
             lines.append("")
 
         # ── Proactive suggestion ──────────────────────────────────────────────
@@ -1444,8 +1858,7 @@ class OpenYantra:
                 content = str(item.get("Content", "")).lower()
                 for loop in all_loops[:5]:
                     loop_words = set(
-                        w for w in loop.get("Topic","").lower().split()
-                        if len(w) > 3
+                        w for w in loop.get("Topic", "").lower().split() if len(w) > 3
                     )
                     if any(w in content for w in loop_words):
                         suggestion = (
@@ -1460,7 +1873,7 @@ class OpenYantra:
             if suggestion:
                 any_content = True
                 if format == "terminal":
-                    lines.append(f"  💡  Suggestion:")
+                    lines.append("  💡  Suggestion:")
                     lines.append(f"     {suggestion}")
                 elif format == "telegram":
                     lines.append(f"*💡 Suggestion:*\n_{suggestion}_")
@@ -1471,8 +1884,8 @@ class OpenYantra:
         for sheet in [SHEET_GOALS, SHEET_BELIEFS]:
             rows = oy._read_sheet(sheet)
             for r in rows:
-                val = (r.get("Goal") or r.get("Position") or "")
-                dt  = str(r.get("Last Updated") or r.get("Added", "") or "")[:10]
+                val = r.get("Goal") or r.get("Position") or ""
+                dt = str(r.get("Last Updated") or r.get("Added", "") or "")[:10]
                 if val and len(str(val)) > 10 and dt and dt < cutoff_7:
                     past_pool.append({"val": str(val), "date": dt})
 
@@ -1480,21 +1893,20 @@ class OpenYantra:
             memory = random.choice(past_pool[:10])
             any_content = True
             if format == "terminal":
-                lines.append(f"  🕰️   On this day (past memory):")
+                lines.append("  🕰️   On this day (past memory):")
                 lines.append(f"     \"{memory['val'][:80]}\"")
             elif format == "telegram":
-                lines.append(
-                    f"*🕰️ Past memory:*\n_{memory['val'][:80]}_")
+                lines.append(f"*🕰️ Past memory:*\n_{memory['val'][:80]}_")
             lines.append("")
 
         # ── Streak counter ────────────────────────────────────────────────────
         sessions = oy._read_sheet(SHEET_SESSION_LOG)
-        streak   = 0
+        streak = 0
         check_date = _d.today()
-        session_dates = {str(s.get("Date",""))[:10] for s in sessions}
+        session_dates = {str(s.get("Date", ""))[:10] for s in sessions}
         while check_date.isoformat() in session_dates:
-            streak     += 1
-            check_date  = check_date - _td(days=1)
+            streak += 1
+            check_date = check_date - _td(days=1)
 
         # ── All clear / footer ────────────────────────────────────────────────
         if not any_content:
@@ -1505,11 +1917,15 @@ class OpenYantra:
             lines.append("")
 
         if format == "terminal":
-            streak_str = f"  🔥  Streak: {streak} day{'s' if streak!=1 else ''}" if streak > 0 else ""
+            streak_str = (
+                f"  🔥  Streak: {streak} day{'s' if streak!=1 else ''}"
+                if streak > 0
+                else ""
+            )
             if streak_str:
                 lines.append(streak_str)
-            lines.append(f"  ─────────────────────────────────────────────────")
-            lines.append(f"  yantra ui → http://localhost:7331")
+            lines.append("  ─────────────────────────────────────────────────")
+            lines.append("  yantra ui → http://localhost:7331")
             lines.append(f"{'='*58}\n")
         elif format == "telegram":
             if streak > 0:
@@ -1523,7 +1939,6 @@ class OpenYantra:
         Checks if brief has been shown today. Returns True if shown.
         Uses a lightweight marker file so it only fires once per day.
         """
-        import tempfile
         from datetime import date as _d
 
         marker = self.path.parent / f".brief_{_d.today().isoformat()}"
@@ -1535,10 +1950,9 @@ class OpenYantra:
         marker.touch()
         return True
 
-
-    def build_context_markdown(self, top_k: int = 10,
-                                include_beliefs: bool = True,
-                                include_people: bool = True) -> str:
+    def build_context_markdown(
+        self, top_k: int = 10, include_beliefs: bool = True, include_people: bool = True
+    ) -> str:
         """
         v2.10 — Copy Context button.
         Formats top memories as a clean Markdown block ready to paste
@@ -1553,9 +1967,9 @@ class OpenYantra:
         """
         from datetime import date as _date
 
-        ctx    = self.load_session_context()
+        ctx = self.load_session_context()
         id_map = ctx.get("identity", {})
-        today  = _date.today().isoformat()
+        today = _date.today().isoformat()
 
         lines = []
         lines.append(f"## My Context — OpenYantra v{self.VERSION}")
@@ -1563,12 +1977,11 @@ class OpenYantra:
         lines.append("")
 
         # Identity
-        name = (id_map.get("Preferred Name") or
-                id_map.get("Full Name") or "")
-        occ  = id_map.get("Occupation", "")
-        loc  = id_map.get("Location", "")
+        name = id_map.get("Preferred Name") or id_map.get("Full Name") or ""
+        occ = id_map.get("Occupation", "")
+        loc = id_map.get("Location", "")
         lang = id_map.get("Primary Language", "")
-        hrs  = id_map.get("Working Hours", "")
+        hrs = id_map.get("Working Hours", "")
 
         identity_parts = [p for p in [name, occ, loc] if p]
         if identity_parts:
@@ -1584,14 +1997,17 @@ class OpenYantra:
         if projects:
             lines.append("**Active Projects:**")
             for p in projects[:5]:
-                name_p    = p.get("Project", "?")
+                name_p = p.get("Project", "?")
                 next_step = p.get("Next Step", "")
-                priority  = p.get("Priority", "")
-                domain    = p.get("Domain", "")
+                priority = p.get("Priority", "")
+                domain = p.get("Domain", "")
                 line = f"- {name_p}"
-                if next_step: line += f" → {next_step}"
-                if priority:  line += f" ({priority})"
-                if domain:    line += f" [{domain}]"
+                if next_step:
+                    line += f" → {next_step}"
+                if priority:
+                    line += f" ({priority})"
+                if domain:
+                    line += f" [{domain}]"
                 lines.append(line)
             lines.append("")
 
@@ -1599,13 +2015,13 @@ class OpenYantra:
         loops = ctx.get("open_loops", [])
         if loops:
             lines.append("**Open Loops (unresolved threads):**")
-            for l in loops[:8]:
-                topic   = l.get("Topic", "?")
-                context = l.get("Context / What's Unresolved", "")
-                priority = l.get("Priority", "")
-                imp     = l.get("Importance", "")
+            for loop in loops[:8]:
+                topic = loop.get("Topic", "?")
+                context = loop.get("Context / What's Unresolved", "")
+                priority = loop.get("Priority", "")
                 line = f"- [{priority}] {topic}"
-                if context: line += f" — {context[:80]}"
+                if context:
+                    line += f" — {context[:80]}"
                 lines.append(line)
             lines.append("")
 
@@ -1614,7 +2030,7 @@ class OpenYantra:
         if goals:
             lines.append("**Goals:**")
             for g in goals[:4]:
-                goal  = g.get("Goal", "?")
+                goal = g.get("Goal", "?")
                 gtype = g.get("Type", "")
                 lines.append(f"- {goal}" + (f" ({gtype})" if gtype else ""))
             lines.append("")
@@ -1625,7 +2041,7 @@ class OpenYantra:
         if high_tasks:
             lines.append("**High Priority Tasks:**")
             for t in high_tasks[:5]:
-                task    = t.get("Task", "?")
+                task = t.get("Task", "?")
                 project = t.get("Project", "")
                 lines.append(f"- {task}" + (f" [{project}]" if project else ""))
             lines.append("")
@@ -1633,16 +2049,18 @@ class OpenYantra:
         # Beliefs — key values and anti-goals
         if include_beliefs:
             beliefs = self._fast_read_sheet(
-                SHEET_BELIEFS,
-                cols=["Topic", "Position", "Domain", "Confidence"]
+                SHEET_BELIEFS, cols=["Topic", "Position", "Domain", "Confidence"]
             )
-            principles = [b for b in beliefs
-                         if b.get("Domain") in ("Values", "Constraints")
-                         and b.get("Confidence") in ("High", None, "nan")]
+            principles = [
+                b
+                for b in beliefs
+                if b.get("Domain") in ("Values", "Constraints")
+                and b.get("Confidence") in ("High", None, "nan")
+            ]
             if principles:
                 lines.append("**My Principles & Constraints:**")
                 for b in principles[:5]:
-                    topic    = b.get("Topic", "?")
+                    topic = b.get("Topic", "?")
                     position = b.get("Position", "")
                     if position:
                         lines.append(f"- {position}")
@@ -1651,31 +2069,31 @@ class OpenYantra:
         # People
         if include_people:
             people = self._fast_read_sheet(
-                SHEET_PEOPLE,
-                cols=["Name", "Relationship", "Context"]
+                SHEET_PEOPLE, cols=["Name", "Relationship", "Context"]
             )
             if people:
                 lines.append("**Important People:**")
                 for p in people[:5]:
-                    pname    = p.get("Name", "?")
-                    rel      = p.get("Relationship", "")
-                    ctx_p    = p.get("Context", "")
+                    pname = p.get("Name", "?")
+                    rel = p.get("Relationship", "")
+                    ctx_p = p.get("Context", "")
                     line = f"- {pname}"
-                    if rel:   line += f" ({rel})"
-                    if ctx_p: line += f" — {ctx_p[:60]}"
+                    if rel:
+                        line += f" ({rel})"
+                    if ctx_p:
+                        line += f" — {ctx_p[:60]}"
                     lines.append(line)
                 lines.append("")
 
         # Preferences
         prefs = self._fast_read_sheet(
-            SHEET_PREFERENCES,
-            cols=["Category", "Preference", "Strength"]
+            SHEET_PREFERENCES, cols=["Category", "Preference", "Strength"]
         )
         strong_prefs = [p for p in prefs if p.get("Strength") == "Strong"]
         if strong_prefs:
             lines.append("**My Preferences:**")
             for p in strong_prefs[:5]:
-                cat  = p.get("Category", "?")
+                cat = p.get("Category", "?")
                 pref = p.get("Preference", "")
                 lines.append(f"- {cat}: {pref}")
             lines.append("")
@@ -1683,7 +2101,7 @@ class OpenYantra:
         # Alerts
         alerts = []
         inbox_pending = ctx.get("inbox_pending", 0)
-        corrections   = ctx.get("pending_corrections", [])
+        corrections = ctx.get("pending_corrections", [])
         if inbox_pending:
             alerts.append(f"{inbox_pending} unrouted Inbox items")
         if corrections:
@@ -1710,19 +2128,21 @@ class OpenYantra:
         copied = False
         try:
             import subprocess
-            if subprocess.run(["which", "pbcopy"],
-                              capture_output=True).returncode == 0:
+
+            if subprocess.run(["which", "pbcopy"], capture_output=True).returncode == 0:
                 subprocess.run(["pbcopy"], input=md.encode(), check=True)
                 copied = True
-            elif subprocess.run(["which", "xclip"],
-                                 capture_output=True).returncode == 0:
-                subprocess.run(["xclip", "-selection", "clipboard"],
-                               input=md.encode(), check=True)
+            elif (
+                subprocess.run(["which", "xclip"], capture_output=True).returncode == 0
+            ):
+                subprocess.run(
+                    ["xclip", "-selection", "clipboard"], input=md.encode(), check=True
+                )
                 copied = True
-            elif subprocess.run(["which", "xsel"],
-                                 capture_output=True).returncode == 0:
-                subprocess.run(["xsel", "--clipboard", "--input"],
-                               input=md.encode(), check=True)
+            elif subprocess.run(["which", "xsel"], capture_output=True).returncode == 0:
+                subprocess.run(
+                    ["xsel", "--clipboard", "--input"], input=md.encode(), check=True
+                )
                 copied = True
         except Exception:
             pass
@@ -1735,7 +2155,6 @@ class OpenYantra:
 
         return md
 
-
     def get_ledger(self) -> list[dict]:
         return self._read_sheet(SHEET_LEDGER)
 
@@ -1743,32 +2162,60 @@ class OpenYantra:
         return self.get_ledger()
 
     def get_vidyakosha_stats(self) -> dict:
-        if self._vidyakosha: return self._vidyakosha.stats()
+        if self._vidyakosha:
+            return self._vidyakosha.stats()
         return {"status": "not initialised"}
 
 
 # ── Sheet routing heuristic ────────────────────────────────────────────────────
 
+
 def _infer_sheet(text: str) -> Optional[str]:
     """Simple keyword-based sheet inference for Inbox routing."""
     text = text.lower()
-    if any(w in text for w in ["project", "build", "working on", "developing",
-                                 "feature", "milestone"]):
+    if any(
+        w in text
+        for w in [
+            "project",
+            "build",
+            "working on",
+            "developing",
+            "feature",
+            "milestone",
+        ]
+    ):
         return SHEET_PROJECTS
-    if any(w in text for w in ["task", "todo", "need to", "should do",
-                                 "remember to", "don't forget"]):
+    if any(
+        w in text
+        for w in ["task", "todo", "need to", "should do", "remember to", "don't forget"]
+    ):
         return SHEET_TASKS
-    if any(w in text for w in ["goal", "want to", "aim to", "aspire",
-                                 "dream", "achieve"]):
+    if any(
+        w in text for w in ["goal", "want to", "aim to", "aspire", "dream", "achieve"]
+    ):
         return SHEET_GOALS
-    if any(w in text for w in ["person", "friend", "colleague", "met",
-                                 "talked to", "knows", "works at"]):
+    if any(
+        w in text
+        for w in [
+            "person",
+            "friend",
+            "colleague",
+            "met",
+            "talked to",
+            "knows",
+            "works at",
+        ]
+    ):
         return SHEET_PEOPLE
-    if any(w in text for w in ["prefer", "like", "hate", "love", "enjoy",
-                                 "dislike", "favourite"]):
+    if any(
+        w in text
+        for w in ["prefer", "like", "hate", "love", "enjoy", "dislike", "favourite"]
+    ):
         return SHEET_PREFERENCES
-    if any(w in text for w in ["believe", "think", "opinion", "value",
-                                 "principle", "philosophy"]):
+    if any(
+        w in text
+        for w in ["believe", "think", "opinion", "value", "principle", "philosophy"]
+    ):
         return SHEET_BELIEFS
     return None
 
@@ -1776,6 +2223,7 @@ def _infer_sheet(text: str) -> Optional[str]:
 # ══════════════════════════════════════════════════════════════════════════════
 # Bootstrap Interview Agent
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     """
@@ -1797,11 +2245,11 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         print("[OpenYantra] Run `yantra ui` to review and edit it.")
         return oy
 
-    print("\n" + "="*62)
+    print("\n" + "=" * 62)
     print("  OpenYantra — Chitragupta Puja")
     print("  The Sacred Memory Machine v2.6")
     print("  Inspired by Chitragupta, the Hindu God of Data")
-    print("="*62)
+    print("=" * 62)
     print("\nNamaste. I am Chitragupta, your memory keeper.")
     print("Answer what feels right. Press Enter to skip any question.")
     print("This takes about 5 minutes.\n")
@@ -1816,7 +2264,7 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         if hint:
             print(f"  {hint}")
         try:
-            return input(f"  → ").strip()
+            return input("  → ").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
@@ -1827,93 +2275,138 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         return [x.strip() for x in raw.replace(";", ",").split(",") if x.strip()]
 
     # ── Q1: The pain point ──────────────────────────────────────────────────
-    print(f"\n  Q1 — Your AI Memory Pain Point")
-    pain = ask("What does your AI always forget that you wish it remembered?", 1,
-               "This tells me where to focus most. (e.g. 'my current projects', 'my preferences')")
+    print("\n  Q1 — Your AI Memory Pain Point")
+    pain = ask(
+        "What does your AI always forget that you wish it remembered?",
+        1,
+        "This tells me where to focus most. (e.g. 'my current projects', 'my preferences')",
+    )
 
     # ── Q2: Identity ────────────────────────────────────────────────────────
-    print(f"\n  Q2 — Who you are")
-    name       = ask("Your name:", 2)
+    print("\n  Q2 — Who you are")
+    name = ask("Your name:", 2)
     occupation = ask("Your occupation / role:", 2)
-    location   = ask("Where are you based? (city, country)", 2)
-    language   = ask("Primary language (default: English):", 2)
+    location = ask("Where are you based? (city, country)", 2)
+    language = ask("Primary language (default: English):", 2)
 
     oy.bootstrap(user_name=name, occupation=occupation, location=location)
     if language and language.lower() != "english":
         oy.update_identity("Primary Language", language)
 
     # ── Q3: Life domains ────────────────────────────────────────────────────
-    print(f"\n  Q3 — Life Domains")
+    print("\n  Q3 — Life Domains")
     domains = multi(
-        "What are your 3–5 most important life areas right now?", 3,
-        "(e.g. career, health, creative work, family, learning — comma separated)")
+        "What are your 3–5 most important life areas right now?",
+        3,
+        "(e.g. career, health, creative work, family, learning — comma separated)",
+    )
     for domain in domains[:5]:
-        oy.request_write(WriteRequest(
-            agent_name, SHEET_BELIEFS, "add",
-            {"Topic": f"Life domain: {domain}",
-             "Position": f"{domain} is a core area of focus",
-             "Domain": domain, "Confidence": "High"},
-            confidence="High", source="User-stated", importance=8,
-        ))
+        oy.request_write(
+            WriteRequest(
+                agent_name,
+                SHEET_BELIEFS,
+                "add",
+                {
+                    "Topic": f"Life domain: {domain}",
+                    "Position": f"{domain} is a core area of focus",
+                    "Domain": domain,
+                    "Confidence": "High",
+                },
+                confidence="High",
+                source="User-stated",
+                importance=8,
+            )
+        )
 
     # ── Q4: Active projects ─────────────────────────────────────────────────
-    print(f"\n  Q4 — Active Projects")
+    print("\n  Q4 — Active Projects")
     print("  Tell me about your top projects. I'll ask for each one.")
     for i in range(1, 4):
         project = ask(f"Active project {i} name (or Enter to skip):", 4)
         if not project:
             break
-        domain  = ask(f"  Domain for '{project}'? (Work/Creative/Personal/Learning)", 4)
-        nextstep= ask(f"  Next concrete step for '{project}'?", 4)
-        oy.add_project(project, domain=domain or "Work",
-                       next_step=nextstep, importance=8)
+        domain = ask(f"  Domain for '{project}'? (Work/Creative/Personal/Learning)", 4)
+        nextstep = ask(f"  Next concrete step for '{project}'?", 4)
+        oy.add_project(
+            project, domain=domain or "Work", next_step=nextstep, importance=8
+        )
 
     # ── Q5: Goals ───────────────────────────────────────────────────────────
-    print(f"\n  Q5 — Goals")
-    long_goal  = ask("Your most important long-term goal:", 5,
-                     "(e.g. 'complete my debut feature film', 'launch my startup')")
+    print("\n  Q5 — Goals")
+    long_goal = ask(
+        "Your most important long-term goal:",
+        5,
+        "(e.g. 'complete my debut feature film', 'launch my startup')",
+    )
     short_goal = ask("A short-term goal you're working on right now:", 5)
-    success    = ask(f"How will you know you've achieved '{long_goal or 'your goal'}'?", 5,
-                     "(What's the specific success signal?)")
+    success = ask(
+        f"How will you know you've achieved '{long_goal or 'your goal'}'?",
+        5,
+        "(What's the specific success signal?)",
+    )
 
     for goal, gtype, note in [
         (long_goal, "Long-term", success),
         (short_goal, "Short-term", ""),
     ]:
         if goal:
-            oy.request_write(WriteRequest(
-                agent_name, SHEET_GOALS, "add",
-                {"Goal": goal, "Type": gtype, "Priority": "High",
-                 "Status": "Active", "Notes": note},
-                confidence="High", source="User-stated", importance=9,
-            ))
+            oy.request_write(
+                WriteRequest(
+                    agent_name,
+                    SHEET_GOALS,
+                    "add",
+                    {
+                        "Goal": goal,
+                        "Type": gtype,
+                        "Priority": "High",
+                        "Status": "Active",
+                        "Notes": note,
+                    },
+                    confidence="High",
+                    source="User-stated",
+                    importance=9,
+                )
+            )
 
     # ── Q6: People ──────────────────────────────────────────────────────────
-    print(f"\n  Q6 — Your People")
+    print("\n  Q6 — Your People")
     print("  Tell me about important people in your work and life.")
     for i in range(1, 4):
         person = ask(f"Important person {i} name (or Enter to skip):", 6)
         if not person:
             break
-        role    = ask(f"  Your relationship with {person}?", 6,
-                      "  (e.g. producer, co-founder, mentor, close friend)")
+        role = ask(
+            f"  Your relationship with {person}?",
+            6,
+            "  (e.g. producer, co-founder, mentor, close friend)",
+        )
         context = ask(f"  One key thing to remember about {person}?", 6)
-        loop    = ask(f"  Any unresolved thread with {person}?", 6,
-                      "  (e.g. 'waiting for budget approval', 'need to follow up')")
-        oy.add_person(person, relationship=role or "Contact",
-                      context=context, importance=7)
+        loop = ask(
+            f"  Any unresolved thread with {person}?",
+            6,
+            "  (e.g. 'waiting for budget approval', 'need to follow up')",
+        )
+        oy.add_person(
+            person, relationship=role or "Contact", context=context, importance=7
+        )
         if loop:
             oy.flush_open_loop(
                 topic=f"Follow up with {person}",
-                context=loop, priority="Medium",
-                related_project="", ttl_days=30, importance=6,
+                context=loop,
+                priority="Medium",
+                related_project="",
+                ttl_days=30,
+                importance=6,
             )
 
     # ── Q7: Preferences ─────────────────────────────────────────────────────
-    print(f"\n  Q7 — Preferences & Rules")
+    print("\n  Q7 — Preferences & Rules")
     comm_style = ask("Communication style? (direct / formal / casual / thoughtful)", 7)
-    tools_pref = ask("Preferred tools or software?", 7,
-                     "(e.g. 'VS Code', 'Notion', 'LibreOffice', 'terminal')")
+    tools_pref = ask(
+        "Preferred tools or software?",
+        7,
+        "(e.g. 'VS Code', 'Notion', 'LibreOffice', 'terminal')",
+    )
     work_hours = ask("Working hours?", 7, "(e.g. 10am–7pm IST)")
 
     for cat, pref in [
@@ -1922,49 +2415,87 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
         ("Working Hours", work_hours),
     ]:
         if pref:
-            oy.request_write(WriteRequest(
-                agent_name, SHEET_PREFERENCES, "add",
-                {"Category": cat, "Preference": pref, "Strength": "Strong"},
-                confidence="High", source="User-stated", importance=7,
-            ))
+            oy.request_write(
+                WriteRequest(
+                    agent_name,
+                    SHEET_PREFERENCES,
+                    "add",
+                    {"Category": cat, "Preference": pref, "Strength": "Strong"},
+                    confidence="High",
+                    source="User-stated",
+                    importance=7,
+                )
+            )
     if work_hours:
         oy.update_identity("Working Hours", work_hours)
 
     # ── Q8: Anti-goals ──────────────────────────────────────────────────────
-    print(f"\n  Q8 — Anti-Goals (what to avoid)")
-    anti = ask("What should your AI never suggest or do?", 8,
-               "(e.g. 'never suggest phone calls', 'avoid enterprise tools', 'no social media')")
+    print("\n  Q8 — Anti-Goals (what to avoid)")
+    anti = ask(
+        "What should your AI never suggest or do?",
+        8,
+        "(e.g. 'never suggest phone calls', 'avoid enterprise tools', 'no social media')",
+    )
     if anti:
-        oy.request_write(WriteRequest(
-            agent_name, SHEET_BELIEFS, "add",
-            {"Topic": "Anti-goal", "Position": anti,
-             "Domain": "Constraints", "Confidence": "High"},
-            confidence="High", source="User-stated", importance=8,
-        ))
+        oy.request_write(
+            WriteRequest(
+                agent_name,
+                SHEET_BELIEFS,
+                "add",
+                {
+                    "Topic": "Anti-goal",
+                    "Position": anti,
+                    "Domain": "Constraints",
+                    "Confidence": "High",
+                },
+                confidence="High",
+                source="User-stated",
+                importance=8,
+            )
+        )
 
     # ── Q9: Beliefs ─────────────────────────────────────────────────────────
-    print(f"\n  Q9 — Beliefs & Principles")
-    principle = ask("What principle guides your most important decisions?", 9,
-                    "(e.g. 'creative freedom over short-term money', 'build in public')")
-    old_belief = ask("What belief did you hold 5 years ago that you no longer hold?", 9,
-                     "(This seeds your belief evolution history)")
+    print("\n  Q9 — Beliefs & Principles")
+    principle = ask(
+        "What principle guides your most important decisions?",
+        9,
+        "(e.g. 'creative freedom over short-term money', 'build in public')",
+    )
+    old_belief = ask(
+        "What belief did you hold 5 years ago that you no longer hold?",
+        9,
+        "(This seeds your belief evolution history)",
+    )
 
     for topic, position in [
         ("Decision principle", principle),
         ("Past belief (evolved)", old_belief),
     ]:
         if position:
-            oy.request_write(WriteRequest(
-                agent_name, SHEET_BELIEFS, "add",
-                {"Topic": topic, "Position": position,
-                 "Domain": "Values", "Confidence": "High"},
-                confidence="High", source="User-stated", importance=8,
-            ))
+            oy.request_write(
+                WriteRequest(
+                    agent_name,
+                    SHEET_BELIEFS,
+                    "add",
+                    {
+                        "Topic": topic,
+                        "Position": position,
+                        "Domain": "Values",
+                        "Confidence": "High",
+                    },
+                    confidence="High",
+                    source="User-stated",
+                    importance=8,
+                )
+            )
 
     # ── Q10: Open loops ─────────────────────────────────────────────────────
-    print(f"\n  Q10 — Current Open Loops")
-    decision = ask("What decision are you currently second-guessing?", 10,
-                   "(Unresolved decisions become Open Loops — the system's strongest feature)")
+    print("\n  Q10 — Current Open Loops")
+    decision = ask(
+        "What decision are you currently second-guessing?",
+        10,
+        "(Unresolved decisions become Open Loops — the system's strongest feature)",
+    )
     recurring = ask("What problem keeps returning in your life?", 10)
 
     for topic, ctx in [
@@ -1975,38 +2506,51 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
             oy.flush_open_loop(topic, ctx, priority="High", ttl_days=60, importance=8)
 
     # ── Q11: Reminder preference ────────────────────────────────────────────
-    print(f"\n  Q11 — How You Want to Be Reminded")
-    reminder = ask("How do you prefer to be reminded about pending items?", 11,
-                   "(e.g. 'morning digest', 'Telegram bot', 'dashboard', 'weekly summary')")
+    print("\n  Q11 — How You Want to Be Reminded")
+    reminder = ask(
+        "How do you prefer to be reminded about pending items?",
+        11,
+        "(e.g. 'morning digest', 'Telegram bot', 'dashboard', 'weekly summary')",
+    )
     if reminder:
-        oy.request_write(WriteRequest(
-            agent_name, SHEET_AGENT_CONFIG, "add",
-            {"Agent": "ALL", "Instruction": f"User prefers reminders via: {reminder}",
-             "Priority": "High", "Active": "Yes"},
-            confidence="High", source="User-stated", importance=7,
-        ))
+        oy.request_write(
+            WriteRequest(
+                agent_name,
+                SHEET_AGENT_CONFIG,
+                "add",
+                {
+                    "Agent": "ALL",
+                    "Instruction": f"User prefers reminders via: {reminder}",
+                    "Priority": "High",
+                    "Active": "Yes",
+                },
+                confidence="High",
+                source="User-stated",
+                importance=7,
+            )
+        )
 
     # ── Q12: The aha moment — sheet preview ─────────────────────────────────
-    print(f"\n  Q12 — Verify")
+    print("\n  Q12 — Verify")
     ctx = oy.load_session_context()
 
-    print("\n" + "="*62)
+    print("\n" + "=" * 62)
     print("  ✓ Chitragupta has recorded your memory.")
-    print("="*62)
+    print("=" * 62)
     print(f"\n  Identity:    {name} | {occupation} | {location}")
     print(f"  Life domains: {', '.join(domains[:3]) if domains else 'none recorded'}")
 
-    projects = ctx.get('active_projects', [])
+    projects = ctx.get("active_projects", [])
     if projects:
         print(f"  Projects ({len(projects)}):")
         for p in projects[:3]:
             print(f"    • {p.get('Project','')} → {p.get('Next Step','')[:50]}")
 
-    loops = ctx.get('open_loops', [])
+    loops = ctx.get("open_loops", [])
     if loops:
         print(f"  Open Loops ({len(loops)}):")
-        for l in loops[:3]:
-            print(f"    • [{l.get('Priority','?')}] {l.get('Topic','')[:55]}")
+        for loop in loops[:3]:
+            print(f"    • [{loop.get('Priority','?')}] {loop.get('Topic','')[:55]}")
 
     goals_list = oy._read_sheet(SHEET_GOALS)
     if goals_list:
@@ -2021,101 +2565,317 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     print(f"\n  {'─'*58}")
     print(f"  Chitrapat: {oy.path}")
     print(f"  Open it:   libreoffice '{oy.path}'")
-    print(f"  Dashboard: yantra ui")
-    print("="*62 + "\n")
+    print("  Dashboard: yantra ui")
+    print("=" * 62 + "\n")
     return oy
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # ODS template builder v2.1
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def _build_ods_template(path: str):
     """Build a blank OpenYantra Chitrapat with all 14 sheets (v2.1)."""
     sheets = {
         SHEET_INDEX: [
             ["Sheet", "Sanskrit", "English", "Purpose", "v2.1 additions"],
-            ["👤 Identity",     "Svarupa",      "Identity",    "Who you are",              "Importance column"],
-            ["🎯 Goals",        "Sankalpa",      "Goals",       "What you want",            "Importance, TTL"],
-            ["🚀 Projects",     "Karma",         "Projects",    "Active work",              "Importance column"],
-            ["👥 People",       "Sambandha",     "People",      "Relationships",            "Importance column"],
-            ["💡 Preferences",  "Ruchi",         "Preferences", "Taste and habits",         "Importance column"],
-            ["🧠 Beliefs",      "Vishwas",       "Beliefs",     "Values, worldview",        "Contradiction_Flag"],
-            ["✅ Tasks",        "Kartavya",      "Tasks",       "Action items",             "Importance column"],
-            ["🔓 Open Loops",   "Anishtha",      "Open Loops",  "Unresolved threads",       "TTL_Days column"],
-            ["📅 Session Log",  "Dinacharya",    "Session Log", "Per-session history",      "—"],
-            ["⚙️ Agent Config", "Niyama",        "Agent Config","Per-agent settings",       "VidyaKosha mode"],
-            ["📒 Agrasandhanī", "Agrasandhanī",  "Ledger",      "Immutable audit trail",    "Importance logged"],
-            ["📥 Inbox",        "Avagraha",      "Inbox",       "Quick capture — NEW v2.1", "Route to sheets"],
-            ["✏️ Corrections",  "Sanshodhan",    "Corrections", "Pending edits — NEW v2.1", "Agent proposals"],
+            ["👤 Identity", "Svarupa", "Identity", "Who you are", "Importance column"],
+            ["🎯 Goals", "Sankalpa", "Goals", "What you want", "Importance, TTL"],
+            ["🚀 Projects", "Karma", "Projects", "Active work", "Importance column"],
+            ["👥 People", "Sambandha", "People", "Relationships", "Importance column"],
+            [
+                "💡 Preferences",
+                "Ruchi",
+                "Preferences",
+                "Taste and habits",
+                "Importance column",
+            ],
+            [
+                "🧠 Beliefs",
+                "Vishwas",
+                "Beliefs",
+                "Values, worldview",
+                "Contradiction_Flag",
+            ],
+            ["✅ Tasks", "Kartavya", "Tasks", "Action items", "Importance column"],
+            [
+                "🔓 Open Loops",
+                "Anishtha",
+                "Open Loops",
+                "Unresolved threads",
+                "TTL_Days column",
+            ],
+            ["📅 Session Log", "Dinacharya", "Session Log", "Per-session history", "—"],
+            [
+                "⚙️ Agent Config",
+                "Niyama",
+                "Agent Config",
+                "Per-agent settings",
+                "VidyaKosha mode",
+            ],
+            [
+                "📒 Agrasandhanī",
+                "Agrasandhanī",
+                "Ledger",
+                "Immutable audit trail",
+                "Importance logged",
+            ],
+            [
+                "📥 Inbox",
+                "Avagraha",
+                "Inbox",
+                "Quick capture — NEW v2.1",
+                "Route to sheets",
+            ],
+            [
+                "✏️ Corrections",
+                "Sanshodhan",
+                "Corrections",
+                "Pending edits — NEW v2.1",
+                "Agent proposals",
+            ],
         ],
         SHEET_IDENTITY: [
-            ["Attribute","Value","Last Updated","Notes","Confidence","Source","Importance"],
-            ["Full Name","","","","High","User-stated","9"],
-            ["Preferred Name","","","","High","User-stated","9"],
-            ["Location","","","City/Region/Country","High","User-stated","8"],
-            ["Timezone","","","e.g. IST, PST","High","User-stated","7"],
-            ["Primary Language","","","","High","User-stated","8"],
-            ["Occupation","","","","High","User-stated","8"],
-            ["Industry","","","","High","User-stated","7"],
-            ["Life Stage","","","e.g. early career","Medium","Agent-inferred","6"],
-            ["Communication Style","","","e.g. direct, casual","Medium","Agent-observed","7"],
-            ["Working Hours","","","e.g. 10am-7pm IST","Medium","User-stated","6"],
+            [
+                "Attribute",
+                "Value",
+                "Last Updated",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
+            ["Full Name", "", "", "", "High", "User-stated", "9"],
+            ["Preferred Name", "", "", "", "High", "User-stated", "9"],
+            ["Location", "", "", "City/Region/Country", "High", "User-stated", "8"],
+            ["Timezone", "", "", "e.g. IST, PST", "High", "User-stated", "7"],
+            ["Primary Language", "", "", "", "High", "User-stated", "8"],
+            ["Occupation", "", "", "", "High", "User-stated", "8"],
+            ["Industry", "", "", "", "High", "User-stated", "7"],
+            [
+                "Life Stage",
+                "",
+                "",
+                "e.g. early career",
+                "Medium",
+                "Agent-inferred",
+                "6",
+            ],
+            [
+                "Communication Style",
+                "",
+                "",
+                "e.g. direct, casual",
+                "Medium",
+                "Agent-observed",
+                "7",
+            ],
+            [
+                "Working Hours",
+                "",
+                "",
+                "e.g. 10am-7pm IST",
+                "Medium",
+                "User-stated",
+                "6",
+            ],
         ],
         SHEET_GOALS: [
-            ["Goal","Type","Priority","Deadline","Status","Last Updated",
-             "Notes","Confidence","Source","Importance"],
+            [
+                "Goal",
+                "Type",
+                "Priority",
+                "Deadline",
+                "Status",
+                "Last Updated",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_PROJECTS: [
-            ["Project","Domain","Status","Priority","Key Decision Made",
-             "Next Step","Last Updated","Notes","Confidence","Source","Importance"],
+            [
+                "Project",
+                "Domain",
+                "Status",
+                "Priority",
+                "Key Decision Made",
+                "Next Step",
+                "Last Updated",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_PEOPLE: [
-            ["Name","Relationship","Context","Sentiment","Last Mentioned",
-             "Notes","Confidence","Source","Importance"],
+            [
+                "Name",
+                "Relationship",
+                "Context",
+                "Sentiment",
+                "Last Mentioned",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_PREFERENCES: [
-            ["Category","Preference","Strength","Source","Notes",
-             "Confidence","Last Updated","Importance"],
+            [
+                "Category",
+                "Preference",
+                "Strength",
+                "Source",
+                "Notes",
+                "Confidence",
+                "Last Updated",
+                "Importance",
+            ],
         ],
         SHEET_BELIEFS: [
-            ["Topic","Position","Confidence","Domain","Last Updated",
-             "Notes","Source","Importance","Contradiction_Flag"],
+            [
+                "Topic",
+                "Position",
+                "Confidence",
+                "Domain",
+                "Last Updated",
+                "Notes",
+                "Source",
+                "Importance",
+                "Contradiction_Flag",
+            ],
         ],
         SHEET_TASKS: [
-            ["Task","Project","Priority","Deadline","Status","Added By",
-             "Notes","Confidence","Source","Importance"],
+            [
+                "Task",
+                "Project",
+                "Priority",
+                "Deadline",
+                "Status",
+                "Added By",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_OPEN_LOOPS: [
-            ["Topic","Context / What's Unresolved","Opened","Priority",
-             "Related Project","Resolved?","Resolution","TTL_Days",
-             "Confidence","Source","Importance"],
+            [
+                "Topic",
+                "Context / What's Unresolved",
+                "Opened",
+                "Priority",
+                "Related Project",
+                "Resolved?",
+                "Resolution",
+                "TTL_Days",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_SESSION_LOG: [
-            ["Date","Topics Discussed","Decisions Made","New Memory Added",
-             "Open Loops Created","Agent","Notes"],
+            [
+                "Date",
+                "Topics Discussed",
+                "Decisions Made",
+                "New Memory Added",
+                "Open Loops Created",
+                "Agent",
+                "Notes",
+            ],
         ],
         SHEET_AGENT_CONFIG: [
-            ["Agent","Instruction","Priority","Active","Notes"],
-            ["ALL","Load Svarupa + Anishtha + Karma at session start","Critical","Yes",""],
-            ["ALL","Flush Anishtha before context compaction","Critical","Yes",""],
-            ["ALL","All writes via Chitragupta — no direct file writes","Critical","Yes",""],
-            ["ALL","Write Dinacharya to Session Log at session end","High","Yes",""],
-            ["ALL","Use inbox() for quick captures without categorisation","High","Yes",""],
-            ["Claude","Match communication style from Ruchi (Preferences)","High","Yes",""],
-            ["Claude","Use per-session snapshot mode for VidyaKosha","Medium","Yes",""],
+            ["Agent", "Instruction", "Priority", "Active", "Notes"],
+            [
+                "ALL",
+                "Load Svarupa + Anishtha + Karma at session start",
+                "Critical",
+                "Yes",
+                "",
+            ],
+            ["ALL", "Flush Anishtha before context compaction", "Critical", "Yes", ""],
+            [
+                "ALL",
+                "All writes via Chitragupta — no direct file writes",
+                "Critical",
+                "Yes",
+                "",
+            ],
+            [
+                "ALL",
+                "Write Dinacharya to Session Log at session end",
+                "High",
+                "Yes",
+                "",
+            ],
+            [
+                "ALL",
+                "Use inbox() for quick captures without categorisation",
+                "High",
+                "Yes",
+                "",
+            ],
+            [
+                "Claude",
+                "Match communication style from Ruchi (Preferences)",
+                "High",
+                "Yes",
+                "",
+            ],
+            [
+                "Claude",
+                "Use per-session snapshot mode for VidyaKosha",
+                "Medium",
+                "Yes",
+                "",
+            ],
         ],
         SHEET_LEDGER: [
-            ["Timestamp","Request ID","Agent","Sheet","Operation",
-             "Row Identifier","Status","Confidence","Source",
-             "Importance","Signature","Reason / Notes"],
+            [
+                "Timestamp",
+                "Request ID",
+                "Agent",
+                "Sheet",
+                "Operation",
+                "Row Identifier",
+                "Status",
+                "Confidence",
+                "Source",
+                "Importance",
+                "Signature",
+                "Reason / Notes",
+            ],
         ],
         SHEET_INBOX: [
-            ["Content","Captured","Routed?","Target Sheet",
-             "Notes","Confidence","Source","Importance"],
+            [
+                "Content",
+                "Captured",
+                "Routed?",
+                "Target Sheet",
+                "Notes",
+                "Confidence",
+                "Source",
+                "Importance",
+            ],
         ],
         SHEET_CORRECTIONS: [
-            ["Target Sheet","Row Identifier","Field","Proposed Value",
-             "Reason","Status","Proposed By","Proposed At",
-             "Reviewed By","Reviewed At","Notes"],
+            [
+                "Target Sheet",
+                "Row Identifier",
+                "Field",
+                "Proposed Value",
+                "Reason",
+                "Status",
+                "Proposed By",
+                "Proposed At",
+                "Reviewed By",
+                "Reviewed At",
+                "Notes",
+            ],
         ],
     }
 
