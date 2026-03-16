@@ -35,8 +35,13 @@ def post_compact_hook(payload: dict) -> dict:
     oy = OpenYantra(OY_FILE, agent_name=AGENT_NAME)
     ctx = oy.load_session_context()
     if ctx["open_loops"]:
+        unresolved_key = "Context / What's Unresolved"
         loops_text = "\n".join(
-            f"- [{l.get('Priority','?')}] {l.get('Topic','?')}: {l.get('Context / What\'s Unresolved','')}"
+            "- [{priority}] {topic}: {context}".format(
+                priority=l.get("Priority", "?"),
+                topic=l.get("Topic", "?"),
+                context=l.get(unresolved_key, ""),
+            )
             for l in ctx["open_loops"]
         )
         payload["new_context"] = payload.get("new_context","") + (
