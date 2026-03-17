@@ -1,0 +1,70 @@
+<!-- OpenYantra — Horizontal Wordmark Lockup
+     Brand Manual §02 · Variant A (Gradient Dark, Primary) · v0.2.0
+     Mark + "OpenYantra" wordmark in IBM Plex Mono
+     Gradient: #1c6fff → #5535e0 → #e84520 → #f5a000
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" fill="none" width="320" height="60" role="img" aria-label="OpenYantra horizontal wordmark">
+  <defs>
+    <linearGradient id="oy-h-mark" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <linearGradient id="oy-h-text" x1="76" y1="0" x2="320" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark (60×60 viewport, scaled to 52px render) -->
+  <g transform="translate(4, 4) scale(0.52)">
+    <!-- Outer ring -->
+    <circle cx="50" cy="50" r="47" stroke="url(#oy-h-mark)" stroke-width="1.5" fill="none"/>
+    <!-- Mid ring -->
+    <circle cx="50" cy="50" r="33" stroke="url(#oy-h-mark)" stroke-width="1" fill="none" opacity="0.5"/>
+    <!-- Inner ring -->
+    <circle cx="50" cy="50" r="18" stroke="url(#oy-h-mark)" stroke-width="0.8" fill="none" opacity="0.3"/>
+    <!-- Axes -->
+    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#oy-h-mark)" stroke-width="0.6" opacity="0.2"/>
+    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#oy-h-mark)" stroke-width="0.6" opacity="0.2"/>
+    <!-- Cardinal nodes -->
+    <circle cx="50" cy="3"  r="2.5" fill="#1c6fff"/>
+    <circle cx="97" cy="50" r="2.5" fill="#5535e0"/>
+    <circle cx="50" cy="97" r="2.5" fill="#e84520"/>
+    <circle cx="3"  cy="50" r="2.5" fill="#f5a000"/>
+    <!-- Petal arcs -->
+    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#oy-h-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
+    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#oy-h-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
+    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#oy-h-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
+    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#oy-h-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
+    <!-- Center core -->
+    <circle cx="50" cy="50" r="4" fill="url(#oy-h-mark)"/>
+  </g>
+
+  <!-- Wordmark: "OpenYantra" — IBM Plex Mono, weight 500 -->
+  <!-- Gradient fill on full wordmark -->
+  <text
+    x="72"
+    y="38"
+    font-family="'IBM Plex Mono', 'Courier New', monospace"
+    font-size="26"
+    font-weight="500"
+    letter-spacing="1"
+    fill="url(#oy-h-text)"
+  >OpenYantra</text>
+
+  <!-- Tagline: "Personal Cognition Ledger" -->
+  <text
+    x="74"
+    y="52"
+    font-family="'IBM Plex Mono', 'Courier New', monospace"
+    font-size="8"
+    font-weight="400"
+    letter-spacing="2"
+    fill="#524f58"
+    text-transform="uppercase"
+  >PERSONAL COGNITION LEDGER</text>
+</svg>

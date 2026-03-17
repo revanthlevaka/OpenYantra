@@ -1,0 +1,62 @@
+<!-- OpenYantra — Canonical Logo Mark
+     Brand Manual §02 · Full Detail · v0.2.0
+     Gradient: #1c6fff → #5535e0 → #e84520 → #f5a000
+     Rings: outer r=47, mid r=33, inner r=18
+     Cardinal nodes: N(top)=blue, E(right)=indigo, S(bottom)=coral, W(left)=amber
+     Petal arcs: 4 cardinal quadratic bezier arcs
+     Center core: full gradient fill, r=4
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" width="100" height="100" role="img" aria-label="OpenYantra logo mark">
+  <defs>
+    <linearGradient id="oy-grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer ring — boundary of memory -->
+  <circle cx="50" cy="50" r="47" stroke="url(#oy-grad)" stroke-width="1.5" fill="none"/>
+
+  <!-- Mid ring — Chitragupta / ledger layer -->
+  <circle cx="50" cy="50" r="33" stroke="url(#oy-grad)" stroke-width="1" fill="none" opacity="0.5"/>
+
+  <!-- Inner ring — domain layer -->
+  <circle cx="50" cy="50" r="18" stroke="url(#oy-grad)" stroke-width="0.8" fill="none" opacity="0.3"/>
+
+  <!-- Cross-hair axes (cardinal radials) -->
+  <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#oy-grad)" stroke-width="0.6" opacity="0.2"/>
+  <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#oy-grad)" stroke-width="0.6" opacity="0.2"/>
+
+  <!-- Diagonal axes (45° radials) -->
+  <line x1="17" y1="17" x2="83" y2="83" stroke="url(#oy-grad)" stroke-width="0.5" opacity="0.12"/>
+  <line x1="83" y1="17" x2="17" y2="83" stroke="url(#oy-grad)" stroke-width="0.5" opacity="0.12"/>
+
+  <!-- 4 Cardinal satellite nodes: N=blue, E=indigo, S=coral, W=amber -->
+  <circle cx="50" cy="3"  r="2.5" fill="#1c6fff"/>
+  <circle cx="97" cy="50" r="2.5" fill="#5535e0"/>
+  <circle cx="50" cy="97" r="2.5" fill="#e84520"/>
+  <circle cx="3"  cy="50" r="2.5" fill="#f5a000"/>
+
+  <!-- 4 Secondary nodes at mid-ring intersections -->
+  <circle cx="50" cy="17" r="1.5" fill="#1c6fff" opacity="0.6"/>
+  <circle cx="83" cy="50" r="1.5" fill="#5535e0" opacity="0.6"/>
+  <circle cx="50" cy="83" r="1.5" fill="#e84520" opacity="0.6"/>
+  <circle cx="17" cy="50" r="1.5" fill="#f5a000" opacity="0.6"/>
+
+  <!-- Petal arcs — 4 cardinal quadratic beziers (domain sheets) -->
+  <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#oy-grad)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#oy-grad)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#oy-grad)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#oy-grad)" stroke-width="0.8" fill="none" opacity="0.42"/>
+
+  <!-- Diagonal petal arcs (45° domain sheets) -->
+  <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#oy-grad)" stroke-width="0.5" fill="none" opacity="0.2"/>
+  <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#oy-grad)" stroke-width="0.5" fill="none" opacity="0.2"/>
+  <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#oy-grad)" stroke-width="0.5" fill="none" opacity="0.2"/>
+  <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#oy-grad)" stroke-width="0.5" fill="none" opacity="0.2"/>
+
+  <!-- Center core — Chitrapat.ods — full gradient fill -->
+  <circle cx="50" cy="50" r="4" fill="url(#oy-grad)"/>
+</svg>

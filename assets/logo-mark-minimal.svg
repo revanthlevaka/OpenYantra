@@ -1,0 +1,34 @@
+<!-- OpenYantra — Minimal Logo Mark
+     Brand Manual §02 · Scale: 32px · v0.2.0
+     Simplified: outer ring + mid ring + 4 cardinal nodes + center dot
+     Petal arcs retained; inner ring and diagonals dropped for clarity at small size
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" width="32" height="32" role="img" aria-label="OpenYantra logo mark minimal">
+  <defs>
+    <linearGradient id="oy-min-grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="50" cy="50" r="46" stroke="url(#oy-min-grad)" stroke-width="3" fill="none"/>
+
+  <!-- Mid ring -->
+  <circle cx="50" cy="50" r="28" stroke="url(#oy-min-grad)" stroke-width="2" fill="none" opacity="0.35"/>
+
+  <!-- 4 Cardinal satellite nodes: N=blue, E=indigo, S=coral, W=amber -->
+  <circle cx="50" cy="4"  r="5" fill="#1c6fff"/>
+  <circle cx="96" cy="50" r="5" fill="#5535e0"/>
+  <circle cx="50" cy="96" r="5" fill="#e84520"/>
+  <circle cx="4"  cy="50" r="5" fill="#f5a000"/>
+
+  <!-- Petal arcs -->
+  <path d="M50 4 Q66 27 50 50 Q34 27 50 4"   stroke="url(#oy-min-grad)" stroke-width="1.2" fill="none" opacity="0.38"/>
+  <path d="M96 50 Q73 66 50 50 Q73 34 96 50"  stroke="url(#oy-min-grad)" stroke-width="1.2" fill="none" opacity="0.38"/>
+  <path d="M50 96 Q34 73 50 50 Q66 73 50 96"  stroke="url(#oy-min-grad)" stroke-width="1.2" fill="none" opacity="0.38"/>
+  <path d="M4 50 Q27 34 50 50 Q27 66 4 50"    stroke="url(#oy-min-grad)" stroke-width="1.2" fill="none" opacity="0.38"/>
+
+  <!-- Center core -->
+  <circle cx="50" cy="50" r="5" fill="url(#oy-min-grad)"/>
+</svg>

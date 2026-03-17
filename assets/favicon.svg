@@ -1,0 +1,25 @@
+<!-- OpenYantra — Favicon
+     Brand Manual §02 · Scale: 16px · v0.2.0
+     Ultra-simplified: single outer ring + 4 cardinal nodes + center dot only
+     No arcs or inner rings — maximum legibility at favicon scale
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" width="16" height="16" role="img" aria-label="OpenYantra favicon">
+  <defs>
+    <linearGradient id="oy-fav-grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer ring only -->
+  <circle cx="50" cy="50" r="46" stroke="url(#oy-fav-grad)" stroke-width="4" fill="none"/>
+
+  <!-- 4 Cardinal satellite nodes: N=blue, E=indigo, S=coral, W=amber -->
+  <circle cx="50" cy="4"  r="7" fill="#1c6fff"/>
+  <circle cx="96" cy="50" r="7" fill="#5535e0"/>
+  <circle cx="50" cy="96" r="7" fill="#e84520"/>
+  <circle cx="4"  cy="50" r="7" fill="#f5a000"/>
+
+  <!-- Center core -->
+  <circle cx="50" cy="50" r="7" fill="url(#oy-fav-grad)"/>
+</svg>
