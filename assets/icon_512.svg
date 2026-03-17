@@ -1,45 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-label="OpenYantra icon">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1c6fff"/>
-      <stop offset="33%" stop-color="#5535e0"/>
-      <stop offset="66%" stop-color="#e84520"/>
+    <linearGradient id="i512-g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
       <stop offset="100%" stop-color="#f5a000"/>
     </linearGradient>
   </defs>
+
+  <!-- Background -->
   <rect width="512" height="512" fill="#0a0a0b"/>
-  <!-- Outer ring -->
-  <circle cx="256" cy="256" r="240" stroke="url(#g)" stroke-width="4" fill="none"/>
-  <!-- Mid ring -->
-  <circle cx="256" cy="256" r="168" stroke="url(#g)" stroke-width="2.5" fill="none" opacity="0.5"/>
-  <!-- Inner ring -->
-  <circle cx="256" cy="256" r="92" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.3"/>
-  <!-- Center core -->
-  <circle cx="256" cy="256" r="20" fill="url(#g)"/>
-  <!-- Axes -->
-  <line x1="256" y1="16" x2="256" y2="496" stroke="url(#g)" stroke-width="1.5" opacity="0.2"/>
-  <line x1="16" y1="256" x2="496" y2="256" stroke="url(#g)" stroke-width="1.5" opacity="0.2"/>
-  <!-- Diagonals -->
-  <line x1="74" y1="74" x2="438" y2="438" stroke="url(#g)" stroke-width="1" opacity="0.1"/>
-  <line x1="438" y1="74" x2="74" y2="438" stroke="url(#g)" stroke-width="1" opacity="0.1"/>
-  <!-- Cardinal nodes -->
-  <circle cx="256" cy="16"  r="12" fill="#1c6fff"/>
-  <circle cx="496" cy="256" r="12" fill="#5535e0"/>
-  <circle cx="256" cy="496" r="12" fill="#e84520"/>
-  <circle cx="16"  cy="256" r="12" fill="#f5a000"/>
-  <!-- Secondary nodes -->
-  <circle cx="256" cy="88"  r="7" fill="#1c6fff" opacity="0.6"/>
-  <circle cx="424" cy="256" r="7" fill="#5535e0" opacity="0.6"/>
-  <circle cx="256" cy="424" r="7" fill="#e84520" opacity="0.6"/>
-  <circle cx="88"  cy="256" r="7" fill="#f5a000" opacity="0.6"/>
-  <!-- Petal arcs -->
-  <path d="M256 16 Q340 136 256 256 Q172 136 256 16"   stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
-  <path d="M496 256 Q376 340 256 256 Q376 172 496 256" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
-  <path d="M256 496 Q172 376 256 256 Q340 376 256 496" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
-  <path d="M16 256 Q136 172 256 256 Q136 340 16 256"   stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
-  <!-- Diagonal petals -->
-  <path d="M74 74 Q165 165 256 256 Q128 128 74 74"   stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.2"/>
-  <path d="M438 74 Q347 165 256 256 Q384 128 438 74" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.2"/>
-  <path d="M438 438 Q347 347 256 256 Q384 384 438 438" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.2"/>
-  <path d="M74 438 Q165 347 256 256 Q128 384 74 438" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.2"/>
+
+  <!-- Mark — canonical geometry scaled from 100-unit viewBox to 472px, centered at 256,256 -->
+  <!-- scale = 4.72, translate so center(50,50)*4.72 = 236 → offset = 256-236 = 20 -->
+  <g transform="translate(20,20) scale(4.72)">
+    <!-- Outer ring -->
+    <circle cx="50" cy="50" r="47" stroke="url(#i512-g)" stroke-width="0.32" fill="none"/>
+    <!-- Mid ring -->
+    <circle cx="50" cy="50" r="33" stroke="url(#i512-g)" stroke-width="0.21" fill="none" opacity="0.5"/>
+    <!-- Inner ring -->
+    <circle cx="50" cy="50" r="18" stroke="url(#i512-g)" stroke-width="0.17" fill="none" opacity="0.3"/>
+    <!-- Cardinal axes -->
+    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#i512-g)" stroke-width="0.13" opacity="0.2"/>
+    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#i512-g)" stroke-width="0.13" opacity="0.2"/>
+    <!-- Diagonal axes -->
+    <line x1="17" y1="17" x2="83" y2="83" stroke="url(#i512-g)" stroke-width="0.11" opacity="0.12"/>
+    <line x1="83" y1="17" x2="17" y2="83" stroke="url(#i512-g)" stroke-width="0.11" opacity="0.12"/>
+    <!-- Cardinal nodes: N=blue E=indigo S=coral W=amber -->
+    <circle cx="50" cy="3"  r="2.5" fill="#1c6fff"/>
+    <circle cx="97" cy="50" r="2.5" fill="#5535e0"/>
+    <circle cx="50" cy="97" r="2.5" fill="#e84520"/>
+    <circle cx="3"  cy="50" r="2.5" fill="#f5a000"/>
+    <!-- Secondary nodes -->
+    <circle cx="50" cy="17" r="1.5" fill="#1c6fff" opacity="0.6"/>
+    <circle cx="83" cy="50" r="1.5" fill="#5535e0" opacity="0.6"/>
+    <circle cx="50" cy="83" r="1.5" fill="#e84520" opacity="0.6"/>
+    <circle cx="17" cy="50" r="1.5" fill="#f5a000" opacity="0.6"/>
+    <!-- Cardinal petal arcs -->
+    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#i512-g)" stroke-width="0.17" fill="none" opacity="0.42"/>
+    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#i512-g)" stroke-width="0.17" fill="none" opacity="0.42"/>
+    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#i512-g)" stroke-width="0.17" fill="none" opacity="0.42"/>
+    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#i512-g)" stroke-width="0.17" fill="none" opacity="0.42"/>
+    <!-- Diagonal petal arcs -->
+    <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#i512-g)" stroke-width="0.11" fill="none" opacity="0.2"/>
+    <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#i512-g)" stroke-width="0.11" fill="none" opacity="0.2"/>
+    <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#i512-g)" stroke-width="0.11" fill="none" opacity="0.2"/>
+    <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#i512-g)" stroke-width="0.11" fill="none" opacity="0.2"/>
+    <!-- Center core -->
+    <circle cx="50" cy="50" r="4" fill="url(#i512-g)"/>
+  </g>
 </svg>
