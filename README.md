@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo_horizontal.png" alt="OpenYantra" width="620"/>
+  <img src="assets/logo_horizontal.svg" alt="OpenYantra" width="620"/>
 </p>
 
 <h1 align="center">OpenYantra</h1>
@@ -170,17 +170,17 @@ Captured from `http://localhost:8000` against the rebuilt v3 Briefing Room dashb
 
 ## Release Assets
 
-![GitHub banner](assets/banner_github.png)
+![GitHub banner](assets/banner_github.svg)
 
-![Open graph card](assets/og_card.png)
+![Open graph card](assets/og_card.svg)
 
-Refreshed for this visual update:
+Refreshed for v0.2.0:
 
-- `assets/logo_horizontal.png`
-- `assets/banner_github.png`
-- `assets/og_card.png`
-- `assets/icon_512.png`
-- `assets/icon_192.png`
+- `assets/logo_horizontal.svg`
+- `assets/banner_github.svg`
+- `assets/og_card.svg`
+- `assets/icon_512.svg`
+- `assets/icon_192.svg`
 
 ## Common Commands
 

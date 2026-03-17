@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="260" y2="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0b"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <!-- Gradient top bar -->
+  <rect width="1200" height="3" fill="url(#tg)"/>
+  <!-- Gradient bottom bar -->
+  <rect y="627" width="1200" height="3" fill="url(#tg)" opacity="0.4"/>
+  <!-- Mark left-anchored at 200, 280 r=130 -->
+  <circle cx="280" cy="315" r="130" stroke="url(#g)" stroke-width="3" fill="none"/>
+  <circle cx="280" cy="315" r="90" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="280" cy="315" r="50" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <circle cx="280" cy="315" r="11" fill="url(#g)"/>
+  <line x1="280" y1="185" x2="280" y2="445" stroke="url(#g)" stroke-width="1.2" opacity="0.2"/>
+  <line x1="150" y1="315" x2="410" y2="315" stroke="url(#g)" stroke-width="1.2" opacity="0.2"/>
+  <circle cx="280" cy="185" r="8" fill="#1c6fff"/>
+  <circle cx="410" cy="315" r="8" fill="#5535e0"/>
+  <circle cx="280" cy="445" r="8" fill="#e84520"/>
+  <circle cx="150" cy="315" r="8" fill="#f5a000"/>
+  <path d="M280 185 Q345 250 280 315 Q215 250 280 185" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M410 315 Q345 380 280 315 Q345 250 410 315" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M280 445 Q215 380 280 315 Q345 380 280 445" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M150 315 Q215 250 280 315 Q215 380 150 315" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <!-- Text block -->
+  <text x="470" y="270" font-family="'IBM Plex Mono', monospace" font-size="72" font-weight="600" fill="url(#tg)">Open</text>
+  <text x="470" y="358" font-family="'IBM Plex Mono', monospace" font-size="72" font-weight="300" fill="#e8e5de">Yantra</text>
+  <text x="472" y="404" font-family="'IBM Plex Mono', monospace" font-size="15" letter-spacing="4" fill="#524f58">PERSONAL COGNITION LEDGER</text>
+  <!-- Divider -->
+  <rect x="470" y="420" width="280" height="1" fill="rgba(255,255,255,0.07)"/>
+  <!-- Sub-line -->
+  <text x="472" y="448" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#7a7682">Local-first. Human-readable. Agent-safe.</text>
+  <!-- Version -->
+  <rect x="470" y="466" width="88" height="20" fill="none" stroke="rgba(245,160,0,0.3)" stroke-width="1"/>
+  <text x="514" y="480" font-family="'IBM Plex Mono', monospace" font-size="11" letter-spacing="2" text-anchor="middle" fill="#f5a000">v0.2.0</text>
+  <!-- MIT badge -->
+  <rect x="568" y="466" width="64" height="20" fill="none" stroke="rgba(28,111,255,0.3)" stroke-width="1"/>
+  <text x="600" y="480" font-family="'IBM Plex Mono', monospace" font-size="11" letter-spacing="2" text-anchor="middle" fill="#1c6fff">MIT</text>
+</svg>

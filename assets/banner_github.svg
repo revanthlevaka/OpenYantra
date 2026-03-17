@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="280" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#0a0a0b"/>
+  <!-- Grid texture -->
+  <rect width="1280" height="640" fill="url(#grid)"/>
+  <!-- Gradient top bar -->
+  <rect width="1280" height="3" fill="url(#tg)"/>
+  <!-- Mark centered at 640, 280 r=140 -->
+  <circle cx="640" cy="280" r="140" stroke="url(#g)" stroke-width="3" fill="none"/>
+  <circle cx="640" cy="280" r="98" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="640" cy="280" r="54" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <circle cx="640" cy="280" r="12" fill="url(#g)"/>
+  <line x1="640" y1="140" x2="640" y2="420" stroke="url(#g)" stroke-width="1.2" opacity="0.2"/>
+  <line x1="500" y1="280" x2="780" y2="280" stroke="url(#g)" stroke-width="1.2" opacity="0.2"/>
+  <line x1="541" y1="181" x2="739" y2="379" stroke="url(#g)" stroke-width="1" opacity="0.1"/>
+  <line x1="739" y1="181" x2="541" y2="379" stroke="url(#g)" stroke-width="1" opacity="0.1"/>
+  <!-- Cardinal nodes -->
+  <circle cx="640" cy="140" r="9" fill="#1c6fff"/>
+  <circle cx="780" cy="280" r="9" fill="#5535e0"/>
+  <circle cx="640" cy="420" r="9" fill="#e84520"/>
+  <circle cx="500" cy="280" r="9" fill="#f5a000"/>
+  <!-- Petal arcs -->
+  <path d="M640 140 Q710 210 640 280 Q570 210 640 140" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M780 280 Q710 350 640 280 Q710 210 780 280" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M640 420 Q570 350 640 280 Q710 350 640 420" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <path d="M500 280 Q570 210 640 280 Q570 350 500 280" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.42"/>
+  <!-- Wordmark -->
+  <text x="640" y="496" font-family="'IBM Plex Mono', monospace" font-size="64" font-weight="500" letter-spacing="-2" text-anchor="middle" fill="url(#tg)">Open</text>
+  <text x="640" y="496" font-family="'IBM Plex Mono', monospace" font-size="64" font-weight="300" letter-spacing="-2" text-anchor="middle" fill="#e8e5de" dx="148">Yantra</text>
+  <!-- Tagline -->
+  <text x="640" y="540" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="4" text-anchor="middle" fill="#524f58">PERSONAL COGNITION LEDGER</text>
+  <!-- Version badge -->
+  <rect x="588" y="558" width="104" height="22" fill="none" stroke="rgba(245,160,0,0.3)" stroke-width="1"/>
+  <text x="640" y="574" font-family="'IBM Plex Mono', monospace" font-size="11" letter-spacing="2" text-anchor="middle" fill="#f5a000">v0.2.0</text>
+</svg>

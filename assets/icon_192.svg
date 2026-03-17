@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" fill="#0a0a0b"/>
+  <!-- Outer ring -->
+  <circle cx="96" cy="96" r="88" stroke="url(#g)" stroke-width="3" fill="none"/>
+  <!-- Mid ring -->
+  <circle cx="96" cy="96" r="58" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Inner ring -->
+  <circle cx="96" cy="96" r="30" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <!-- Center core -->
+  <circle cx="96" cy="96" r="8" fill="url(#g)"/>
+  <!-- Axes -->
+  <line x1="96" y1="8" x2="96" y2="184" stroke="url(#g)" stroke-width="1" opacity="0.2"/>
+  <line x1="8" y1="96" x2="184" y2="96" stroke="url(#g)" stroke-width="1" opacity="0.2"/>
+  <!-- Cardinal nodes -->
+  <circle cx="96" cy="8"   r="5" fill="#1c6fff"/>
+  <circle cx="184" cy="96" r="5" fill="#5535e0"/>
+  <circle cx="96" cy="184" r="5" fill="#e84520"/>
+  <circle cx="8"  cy="96"  r="5" fill="#f5a000"/>
+  <!-- Petal arcs -->
+  <path d="M96 8 Q128 52 96 96 Q64 52 96 8"   stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M184 96 Q140 128 96 96 Q140 64 184 96" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M96 184 Q64 140 96 96 Q128 140 96 184" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M8 96 Q52 64 96 96 Q52 128 8 96"   stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+</svg>
