@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
-#  OpenYantra v2.3 Installer — Mac + Linux
+#  OpenYantra v2.11 Installer — Mac + Linux
 #  The Sacred Memory Machine
 #  Inspired by Chitragupta, the Hindu God of Data
 #
@@ -15,7 +15,7 @@
 
 set -e
 
-VERSION="2.10"
+VERSION="2.11"
 INSTALL_DIR="$HOME/openyantra"
 VENV_DIR="$INSTALL_DIR/.venv"
 RAW="https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"
@@ -213,7 +213,7 @@ install_deps() {
 download_files() {
   step "Downloading OpenYantra v${VERSION} files"
 
-  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs}
+  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs,assets,UI/v3}
 
   FILES=(
     "openyantra.py"
@@ -222,8 +222,10 @@ download_files() {
     "yantra_digest.py"
     "telegram_bot.py"
     "ios_shortcut.py"
-    "yantra_mail.py"
     "yantra_migrate.py"
+    "UI/v3/dashboard.html"
+    "docs/BRAND_MANUAL.md"
+    "docs/VISUAL_GUIDE.md"
     "openclaw/hooks.py"
     "openclaw/plugin.py"
     "openclaw/__init__.py"
@@ -236,6 +238,8 @@ download_files() {
     "SKILL.md"
     "MYTHOLOGY.md"
     "WHITEPAPER.md"
+    "openyantra-brand-manual.html"
+    "visual-guide.html"
   )
 
   for file in "${FILES[@]}"; do
@@ -405,6 +409,26 @@ else: print('✓ No expired loops')
     echo "Starting Telegram bot..."
     \$PYTHON "\$INSTALL_DIR/telegram_bot.py" --file "\$OY_FILE"
     ;;
+  shortcut)
+    echo "Starting iOS Shortcut server..."
+    \$PYTHON "\$INSTALL_DIR/ios_shortcut.py" --file "\$OY_FILE"
+    ;;
+  morning)
+    \$PYTHON -c "
+import sys; sys.path.insert(0, '\$INSTALL_DIR')
+from openyantra import OpenYantra
+oy = OpenYantra('\$OY_FILE')
+print(oy.morning_brief())
+"
+    ;;
+  context)
+    \$PYTHON -c "
+import sys; sys.path.insert(0, '\$INSTALL_DIR')
+from openyantra import OpenYantra
+oy = OpenYantra('\$OY_FILE')
+print(oy.copy_context())
+"
+    ;;
   open|edit)
     if command -v libreoffice &>/dev/null; then
       libreoffice "\$OY_FILE" &
@@ -425,6 +449,8 @@ else: print('✓ No expired loops')
     echo "  COMMANDS:"
     echo "    yantra bootstrap    Interview-based setup (first time)"
     echo "    yantra ui [port]    Browser dashboard → http://localhost:7331"
+    echo "    yantra morning      Morning Briefing"
+    echo "    yantra context      Copy Markdown context for your AI chat"
     echo "    yantra doctor       System health check"
     echo "    yantra health       Memory stats"
     echo "    yantra inbox [text] Quick capture to Inbox"
@@ -434,17 +460,9 @@ else: print('✓ No expired loops')
     echo "    yantra diff         Belief contradiction check"
     echo "    yantra ttl          Check expired open loops"
     echo "    yantra telegram     Start Telegram bot capture"
+    echo "    yantra shortcut     Start iOS Shortcut server (port 7332)"
     echo "    yantra open         Open Chitrapat in LibreOffice"
-    echo "    yantra stats        Memory growth analytics
-    yantra morning      Daily brief — urgent loops, tasks, insight, streak
-    yantra context      Copy full context to clipboard — paste into any AI chat
-    yantra integrity    Verify Agrasandhani SHA-256 Mudra signatures
-    yantra archive      Rotate session log (default: keep 90 days)
-    yantra shortcut     Start iOS Shortcut server (port 7332)
-    yantra mail         Start Email-to-Inbox SMTP server (port 2525)
-    yantra migrate      Upgrade older Chitrapat to current schema
-    yantra schedule     Schedule daily digest via cron/launchd
-    yantra version      Show version"
+    echo "    yantra version      Show version"
     echo ""
     echo "  FILE: \$OY_FILE"
     echo "  Set OPENYANTRA_FILE to change location"
@@ -588,6 +606,7 @@ print_summary() {
   echo "    yantra inbox 'text'  ← quick capture"
   echo "    yantra digest        ← daily summary"
   echo "    yantra telegram      ← start Telegram bot"
+  echo "    yantra shortcut      ← start iOS Shortcut capture"
   echo ""
   echo -e "  ${DIM}Restart terminal or run: source $([[ "$SHELL" == *zsh* ]] && echo ~/.zshrc || echo ~/.bashrc)${RESET}"
   echo -e "  ${DIM}Desktop shortcut: ~/Desktop/OpenYantra.command${RESET}"

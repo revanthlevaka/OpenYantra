@@ -67,7 +67,7 @@ class TrustTier(Enum):
     CHITRAGUPTA   = 4   # LedgerAgent — system writer
     KNOWN_AGENT   = 3   # Claude, OpenClaw, registered agents
     UNKNOWN_AGENT = 2   # Unregistered agents
-    EXTERNAL      = 1   # Telegram bot, email, browser extension
+    EXTERNAL      = 1   # Telegram bot, iOS Shortcut, browser extension
     UNTRUSTED     = 0   # Explicitly flagged agents
 
 
@@ -474,7 +474,7 @@ class Raksha:
         # Lower trust = lower threshold for blocking
 
         if trust_tier == TrustTier.EXTERNAL:
-            # External sources (Telegram, email) get stricter treatment
+            # External capture surfaces (Telegram, iOS Shortcut) get stricter treatment
             if threat_level == ThreatLevel.SUSPICIOUS:
                 threat_level = ThreatLevel.CONFIRMED
 

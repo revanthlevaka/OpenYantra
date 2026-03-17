@@ -1,5 +1,5 @@
 """
-yantra_digest.py — OpenYantra Daily Digest v2.3
+yantra_digest.py — OpenYantra Daily Digest v2.11
 
 Proactively surfaces what matters — open loops, stale projects,
 memory insights, and a random past memory for reflection.
@@ -43,7 +43,7 @@ def generate_digest(oy_path: str, format: str = "terminal") -> str:
     """
     Generate a daily digest from the Chitrapat.
 
-    format: "terminal" | "telegram" | "email"
+    format: "terminal" | "telegram"
     """
     oy = OpenYantra(oy_path, agent_name="Digest")
     today = date.today().isoformat()
@@ -58,9 +58,6 @@ def generate_digest(oy_path: str, format: str = "terminal") -> str:
         )
     elif format == "telegram":
         sections.append(f"🌅 *OpenYantra Daily Digest*\n_{today}_")
-    else:
-        sections.append(f"OpenYantra Daily Digest — {today}")
-
     # ── Open Loops needing attention ──────────────────────────────────────────
 
     all_loops = [
@@ -292,7 +289,7 @@ def run_scheduled(oy_path: str, time_str: str = "08:00"):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenYantra Daily Digest v2.3")
+    parser = argparse.ArgumentParser(description="OpenYantra Daily Digest v2.11")
     parser.add_argument(
         "--file",
         "-f",
@@ -306,7 +303,7 @@ def main():
         "--time", "-t", default="08:00", help="Schedule time HH:MM (default 08:00)"
     )
     parser.add_argument(
-        "--format", choices=["terminal", "telegram", "email"], default="terminal"
+        "--format", choices=["terminal", "telegram"], default="terminal"
     )
     args = parser.parse_args()
 

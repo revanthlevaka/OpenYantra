@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-#  OpenYantra v2.3 Installer — Windows (PowerShell)
+#  OpenYantra v2.11 Installer — Windows (PowerShell)
 #  The Sacred Memory Machine
 #  Inspired by Chitragupta, the Hindu God of Data
 #
@@ -14,7 +14,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 $ErrorActionPreference = "Stop"
-$VERSION = "2.10"
+$VERSION = "2.11"
 $INSTALL_DIR = "$env:USERPROFILE\openyantra"
 $VENV_DIR    = "$INSTALL_DIR\.venv"
 $RAW         = "https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"
@@ -152,19 +152,21 @@ function Install-Deps {
 function Download-Files {
     Write-Step "Downloading OpenYantra v$VERSION files"
 
-    $dirs = @("openclaw", "examples", "references", "docs", "assets")
+    $dirs = @("openclaw", "examples", "references", "docs", "assets", "UI\v3")
     foreach ($d in $dirs) {
         New-Item -ItemType Directory -Path "$INSTALL_DIR\$d" -Force | Out-Null
     }
 
     $files = @(
         "openyantra.py", "vidyakosha.py", "yantra_ui.py",
-        "yantra_digest.py", "telegram_bot.py",
+        "yantra_digest.py", "telegram_bot.py", "ios_shortcut.py",
+        "UI/v3/dashboard.html",
         "openclaw/hooks.py", "openclaw/plugin.py", "openclaw/__init__.py",
         "examples/bootstrap.py", "examples/langchain_adapter.py",
         "examples/__init__.py", "references/controlled-vocab.md",
-        "docs/DEPLOYMENT.md", "PROTOCOL.md", "SKILL.md",
-        "MYTHOLOGY.md", "WHITEPAPER.md"
+        "docs/DEPLOYMENT.md", "docs/BRAND_MANUAL.md", "docs/VISUAL_GUIDE.md",
+        "PROTOCOL.md", "SKILL.md", "MYTHOLOGY.md", "WHITEPAPER.md",
+        "openyantra-brand-manual.html", "visual-guide.html"
     )
 
     foreach ($file in $files) {
@@ -224,14 +226,18 @@ print(f'  Chitrapat  {chr(10003) if os.path.exists(f) else chr(10007)+\" run: ya
         & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); r=oy.inbox('`$text'); print('Captured' if r.get('status')=='written' else r.get('status'))"
     }
     "digest"  { & `$PYTHON "`$INSTALL_DIR\yantra_digest.py" --file `$OY_FILE }
+    "route"   { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); d=oy.route_inbox(); r=sum(1 for x in d if x.get('routed')); print(f'Routed {r}/{len(d)} inbox items')" }
     "loops"   { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra,SHEET_OPEN_LOOPS; oy=OpenYantra('`$OY_FILE'); loops=[r for r in oy._read_sheet(SHEET_OPEN_LOOPS) if r.get('Resolved?')=='No']; print(f'Open Loops ({len(loops)}):'); [print(f'  [{l.get(\"Priority\",\"?\"):8}] {l.get(\"Topic\",\"\")[:55]}') for l in loops]" }
     "telegram"{ & `$PYTHON "`$INSTALL_DIR\telegram_bot.py" --file `$OY_FILE }
+    "shortcut"{ & `$PYTHON "`$INSTALL_DIR\ios_shortcut.py" --file `$OY_FILE }
+    "morning" { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); print(oy.morning_brief())" }
+    "context" { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); print(oy.copy_context())" }
     "open"    { Start-Process soffice -ArgumentList `$OY_FILE }
     "version" { Write-Host "OpenYantra v$VERSION" }
     default   {
         Write-Host "`n  OpenYantra v$VERSION — The Sacred Memory Machine"
         Write-Host "`n  COMMANDS:"
-        @("bootstrap","ui [port]","doctor","health","inbox [text]","digest","loops","telegram","open","version") | ForEach-Object { Write-Host "    yantra $_" }
+        @("bootstrap","ui [port]","morning","context","doctor","health","inbox [text]","route","digest","loops","telegram","shortcut","open","version") | ForEach-Object { Write-Host "    yantra $_" }
         Write-Host ""
     }
 }
@@ -328,6 +334,7 @@ function Print-Summary {
     Write-Host "    yantra doctor       ← system health check"
     Write-Host "    yantra inbox 'text' ← quick capture"
     Write-Host "    yantra digest       ← daily summary"
+    Write-Host "    yantra shortcut     ← iOS Shortcut capture"
     Write-Host ""
     Write-Host "  Note: Restart terminal for PATH changes to take effect" -ForegroundColor DarkGray
     Write-Host "  Desktop shortcut: OpenYantra.lnk on your Desktop" -ForegroundColor DarkGray
