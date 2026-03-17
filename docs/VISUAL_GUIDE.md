@@ -1,6 +1,6 @@
 # OpenYantra Visual Guide
 
-Canonical reference: [visual-guide.html](../visual-guide.html)
+Canonical reference: [openyantra-brand-manual.html](../openyantra-brand-manual.html)
 
 Use this file as the repo-stable entry point for the visual implementation guide.
 

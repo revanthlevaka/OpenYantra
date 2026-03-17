@@ -219,7 +219,7 @@ async def api_morning():
         "brief": brief,
         "streak": stats.get("writes_last_7_days", 0),
         "loops": stats.get("open_loops_total", 0),
-        "inbox": stats.get("chitrapat_size_kb", 0),
+        "inbox": stats.get("inbox_pending", 0),
     }
 
 
@@ -261,9 +261,10 @@ def main():
 
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     health = _oy.health_check()
+    display_host = "localhost" if args.host == "127.0.0.1" else args.host
     print(
         f"\n{'='*50}\n  OpenYantra Dashboard v2.11\n"
-        f"  -> http://{args.host}:{args.port}\n"
+        f"  -> http://{display_host}:{args.port}\n"
         f"  Loops:{health.get('open_loops', 0)} Inbox:{health.get('inbox_pending', 0)}\n"
         f"{'='*50}\n"
     )
