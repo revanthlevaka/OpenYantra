@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" fill="#0b0b0c"/>
+  <circle cx="96" cy="96" r="86" stroke="url(#g)" stroke-width="3" fill="none"/>
+  <circle cx="96" cy="96" r="56" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.45"/>
+  <circle cx="96" cy="96" r="8"  fill="url(#g)"/>
+  <circle cx="96" cy="10"  r="5.5" fill="#1c6fff"/>
+  <circle cx="182" cy="96" r="5.5" fill="#5535e0"/>
+  <circle cx="96"  cy="182" r="5.5" fill="#e84520"/>
+  <circle cx="10"  cy="96" r="5.5" fill="#f5a000"/>
+  <path d="M96 10 Q118 53 96 96 Q74 53 96 10"  stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M182 96 Q139 118 96 96 Q139 74 182 96" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M96 182 Q74 139 96 96 Q118 139 96 182" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+  <path d="M10 96 Q53 74 96 96 Q53 118 10 96" stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.42"/>
+</svg>

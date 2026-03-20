@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OpenYantra v2.12 -- Briefing Room</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400&display=swap');
+:root,[data-theme="dark"]{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;--border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);--dim:#252328;--muted:#524f58;--subtle:#7a7682;
+  --text:#e8e5de;--text-dim:rgba(232,229,222,0.52);--nav-bg:rgba(10,10,11,0.95);
+  --term-bg:#060607;
+}
+[data-theme="light"]{
+  --ink:#f3f1ec;--surface:#fff;--surface2:#ece9e2;--border:rgba(0,0,0,0.09);
+  --border2:rgba(0,0,0,0.16);--dim:#d0ccc4;--muted:#888380;--subtle:#555250;
+  --text:#1a1820;--text-dim:rgba(26,24,32,0.56);--nav-bg:rgba(243,241,236,0.96);
+  --term-bg:#1a1820;
+}
+:root{
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad:linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-h:linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--ink);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--mono);cursor:pointer;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--dim);}
+.grad-text{background:linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--grad-h);}
+.hdr-l{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:0.06em;}
+.hdr-mark{width:22px;height:22px;animation:spin 90s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hdr-badge{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--dim);color:var(--muted);margin-left:6px;}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.theme-row{display:flex;background:var(--surface);border:1px solid var(--border);padding:2px;gap:1px;}
+.th-btn{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 8px;background:transparent;border:none;color:var(--muted);cursor:pointer;}
+.th-btn.active{background:var(--dim);color:var(--text);}
+
+nav{position:fixed;top:52px;left:0;right:0;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;}
+nav::-webkit-scrollbar{height:2px;}
+.ntab{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 20px;background:transparent;border:none;border-right:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color 0.15s,background 0.15s;}
+.ntab:hover{color:var(--text);background:var(--surface2);}
+.ntab.active{color:var(--text);border-bottom-color:var(--amber);}
+
+main{margin-top:100px;padding:20px;max-width:1200px;margin-left:auto;margin-right:auto;padding-bottom:80px;}
+.pane{display:none;}
+.pane.active{display:block;}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:18px;}
+.card{background:var(--surface2);border:1px solid var(--border);padding:13px;cursor:pointer;transition:border-color 0.15s;}
+.card:hover{border-color:rgba(255,153,51,0.4);}
+.card.warn{border-color:rgba(245,160,0,0.35);}
+.card.alert{border-color:rgba(232,69,32,0.35);}
+.cn{font-size:1.8rem;font-weight:300;line-height:1;margin-bottom:4px;}
+.ck{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* Section header */
+.sh{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px;margin:16px 0 10px;}
+.sh::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th{background:var(--surface2);color:var(--muted);padding:7px 10px;text-align:left;font-weight:400;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+td{padding:6px 10px;border-bottom:1px solid var(--border);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+tr:hover td{background:var(--surface2);}
+.badge{display:inline-block;font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid;}
+.b-ok{border-color:rgba(26,161,103,0.35);color:var(--green);}
+.b-hi{border-color:rgba(232,69,32,0.35);color:var(--coral);}
+.b-md{border-color:rgba(245,160,0,0.35);color:var(--amber);}
+.b-lo{border-color:rgba(28,111,255,0.35);color:var(--blue);}
+
+/* Ts-card (Today) */
+.ts-card{background:var(--surface2);border:1px solid var(--border);padding:13px;margin-bottom:10px;position:relative;overflow:hidden;}
+.ts-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.ts-card h3{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
+.ti{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.ti:last-child{border-bottom:none;}
+.ti-pri{min-width:52px;font-size:8px;text-align:center;letter-spacing:0.08em;}
+.ti-con{flex:1;font-size:11px;}
+.ti-con small{color:var(--muted);font-size:10px;display:block;margin-top:2px;}
+.ti-act button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:9px;cursor:pointer;}
+.ti-act button:hover{border-color:var(--amber);color:var(--amber);}
+
+/* Oracle card */
+.oracle-card{background:linear-gradient(135deg,#0e1628,#161830);border:1px solid rgba(28,111,255,0.25);padding:14px 18px;margin-bottom:12px;}
+.oracle-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.oracle-card-title{font-size:11px;font-weight:500;color:var(--blue);letter-spacing:0.04em;}
+.oracle-item{padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.oracle-item:last-child{border-bottom:none;}
+.oracle-type{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px;}
+.oracle-detail{font-size:10px;color:var(--text-dim);}
+.oracle-action{font-size:9px;color:var(--blue);margin-top:2px;}
+
+/* Insight card (morning brief) */
+.insight-card{background:linear-gradient(135deg,#1e1630,#241832);border:1px solid rgba(255,153,51,0.25);padding:14px 18px;margin-bottom:12px;}
+
+/* Inbox */
+.ibf{display:flex;gap:8px;margin-bottom:12px;}
+.ibf input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;outline:none;}
+.ibf input:focus{border-color:var(--amber);}
+.btn-p{background:var(--grad);color:#fff;border:none;padding:8px 18px;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;}
+.btn-p:hover{opacity:0.88;}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+.btn:hover{border-color:var(--amber);}
+.btn-ok{border-color:rgba(26,161,103,0.4);color:var(--green);}
+.btn-x{border-color:rgba(232,69,32,0.4);color:var(--coral);}
+
+/* Timeline */
+.tl{position:relative;padding-left:20px;}
+.tl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--border);}
+.tli{position:relative;margin-bottom:10px;}
+.tli::before{content:'';position:absolute;left:-16px;top:5px;width:7px;height:7px;border-radius:50%;background:var(--amber);border:2px solid var(--ink);}
+.tl-ts{font-size:9px;color:var(--muted);margin-bottom:2px;}
+.tl-body{background:var(--surface2);border:1px solid var(--border);padding:7px 11px;font-size:11px;}
+.tl-ag{color:var(--amber);font-size:9px;margin-bottom:2px;}
+
+/* Health grid */
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;}
+.hi{background:var(--surface2);border:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.hi-k{font-size:9px;letter-spacing:0.08em;color:var(--muted);}
+.hi-v{font-size:13px;font-weight:500;}
+.hi-v.ok{color:var(--green);}.hi-v.warn{color:var(--amber);}
+
+/* Security */
+.sec-clean{background:rgba(26,161,103,0.07);border:1px solid rgba(26,161,103,0.25);padding:12px 16px;margin-bottom:14px;font-size:11px;color:var(--green);}
+.q-item{background:var(--surface2);border:1px solid rgba(232,69,32,0.25);padding:10px 14px;margin-bottom:8px;}
+.q-type{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--coral);margin-bottom:4px;}
+
+/* Copy context */
+.ctx-btn{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ctx-hint{font-size:10px;color:var(--muted);}
+
+/* Float capture */
+#fcap{position:fixed;bottom:20px;right:20px;z-index:200;}
+#fbtn{background:var(--amber);color:var(--ink);border:none;width:48px;height:48px;border-radius:50%;font-size:1.4rem;font-weight:700;box-shadow:0 4px 16px rgba(245,160,0,0.4);}
+#fbtn:hover{transform:scale(1.08);}
+#fform{display:none;position:absolute;bottom:56px;right:0;background:var(--surface);border:1px solid var(--amber);padding:12px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+#fform.open{display:block;}
+#fform p{font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;}
+#finput{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px;font-family:var(--mono);font-size:11px;margin-bottom:7px;resize:none;height:54px;outline:none;}
+#finput:focus{border-color:var(--amber);}
+.fbrow{display:flex;gap:6px;}
+
+/* Toast */
+#toast{position:fixed;bottom:76px;right:22px;background:var(--surface);border:1px solid var(--green);color:var(--green);padding:8px 14px;font-size:10px;display:none;z-index:300;}
+
+.empty{color:var(--muted);text-align:center;padding:24px;font-size:11px;}
+
+@media(max-width:600px){nav{gap:0;}main{padding:12px;}.cards{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-l">
+    <svg class="hdr-mark" width="22" height="22" viewBox="0 0 100 100" fill="none">
+      <defs><linearGradient id="hG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="46" stroke="url(#hG)" stroke-width="2.5" fill="none"/>
+      <circle cx="50" cy="50" r="28" stroke="url(#hG)" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <circle cx="50" cy="50" r="5" fill="url(#hG)"/>
+      <circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/>
+      <circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/>
+    </svg>
+    OpenYantra
+    <span class="hdr-badge">v2.12</span>
+  </div>
+  <div class="hdr-r">
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green)"><span class="status-dot"></span>Chitragupta active</span>
+    <div class="theme-row" id="tr">
+      <button class="th-btn" data-mode="light">Light</button>
+      <button class="th-btn" data-mode="dark">Dark</button>
+      <button class="th-btn" data-mode="auto">Auto</button>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="ntab active" onclick="go('today',this)">🌅 Today</button>
+  <button class="ntab" onclick="go('inbox',this)">📥 Inbox</button>
+  <button class="ntab" onclick="go('loops',this)">🔓 Loops</button>
+  <button class="ntab" onclick="go('projects',this)">🚀 Projects</button>
+  <button class="ntab" onclick="go('oracle',this)">🔮 Oracle</button>
+  <button class="ntab" onclick="go('review',this)">✏️ Review</button>
+  <button class="ntab" onclick="go('timeline',this)">📅 Timeline</button>
+  <button class="ntab" onclick="go('security',this)">🔒 Security</button>
+  <button class="ntab" onclick="go('ledger',this)">📒 Ledger</button>
+  <button class="ntab" onclick="go('health',this)">💚 Health</button>
+</nav>
+
+<main>
+  <div id="today" class="pane active"></div>
+  <div id="inbox" class="pane"></div>
+  <div id="loops" class="pane"></div>
+  <div id="projects" class="pane"></div>
+  <div id="oracle" class="pane"></div>
+  <div id="review" class="pane"></div>
+  <div id="timeline" class="pane"></div>
+  <div id="security" class="pane"></div>
+  <div id="ledger" class="pane"></div>
+  <div id="health" class="pane"></div>
+</main>
+
+<div id="fcap">
+  <div id="fform">
+    <p>QUICK CAPTURE -- INBOX</p>
+    <textarea id="finput" placeholder="Capture anything..."></textarea>
+    <div class="fbrow">
+      <button class="btn-p" onclick="floatSave()" style="flex:1">Save</button>
+      <button class="btn" onclick="floatClose()">X</button>
+    </div>
+  </div>
+  <button id="fbtn" onclick="floatToggle()" title="Quick capture (i)">+</button>
+</div>
+<div id="toast"></div>
+
+<script>
+const api = async(url,opts={})=>{try{const r=await fetch(url,opts);return await r.json();}catch(e){return{};}};
+const toast = (m,ok=true)=>{const t=document.getElementById('toast');t.textContent=m;t.style.borderColor=ok?'var(--green)':'var(--coral)';t.style.color=ok?'var(--green)':'var(--coral)';t.style.display='block';setTimeout(()=>t.style.display='none',2500);};
+const ptag = s=>{if(!s)return'';const m={'Active':'b-ok','Pending':'b-md','High':'b-hi','Critical':'b-hi','Medium':'b-md','Low':'b-lo','Done':'b-lo','written':'b-ok','confirmed':'b-hi','suspicious':'b-md','clean':'b-ok'};return`<span class="badge ${m[s]||''}">${s}</span>`;};
+const tbl = (rows,cols)=>{
+  if(!rows||!rows.length)return'<div class="empty">No data yet.</div>';
+  let h='<table><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+  rows.forEach(r=>{h+='<tr>'+cols.map(c=>{const v=String(r[c]||'');if(['Status','Priority','Threat Level'].includes(c))return`<td>${ptag(v)}</td>`;return`<td title="${v}">${v.substring(0,55)}</td>`;}).join('')+'</tr>';});
+  return h+'</table>';
+};
+
+let cur='today';
+function go(name,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  cur=name; load(name);
+}
+
+async function load(name){
+  const L={today:loadToday,inbox:loadInbox,loops:loadLoops,
+    projects:()=>loadTable('projects',['Project','Domain','Status','Priority','Next Step'],'projects'),
+    oracle:loadOracle,review:loadReview,timeline:loadTimeline,
+    security:loadSecurity,ledger:()=>loadTable('ledger',['Timestamp','Agent','Sheet','Operation','Status'],'ledger'),
+    health:loadHealth};
+  if(L[name])await L[name]();
+}
+
+async function loadToday(){
+  const [h,ld,pd,td,id,od]=await Promise.all([
+    api('/api/health'),api('/api/sheet/open_loops'),api('/api/sheet/projects'),
+    api('/api/sheet/tasks'),api('/api/sheet/inbox'),api('/api/oracle')
+  ]);
+  const cards=[
+    {n:h.open_loops||0,k:'Open Loops',c:(h.open_loops||0)>10?'warn':''},
+    {n:h.inbox_pending||0,k:'Inbox',c:(h.inbox_pending||0)>0?'warn':''},
+    {n:h.corrections_pending||0,k:'Corrections',c:(h.corrections_pending||0)>0?'warn':''},
+    {n:h.stale_projects||0,k:'Stale Projects',c:(h.stale_projects||0)>0?'alert':''},
+  ].map(c=>`<div class="card ${c.c}" onclick="goTo('${c.k.toLowerCase().replace(' ','')}')"><div class="cn" style="color:var(--amber)">${c.n}</div><div class="ck">${c.k}</div></div>`).join('');
+
+  // Copy context button
+  const ctxBtn=`<div class="ctx-btn"><button class="btn-p" onclick="copyCtx()">📋 Copy Context</button><span class="ctx-hint">Paste into Claude.ai, ChatGPT, or any AI chat</span></div>`;
+
+  // Morning brief card
+  const brief=await api('/api/morning');
+  let briefCard='';
+  if(brief&&brief.brief){
+    const bHtml=brief.brief.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--amber)">$1</strong>').replace(/\*(.*?)\*/g,'<em style="color:var(--muted)">$1</em>').replace(/^##.*$/gm,'').split('\n').filter(l=>l.trim()).join('<br>');
+    briefCard=`<div class="insight-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="color:var(--amber);font-size:11px;font-weight:500">🌅 Morning Brief</span>${brief.streak>0?`<span style="color:var(--coral);font-size:10px">🔥 ${brief.streak}d streak</span>`:''}</div><div style="color:var(--text-dim);font-family:var(--sans);font-size:12px;line-height:1.7">${bHtml}</div></div>`;
+  }
+
+  // Oracle card
+  let oCard='';
+  if(od&&od.count>0){
+    let oItems=od.insights.slice(0,3).map(ins=>{
+      const tc={'inbox_loop_match':'var(--amber)','task_loop_block':'var(--coral)','belief_conflict':'var(--amber)','stale_project':'var(--blue)','person_missing':'var(--green)','loop_aging':'var(--coral)','orphan_task':'var(--muted)'}[ins.type]||'var(--muted)';
+      return`<div class="oracle-item"><div class="oracle-type" style="color:${tc}">${ins.type}</div><div class="oracle-detail">${ins.detail.substring(0,90)}</div><div class="oracle-action">-- ${ins.action.substring(0,65)}</div></div>`;
+    }).join('');
+    oCard=`<div class="oracle-card" id="oracle-card"><div class="oracle-card-head"><span class="oracle-card-title">🔮 Oracle -- ${od.count} insight${od.count!==1?'s':''}</span><button class="btn" style="font-size:9px;padding:4px 10px" onclick="goTo('oracle')">All</button></div>${oItems}</div>`;
+  }
+
+  // Urgent items
+  const cutoff=new Date(Date.now()-7*86400000).toISOString().slice(0,10);
+  const loops=(ld.rows||[]).filter(r=>r['Resolved?']==='No').sort((a,b)=>(b['Importance']||5)-(a['Importance']||5)).slice(0,4);
+  const stale=(pd.rows||[]).filter(r=>r['Status']==='Active'&&(r['Last Updated']||'')<cutoff).slice(0,3);
+  const uTasks=(td.rows||[]).filter(r=>r['Status']==='Pending'&&r['Priority']==='High').slice(0,3);
+  const inbox=(id.rows||[]).filter(r=>r['Routed?']==='No').slice(0,3);
+
+  let body='';
+  if(loops.length){
+    body+='<div class="ts-card"><h3>Open Loops -- Needing Attention</h3>';
+    loops.forEach(l=>{body+=`<div class="ti"><div class="ti-pri">${ptag(l['Priority']||'?')}</div><div class="ti-con">${(l['Topic']||'').substring(0,60)}<small>${(l["Context / What's Unresolved"]||'').substring(0,70)}</small></div><div class="ti-act"><button onclick="resolveLoop('${(l['Topic']||'').replace(/'/g,"\\'")}')">Resolve</button></div></div>`;});
+    body+='</div>';
+  }
+  if(stale.length){
+    body+='<div class="ts-card"><h3>Stale Projects -- No Update 7+ Days</h3>';
+    stale.forEach(p=>{body+=`<div class="ti"><div class="ti-pri">${ptag(p['Priority']||'?')}</div><div class="ti-con">${(p['Project']||'').substring(0,55)}<small>Next: ${(p['Next Step']||'not set').substring(0,60)}</small></div><div class="ti-act"><button onclick="goTo('projects')">View</button></div></div>`;});
+    body+='</div>';
+  }
+  if(uTasks.length){
+    body+='<div class="ts-card"><h3>High Priority Tasks</h3>';
+    uTasks.forEach(t=>{body+=`<div class="ti"><div class="ti-pri">${ptag('High')}</div><div class="ti-con">${(t['Task']||'').substring(0,60)}<small>${t['Project']||''}</small></div><div class="ti-act"><button onclick="doneTask('${(t['Task']||'').replace(/'/g,"\\'")}')">Done</button></div></div>`;});
+    body+='</div>';
+  }
+  if(inbox.length){
+    body+=`<div class="ts-card"><h3>Inbox -- ${inbox.length} Items Need Routing</h3>`;
+    inbox.forEach(i=>{body+=`<div class="ti"><div class="ti-pri" style="color:var(--muted);font-size:9px">Inbox</div><div class="ti-con">${(i['Content']||'').substring(0,75)}</div><div class="ti-act"><button onclick="routeAll()">Route All</button></div></div>`;});
+    body+='</div>';
+  }
+  if(!body)body='<div class="ts-card"><h3 style="color:var(--green)">All clear -- nothing urgent today</h3></div>';
+
+  document.getElementById('today').innerHTML='<div class="cards">'+cards+'</div>'+briefCard+oCard+ctxBtn+body;
+}
+
+async function loadOracle(){
+  const od=await api('/api/oracle');
+  const el=document.getElementById('oracle');
+  if(!od||od.count===0){el.innerHTML='<div class="sh"><span>Oracle</span></div><div class="empty">Nothing to surface today -- all memory connections look healthy.</div>';return;}
+  const typeColor={'inbox_loop_match':'var(--amber)','task_loop_block':'var(--coral)','belief_conflict':'var(--amber)','stale_project':'var(--blue)','person_missing':'var(--green)','loop_aging':'var(--coral)','orphan_task':'var(--muted)'};
+  let html=`<div class="sh"><span>Oracle -- ${od.count} Insight${od.count!==1?'s':''}</span></div>`;
+  html+='<p style="font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-bottom:16px">Cross-reference engine -- read-only, never writes. Surfaces non-obvious connections across all sheets.</p>';
+  od.insights.forEach((ins,i)=>{
+    const tc=typeColor[ins.type]||'var(--muted)';
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${tc};padding:12px 16px;margin-bottom:8px">
+      <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${tc};margin-bottom:5px">${i+1}. ${ins.type}</div>
+      <div style="font-size:12px;font-weight:500;margin-bottom:4px">${ins.title}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">${ins.detail}</div>
+      <div style="font-size:10px;color:var(--blue)">Action: ${ins.action}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+async function loadInbox(){
+  const d=await api('/api/sheet/inbox');
+  const rows=(d.rows||[]).filter(r=>r['Routed?']==='No');
+  let html=`<div class="sh"><span>Inbox -- Quick Capture</span></div>`;
+  html+=`<div class="ibf"><input id="ii" placeholder="Capture a thought..."/><button class="btn-p" onclick="saveInbox()">Save</button></div>`;
+  html+=tbl(rows,['Content','Captured','Importance','Source']);
+  if(rows.length)html+=`<br><button class="btn btn-ok" onclick="routeAll()">Route All (${rows.length} items)</button>`;
+  document.getElementById('inbox').innerHTML=html;
+}
+
+async function loadLoops(){
+  const d=await api('/api/sheet/open_loops');
+  const open=(d.rows||[]).filter(r=>r['Resolved?']==='No');
+  document.getElementById('loops').innerHTML='<div class="sh"><span>Open Loops (Anishtha)</span></div>'+tbl(open,['Topic',"Context / What's Unresolved",'Priority','Importance','Opened','TTL_Days']);
+}
+
+async function loadTable(sheet,cols,elId){
+  const d=await api(`/api/sheet/${sheet}`);
+  document.getElementById(elId).innerHTML='<div class="sh"><span>'+sheet+'</span></div>'+tbl(d.rows||[],cols);
+}
+
+async function loadReview(){
+  const d=await api('/api/sheet/corrections');
+  const pending=(d.rows||[]).filter(r=>r['Status']==='Pending');
+  const el=document.getElementById('review');
+  if(!pending.length){el.innerHTML='<div class="sh"><span>Review (Corrections + Conflicts)</span></div><div class="empty">Nothing pending approval.</div>';return;}
+  let html='<div class="sh"><span>Corrections Pending Approval</span></div>';
+  html+='<p style="font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-bottom:14px">Your choice is Dharma-Adesh -- it always wins.</p>';
+  pending.forEach((c,i)=>{
+    html+=`<div style="background:var(--surface2);border:1px solid rgba(245,160,0,0.25);padding:13px;margin-bottom:10px">
+      <div style="font-size:10px;color:var(--amber);margin-bottom:8px">${c['Target Sheet']||'?'} -- ${c['Row Identifier']||'?'} -- ${c['Field']||'?'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div style="background:rgba(245,160,0,0.07);border:1px solid rgba(245,160,0,0.2);padding:10px"><div style="font-size:9px;color:var(--amber);margin-bottom:3px">Agent proposes</div><div style="font-size:12px">${c['Proposed Value']||'?'}</div></div>
+        <div style="background:rgba(26,161,103,0.07);border:1px solid rgba(26,161,103,0.2);padding:10px"><div style="font-size:9px;color:var(--green);margin-bottom:3px">Your version (current)</div><div style="font-size:12px;color:var(--muted)">--</div></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ok" onclick="revC(${i},'Approved')">Accept change</button>
+        <button class="btn btn-x" onclick="revC(${i},'Rejected')">Keep mine</button>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+async function loadTimeline(){
+  const d=await api('/api/sheet/ledger');
+  const rows=(d.rows||[]).filter(r=>r['Status']==='written').slice(-50).reverse();
+  const em={'🚀 Projects':'🚀','✅ Tasks':'✅','🔓 Open Loops':'🔓','👤 Identity':'👤','🎯 Goals':'🎯','👥 People':'👥','📥 Inbox':'📥','🧠 Beliefs':'🧠','💡 Preferences':'💡'};
+  if(!rows.length){document.getElementById('timeline').innerHTML='<div class="sh"><span>Timeline</span></div><div class="empty">No activity yet.</div>';return;}
+  let html='<div class="sh"><span>Activity Timeline</span></div><div class="tl">';
+  rows.forEach(r=>{
+    const sh=r['Sheet']||'';const ico=em[sh]||'📝';
+    const ts=(r['Timestamp']||'').substring(0,16).replace('T',' ');
+    const rid=r['Row Identifier']||'';
+    html+=`<div class="tli"><div class="tl-ts">${ts}</div><div class="tl-body"><div class="tl-ag">${r['Agent']||'?'} -- ${r['Operation']||'?'}</div><div>${ico} ${sh.replace(/^[^\s]+\s*/,'').substring(0,40)}${rid?' -- '+rid.substring(0,40):''}</div></div></div>`;
+  });
+  html+='</div>';
+  document.getElementById('timeline').innerHTML=html;
+}
+
+async function loadSecurity(){
+  const [q,sl]=await Promise.all([api('/api/sheet/quarantine'),api('/api/sheet/security_log')]);
+  const qr=(q.rows||[]).filter(r=>r['Status']==='Quarantined');
+  let html='<div class="sh"><span>Security (Raksha)</span></div>';
+  html+=`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn-p" onclick="scanSec()">Run Full Scan</button><button class="btn" onclick="load('security')">Refresh</button></div>`;
+  html+='<div id="scanres" style="margin-bottom:12px"></div>';
+  if(!qr.length){html+='<div class="sec-clean">No quarantined writes -- Chitrapat is clean.</div>';}
+  else{
+    html+='<div class="sh"><span>Quarantined Writes</span></div>';
+    qr.forEach(r=>{html+=`<div class="q-item"><div class="q-type">${r['Threat Level']||''} -- ${r['Threat Type']||''}</div><div style="font-size:11px;margin-bottom:6px">${(r['Threats Found']||'').substring(0,80)}</div><div style="display:flex;gap:8px"><button class="btn btn-ok" onclick="releaseQ('${r['Request ID']||''}')">Release (Dharma-Adesh)</button></div></div>`;});
+  }
+  html+='<div class="sh" style="margin-top:14px"><span>Security Log</span></div>';
+  html+=tbl((sl.rows||[]).slice(-15).reverse(),['Timestamp','Agent','Sheet','Threat Level','Status']);
+  document.getElementById('security').innerHTML=html;
+}
+
+async function loadHealth(){
+  const h=await api('/api/health');
+  const items=[
+    {k:'Status',v:h.status,ok:h.status==='healthy'},
+    {k:'Chitragupta',v:h.chitragupta_alive?'alive':'silent',ok:h.chitragupta_alive},
+    {k:'VidyaKosha',v:h.vidyakosha,ok:h.vidyakosha==='available'},
+    {k:'File Size',v:(h.chitrapat_size_kb||0)+' KB',ok:true},
+    {k:'Open Loops',v:h.open_loops||0,ok:(h.open_loops||0)<20},
+    {k:'Inbox Pending',v:h.inbox_pending||0,ok:(h.inbox_pending||0)===0},
+    {k:'Corrections',v:h.corrections_pending||0,ok:(h.corrections_pending||0)===0},
+    {k:'Stale Projects',v:h.stale_projects||0,ok:(h.stale_projects||0)===0},
+  ];
+  let html='<div class="sh"><span>System Health</span></div><div class="hgrid">';
+  html+=items.map(i=>`<div class="hi"><span class="hi-k">${i.k}</span><span class="hi-v ${i.ok?'ok':'warn'}">${i.v}</span></div>`).join('');
+  if(h.rows){html+='</div><div class="sh" style="margin-top:14px"><span>Row Counts</span></div><div class="hgrid">';html+=Object.entries(h.rows).map(([s,n])=>`<div class="hi"><span class="hi-k" style="font-size:8px">${s}</span><span class="hi-v">${n}</span></div>`).join('');}
+  html+='</div>';
+  document.getElementById('health').innerHTML=html;
+}
+
+/* Actions */
+function goTo(name){
+  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health'];
+  const idx=tabs.indexOf(name);
+  if(idx>=0)go(name,document.querySelectorAll('.ntab')[idx]);
+}
+
+async function saveInbox(){
+  const el=document.getElementById('ii');const t=el.value.trim();if(!t)return;
+  const r=await api('/api/inbox',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+  if(r.status==='written'){toast('Captured to Inbox');el.value='';await loadInbox();}else toast(r.reason||r.status,false);
+}
+
+async function routeAll(){
+  const r=await api('/api/inbox/route',{method:'POST'});
+  toast(`Routed ${r.routed||0} items`);await loadInbox();if(cur==='today')await loadToday();
+}
+
+async function resolveLoop(topic){
+  const r=await api(`/api/loops/${encodeURIComponent(topic)}/resolve`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({resolution:'Resolved via Today view'})});
+  toast(r.status==='written'?'Loop resolved':'Status: '+r.status);await loadToday();if(cur==='loops')await loadLoops();
+}
+
+async function doneTask(task){
+  const r=await api('/api/tasks/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task})});
+  toast(r.status==='written'?'Task marked done':'Status: '+r.status);if(cur==='today')await loadToday();
+}
+
+async function revC(idx,decision){
+  await api('/api/corrections/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx,decision})});
+  toast(decision==='Approved'?'Change applied':'Your version kept');await loadReview();
+}
+
+async function scanSec(){
+  const el=document.getElementById('scanres');el.innerHTML='<span style="color:var(--muted)">Scanning...</span>';
+  const r=await api('/api/security/scan',{method:'POST'});
+  const t=r.total_findings||0;
+  const col=t===0?'var(--green)':(r.confirmed||0)>0?'var(--coral)':'var(--amber)';
+  el.innerHTML=`<div style="color:${col};padding:9px;border:1px solid ${col};font-size:11px">${t===0?'Clean -- no threats detected':`${t} findings: ${r.critical||0} critical, ${r.confirmed||0} confirmed, ${r.suspicious||0} suspicious`}</div>`;
+  await loadSecurity();
+}
+
+async function releaseQ(id){
+  const r=await api('/api/security/quarantine/release',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:id})});
+  toast(r.status==='released'?'Released':'Status: '+r.status);await loadSecurity();
+}
+
+async function copyCtx(){
+  const r=await api('/api/context/copy',{method:'POST'});
+  if(r.markdown){try{await navigator.clipboard.writeText(r.markdown);toast('Context copied to clipboard');}catch(e){toast('Context ready (clipboard unavailable)',false);}}
+}
+
+/* Float capture */
+function floatToggle(){const f=document.getElementById('fform');f.classList.toggle('open');if(f.classList.contains('open'))setTimeout(()=>document.getElementById('finput').focus(),80);}
+function floatClose(){document.getElementById('fform').classList.remove('open');}
+async function floatSave(){
+  const el=document.getElementById('finput');const t=el.value.trim();if(!t)return;
+  const r=await api('/api/inbox',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+  if(r.status==='written'){toast('Captured');el.value='';floatClose();}else toast('Failed',false);
+}
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown',e=>{
+  if(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA')return;
+  if(e.key==='i')floatToggle();
+  if(e.key==='Escape')floatClose();
+});
+
+/* Theme */
+(function(){
+  const root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme:light)');
+  function apply(m){root.setAttribute('data-theme',m==='auto'?(mq.matches?'light':'dark'):m);document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));localStorage.setItem('oy-t',m);}
+  apply(localStorage.getItem('oy-t')||'auto');
+  mq.addEventListener('change',()=>{if((localStorage.getItem('oy-t')||'auto')==='auto')apply('auto');});
+  document.querySelectorAll('.th-btn').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.mode)));
+})();
+
+/* Auto refresh Today */
+setInterval(()=>{if(cur==='today')loadToday();},30000);
+load('today');
+</script>
+</body>
+</html>

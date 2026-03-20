@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" width="320" height="60">
+  <defs>
+    <linearGradient id="grd" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark -->
+  <circle cx="30" cy="30" r="27" stroke="url(#grd)" stroke-width="1.5" fill="none"/>
+  <circle cx="30" cy="30" r="17" stroke="url(#grd)" stroke-width="1" fill="none" opacity="0.45"/>
+  <circle cx="30" cy="30" r="3" fill="url(#grd)"/>
+  <circle cx="30" cy="3"  r="2.5" fill="#1c6fff"/>
+  <circle cx="57" cy="30" r="2.5" fill="#5535e0"/>
+  <circle cx="30" cy="57" r="2.5" fill="#e84520"/>
+  <circle cx="3"  cy="30" r="2.5" fill="#f5a000"/>
+  <path d="M30 3 Q40 17 30 30 Q20 17 30 3"  stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M57 30 Q43 40 30 30 Q43 20 57 30" stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M30 57 Q20 43 30 30 Q40 43 30 57" stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M3 30 Q17 20 30 30 Q17 40 3 30"   stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <!-- Wordmark -->
+  <text x="72" y="38" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="500" letter-spacing="0.03em" fill="url(#grd)">Open</text>
+  <text x="133" y="38" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="300" letter-spacing="0.03em" fill="#e8e5de">Yantra</text>
+</svg>

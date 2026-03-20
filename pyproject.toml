@@ -1,0 +1,115 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "openyantra"
+version = "2.12.0"
+description = "The Sacred Memory Machine -- persistent memory for personal agentic AI"
+authors = [
+  { name = "Revanth Levaka", email = "revanth@revanthlevaka.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = [
+  "ai", "memory", "agent", "persistent-memory", "chitragupta",
+  "openyantra", "ods", "local-first", "llm"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# Core -- only what is absolutely required to read/write chitrapat.ods
+dependencies = [
+  "odfpy>=1.4",
+  "pandas>=1.5",
+]
+
+[project.optional-dependencies]
+# Search -- BM25 + TF-IDF hybrid VidyaKosha
+search = [
+  "scikit-learn>=1.2",
+  "faiss-cpu>=1.7",
+]
+
+# Embeddings -- sentence-transformers for better search quality
+embeddings = [
+  "sentence-transformers>=2.2",
+]
+
+# Dashboard -- browser UI via FastAPI
+ui = [
+  "fastapi>=0.100",
+  "uvicorn[standard]>=0.22",
+]
+
+# Capture -- Telegram bot
+telegram = [
+  "python-telegram-bot>=20.0",
+]
+
+# Full install -- everything
+full = [
+  "scikit-learn>=1.2",
+  "faiss-cpu>=1.7",
+  "fastapi>=0.100",
+  "uvicorn[standard]>=0.22",
+  "python-telegram-bot>=20.0",
+  "schedule>=1.2",
+  "requests>=2.28",
+]
+
+# Development
+dev = [
+  "pytest>=7.0",
+  "pytest-asyncio>=0.21",
+  "ruff>=0.1",
+  "mypy>=1.0",
+]
+
+[project.urls]
+Homepage = "https://openyantra.revanthlevaka.com"
+Repository = "https://github.com/revanthlevaka/OpenYantra"
+Documentation = "https://github.com/revanthlevaka/OpenYantra/blob/main/docs/DEPLOYMENT.md"
+Changelog = "https://github.com/revanthlevaka/OpenYantra/blob/main/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/revanthlevaka/OpenYantra/issues"
+
+[project.scripts]
+yantra = "openyantra.cli:main"
+
+[tool.setuptools]
+py-modules = [
+  "openyantra",
+  "vidyakosha",
+  "yantra_security",
+  "yantra_digest",
+  "yantra_migrate",
+  "yantra_ui",
+  "telegram_bot",
+  "ios_shortcut",
+]
+
+[tool.setuptools.package-data]
+"*" = ["chitrapat_template.ods", "SKILL.md"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true

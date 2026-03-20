@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#0b0b0c"/>
+  <circle cx="256" cy="256" r="230" stroke="url(#g)" stroke-width="7" fill="none"/>
+  <circle cx="256" cy="256" r="150" stroke="url(#g)" stroke-width="5" fill="none" opacity="0.45"/>
+  <circle cx="256" cy="256" r="75"  stroke="url(#g)" stroke-width="3" fill="none" opacity="0.25"/>
+  <circle cx="256" cy="256" r="22"  fill="url(#g)"/>
+  <line x1="256" y1="26" x2="256" y2="486" stroke="url(#g)" stroke-width="2" opacity="0.18"/>
+  <line x1="26" y1="256" x2="486" y2="256" stroke="url(#g)" stroke-width="2" opacity="0.18"/>
+  <line x1="91" y1="91" x2="421" y2="421" stroke="url(#g)" stroke-width="1.5" opacity="0.1"/>
+  <line x1="421" y1="91" x2="91" y2="421" stroke="url(#g)" stroke-width="1.5" opacity="0.1"/>
+  <circle cx="256" cy="26"  r="14" fill="#1c6fff"/>
+  <circle cx="486" cy="256" r="14" fill="#5535e0"/>
+  <circle cx="256" cy="486" r="14" fill="#e84520"/>
+  <circle cx="26"  cy="256" r="14" fill="#f5a000"/>
+  <path d="M256 26 Q316 141 256 256 Q196 141 256 26"  stroke="url(#g)" stroke-width="4" fill="none" opacity="0.42"/>
+  <path d="M486 256 Q371 316 256 256 Q371 196 486 256" stroke="url(#g)" stroke-width="4" fill="none" opacity="0.42"/>
+  <path d="M256 486 Q196 371 256 256 Q316 371 256 486" stroke="url(#g)" stroke-width="4" fill="none" opacity="0.42"/>
+  <path d="M26 256 Q141 196 256 256 Q141 316 26 256"  stroke="url(#g)" stroke-width="4" fill="none" opacity="0.42"/>
+  <path d="M91 91 Q179 179 256 256 Q153 153 91 91"    stroke="url(#g)" stroke-width="2.5" fill="none" opacity="0.2"/>
+  <path d="M421 91 Q333 179 256 256 Q359 153 421 91"  stroke="url(#g)" stroke-width="2.5" fill="none" opacity="0.2"/>
+  <path d="M421 421 Q333 333 256 256 Q359 359 421 421" stroke="url(#g)" stroke-width="2.5" fill="none" opacity="0.2"/>
+  <path d="M91 421 Q179 333 256 256 Q153 359 91 421"  stroke="url(#g)" stroke-width="2.5" fill="none" opacity="0.2"/>
+</svg>

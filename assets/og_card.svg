@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+    <linearGradient id="gh" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1c6fff"/>
+      <stop offset="33%"  stop-color="#5535e0"/>
+      <stop offset="66%"  stop-color="#e84520"/>
+      <stop offset="100%" stop-color="#f5a000"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0b0b0c"/>
+  <!-- Grid texture -->
+  <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+    <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <!-- Top bar -->
+  <rect width="1200" height="4" fill="url(#gh)"/>
+  <!-- Mark -->
+  <circle cx="180" cy="315" r="120" stroke="url(#g)" stroke-width="3" fill="none"/>
+  <circle cx="180" cy="315" r="78" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.45"/>
+  <circle cx="180" cy="315" r="12" fill="url(#g)"/>
+  <circle cx="180" cy="195" r="9" fill="#1c6fff"/>
+  <circle cx="300" cy="315" r="9" fill="#5535e0"/>
+  <circle cx="180" cy="435" r="9" fill="#e84520"/>
+  <circle cx="60"  cy="315" r="9" fill="#f5a000"/>
+  <path d="M180 195 Q216 255 180 315 Q144 255 180 195" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.4"/>
+  <path d="M300 315 Q240 351 180 315 Q240 279 300 315" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.4"/>
+  <path d="M180 435 Q144 375 180 315 Q216 375 180 435" stroke="url(#g)" stroke-width="2" fill="none" opacity="0.4"/>
+  <path d="M60 315 Q120 279 180 315 Q120 351 60 315"  stroke="url(#g)" stroke-width="2" fill="none" opacity="0.4"/>
+  <!-- Wordmark -->
+  <text x="360" y="295" font-family="'IBM Plex Mono',monospace" font-size="72" font-weight="600" fill="url(#g)" letter-spacing="2">Open</text>
+  <text x="552" y="295" font-family="'IBM Plex Mono',monospace" font-size="72" font-weight="300" fill="#e8e5de" letter-spacing="2">Yantra</text>
+  <!-- Tagline -->
+  <text x="362" y="345" font-family="'IBM Plex Sans',sans-serif" font-size="22" font-weight="300" fill="rgba(232,229,222,0.5)" letter-spacing="1">Local-first personal AI memory. One file. Full control.</text>
+  <!-- Badges -->
+  <rect x="362" y="380" width="120" height="28" rx="2" fill="rgba(28,111,255,0.12)" stroke="rgba(28,111,255,0.35)" stroke-width="1"/>
+  <text x="422" y="399" font-family="'IBM Plex Mono',monospace" font-size="12" text-anchor="middle" fill="#1c6fff" letter-spacing="1">LOCAL-FIRST</text>
+  <rect x="498" y="380" width="120" height="28" rx="2" fill="rgba(245,160,0,0.1)" stroke="rgba(245,160,0,0.35)" stroke-width="1"/>
+  <text x="558" y="399" font-family="'IBM Plex Mono',monospace" font-size="12" text-anchor="middle" fill="#f5a000" letter-spacing="1">SHA-256</text>
+  <rect x="634" y="380" width="80" height="28" rx="2" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+  <text x="674" y="399" font-family="'IBM Plex Mono',monospace" font-size="12" text-anchor="middle" fill="#1aa167" letter-spacing="1">MIT</text>
+  <!-- Footer -->
+  <text x="362" y="570" font-family="'IBM Plex Mono',monospace" font-size="14" fill="rgba(232,229,222,0.3)" letter-spacing="1">github.com/revanthlevaka/OpenYantra</text>
+  <text x="1140" y="570" font-family="'IBM Plex Mono',monospace" font-size="14" fill="rgba(232,229,222,0.25)" text-anchor="end">v2.12</text>
+</svg>
