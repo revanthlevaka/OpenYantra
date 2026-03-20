@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo_horizontal.svg" alt="OpenYantra" width="620"/>
+  <img src="assets/banner_github.svg" alt="OpenYantra" width="620"/>
 </p>
 
 <h1 align="center">OpenYantra</h1>
