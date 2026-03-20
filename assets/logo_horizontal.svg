@@ -1,59 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="60" viewBox="0 0 320 60" fill="none" role="img" aria-label="OpenYantra horizontal wordmark">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" width="320" height="60">
   <defs>
-    <!-- Mark gradient: diagonal across the 52px render area -->
-    <linearGradient id="lh-mark" x1="4" y1="4" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop offset="0%"   stop-color="#1c6fff"/>
-      <stop offset="33%"  stop-color="#5535e0"/>
-      <stop offset="66%"  stop-color="#e84520"/>
-      <stop offset="100%" stop-color="#f5a000"/>
-    </linearGradient>
-    <!-- Wordmark gradient: horizontal across text span -->
-    <linearGradient id="lh-text" x1="72" y1="0" x2="316" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%"   stop-color="#1c6fff"/>
-      <stop offset="33%"  stop-color="#5535e0"/>
-      <stop offset="66%"  stop-color="#e84520"/>
+    <linearGradient id="grd" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c6fff"/>
+      <stop offset="33%" stop-color="#5535e0"/>
+      <stop offset="66%" stop-color="#e84520"/>
       <stop offset="100%" stop-color="#f5a000"/>
     </linearGradient>
   </defs>
-
-  <!-- Mark — canonical geometry, 100-unit viewBox scaled to 52px, centered in 60px height -->
-  <!-- scale=0.52, offset: x=4 so mark spans 4→55.2; y=4 so mark spans 4→55.2 -->
-  <g transform="translate(4,4) scale(0.52)">
-    <circle cx="50" cy="50" r="47" stroke="url(#lh-mark)" stroke-width="1.5" fill="none"/>
-    <circle cx="50" cy="50" r="33" stroke="url(#lh-mark)" stroke-width="1"   fill="none" opacity="0.5"/>
-    <circle cx="50" cy="50" r="18" stroke="url(#lh-mark)" stroke-width="0.8" fill="none" opacity="0.3"/>
-    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#lh-mark)" stroke-width="0.6" opacity="0.2"/>
-    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#lh-mark)" stroke-width="0.6" opacity="0.2"/>
-    <line x1="17" y1="17" x2="83" y2="83" stroke="url(#lh-mark)" stroke-width="0.5" opacity="0.12"/>
-    <line x1="83" y1="17" x2="17" y2="83" stroke="url(#lh-mark)" stroke-width="0.5" opacity="0.12"/>
-    <circle cx="50" cy="3"  r="2.5" fill="#1c6fff"/>
-    <circle cx="97" cy="50" r="2.5" fill="#5535e0"/>
-    <circle cx="50" cy="97" r="2.5" fill="#e84520"/>
-    <circle cx="3"  cy="50" r="2.5" fill="#f5a000"/>
-    <circle cx="50" cy="17" r="1.5" fill="#1c6fff" opacity="0.6"/>
-    <circle cx="83" cy="50" r="1.5" fill="#5535e0" opacity="0.6"/>
-    <circle cx="50" cy="83" r="1.5" fill="#e84520" opacity="0.6"/>
-    <circle cx="17" cy="50" r="1.5" fill="#f5a000" opacity="0.6"/>
-    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#lh-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
-    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#lh-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
-    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#lh-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
-    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#lh-mark)" stroke-width="0.9" fill="none" opacity="0.42"/>
-    <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#lh-mark)" stroke-width="0.5" fill="none" opacity="0.2"/>
-    <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#lh-mark)" stroke-width="0.5" fill="none" opacity="0.2"/>
-    <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#lh-mark)" stroke-width="0.5" fill="none" opacity="0.2"/>
-    <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#lh-mark)" stroke-width="0.5" fill="none" opacity="0.2"/>
-    <circle cx="50" cy="50" r="4" fill="url(#lh-mark)"/>
-  </g>
-
+  <!-- Mark -->
+  <circle cx="30" cy="30" r="27" stroke="url(#grd)" stroke-width="1.5" fill="none"/>
+  <circle cx="30" cy="30" r="17" stroke="url(#grd)" stroke-width="1" fill="none" opacity="0.45"/>
+  <circle cx="30" cy="30" r="3" fill="url(#grd)"/>
+  <circle cx="30" cy="3"  r="2.5" fill="#1c6fff"/>
+  <circle cx="57" cy="30" r="2.5" fill="#5535e0"/>
+  <circle cx="30" cy="57" r="2.5" fill="#e84520"/>
+  <circle cx="3"  cy="30" r="2.5" fill="#f5a000"/>
+  <path d="M30 3 Q40 17 30 30 Q20 17 30 3"  stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M57 30 Q43 40 30 30 Q43 20 57 30" stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M30 57 Q20 43 30 30 Q40 43 30 57" stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
+  <path d="M3 30 Q17 20 30 30 Q17 40 3 30"   stroke="url(#grd)" stroke-width="0.8" fill="none" opacity="0.42"/>
   <!-- Wordmark -->
-  <text x="72" y="38"
-    font-family="'IBM Plex Mono','Courier New',monospace"
-    font-size="26" font-weight="500" letter-spacing="1"
-    fill="url(#lh-text)">OpenYantra</text>
-
-  <!-- Tagline -->
-  <text x="74" y="52"
-    font-family="'IBM Plex Mono','Courier New',monospace"
-    font-size="8" font-weight="400" letter-spacing="2"
-    fill="#524f58">PERSONAL COGNITION LEDGER</text>
+  <text x="72" y="38" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="500" letter-spacing="0.03em" fill="url(#grd)">Open</text>
+  <text x="133" y="38" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="300" letter-spacing="0.03em" fill="#e8e5de">Yantra</text>
 </svg>

@@ -1,5 +1,5 @@
 """
-examples/langchain_adapter.py — LangChain memory backend v2.2
+examples/langchain_adapter.py -- LangChain memory backend v2.12
 """
 from pathlib import Path
 from typing import Any, Dict, List

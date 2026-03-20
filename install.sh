@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
-#  OpenYantra v2.11 Installer — Mac + Linux
+#  OpenYantra v2.12 Installer -- Mac + Linux
 #  The Sacred Memory Machine
 #  Inspired by Chitragupta, the Hindu God of Data
 #
-#  Fully self-contained — installs everything automatically:
+#  Fully self-contained -- installs everything automatically:
 #  Python, LibreOffice, all deps, venv, CLI, desktop shortcut
 #
 #  Usage:
@@ -15,7 +15,7 @@
 
 set -e
 
-VERSION="2.11"
+VERSION="2.12"
 INSTALL_DIR="$HOME/openyantra"
 VENV_DIR="$INSTALL_DIR/.venv"
 RAW="https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"
@@ -29,7 +29,7 @@ DIM='\033[0;90m';     RESET='\033[0m';    BOLD='\033[1m'
 banner() {
   echo ""
   echo -e "${SAFFRON}${BOLD}  ╔══════════════════════════════════════════════╗${RESET}"
-  echo -e "${SAFFRON}${BOLD}  ║  OpenYantra v${VERSION} — The Sacred Memory Machine  ║${RESET}"
+  echo -e "${SAFFRON}${BOLD}  ║  OpenYantra v${VERSION} -- The Sacred Memory Machine  ║${RESET}"
   echo -e "${SAFFRON}${BOLD}  ║  Inspired by Chitragupta, Hindu God of Data   ║${RESET}"
   echo -e "${SAFFRON}${BOLD}  ╚══════════════════════════════════════════════╝${RESET}"
   echo ""
@@ -87,7 +87,7 @@ install_python() {
     fi
   done
 
-  # Python not found or too old — install it
+  # Python not found or too old -- install it
   warn "Python 3.9+ not found. Installing automatically..."
 
   if [[ "$OS" == "mac" ]]; then
@@ -139,7 +139,7 @@ install_libreoffice() {
 
   if [[ "$OS" == "mac" ]]; then
     if command -v brew &>/dev/null; then
-      brew install --cask libreoffice 2>/dev/null || warn "LibreOffice install failed — install manually from libreoffice.org"
+      brew install --cask libreoffice 2>/dev/null || warn "LibreOffice install failed -- install manually from libreoffice.org"
       log "LibreOffice installed"
     else
       warn "Install LibreOffice manually: https://libreoffice.org"
@@ -186,7 +186,7 @@ create_venv() {
 install_deps() {
   step "Installing Python dependencies"
 
-  # Core deps — always installed
+  # Core deps -- always installed
   CORE_DEPS=(
     "odfpy"
     "pandas"
@@ -203,7 +203,7 @@ install_deps() {
   $PIP install --quiet "${CORE_DEPS[@]}"
   log "All core dependencies installed"
 
-  # sentence-transformers — skipped (using TF-IDF, faster install)
+  # sentence-transformers -- skipped (using TF-IDF, faster install)
   info "Using TF-IDF embedder (fast, zero extra deps)"
   info "For better search quality later: pip install sentence-transformers"
 }
@@ -213,7 +213,7 @@ install_deps() {
 download_files() {
   step "Downloading OpenYantra v${VERSION} files"
 
-  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs,assets,UI/v3}
+  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs}
 
   FILES=(
     "openyantra.py"
@@ -222,10 +222,8 @@ download_files() {
     "yantra_digest.py"
     "telegram_bot.py"
     "ios_shortcut.py"
+    "yantra_mail.py"
     "yantra_migrate.py"
-    "UI/v3/dashboard.html"
-    "docs/BRAND_MANUAL.md"
-    "docs/VISUAL_GUIDE.md"
     "openclaw/hooks.py"
     "openclaw/plugin.py"
     "openclaw/__init__.py"
@@ -238,8 +236,6 @@ download_files() {
     "SKILL.md"
     "MYTHOLOGY.md"
     "WHITEPAPER.md"
-    "openyantra-brand-manual.html"
-    "visual-guide.html"
   )
 
   for file in "${FILES[@]}"; do
@@ -263,7 +259,7 @@ create_cli() {
 
   cat > "$BIN" << SCRIPT
 #!/usr/bin/env bash
-# yantra — OpenYantra v${VERSION} CLI
+# yantra -- OpenYantra v${VERSION} CLI
 INSTALL_DIR="\$HOME/openyantra"
 VENV="\$INSTALL_DIR/.venv"
 OY_FILE="\${OPENYANTRA_FILE:-\$HOME/openyantra/chitrapat.ods}"
@@ -341,7 +337,7 @@ if os.path.exists(f):
     kb = os.path.getsize(f)//1024
     print(f'  Chitrapat           ✓ {kb}KB')
 else:
-    print(f'  Chitrapat           ✗ not found — run: yantra bootstrap')
+    print(f'  Chitrapat           ✗ not found -- run: yantra bootstrap')
 print('='*45)
 "
     ;;
@@ -358,6 +354,38 @@ print('✓ Captured to Inbox' if r.get('status')=='written' else f'Status: {r.ge
     ;;
   digest)
     \$PYTHON "\$INSTALL_DIR/yantra_digest.py" --file "\$OY_FILE"
+    ;;
+  oracle)
+    \$PYTHON -c "
+import sys; sys.path.insert(0, '\$INSTALL_DIR')
+from openyantra import OpenYantra
+oy = OpenYantra('\$OY_FILE')
+print(oy.oracle_text(max_insights=8))
+"
+    ;;
+  export)
+    SHEET=""; FMT="markdown"; SINCE=""; OUTPUT=""
+    shift
+    while [[ \$# -gt 0 ]]; do
+      case "\$1" in
+        --sheet|-s) SHEET="\$2"; shift 2 ;;
+        --format|-f) FMT="\$2"; shift 2 ;;
+        --since)     SINCE="\$2"; shift 2 ;;
+        --output|-o) OUTPUT="\$2"; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+    \$PYTHON -c "
+import sys; sys.path.insert(0, '\$INSTALL_DIR')
+from openyantra import OpenYantra
+oy = OpenYantra('\$OY_FILE')
+kw = {}
+if '\$SHEET': kw['sheet'] = '\$SHEET'
+if '\$SINCE': kw['since'] = '\$SINCE'
+if '\$OUTPUT': kw['output_path'] = '\$OUTPUT'
+result = oy.export(fmt='\$FMT' or 'markdown', **kw)
+if not '\$OUTPUT': print(result)
+"
     ;;
   route)
     \$PYTHON -c "
@@ -409,26 +437,6 @@ else: print('✓ No expired loops')
     echo "Starting Telegram bot..."
     \$PYTHON "\$INSTALL_DIR/telegram_bot.py" --file "\$OY_FILE"
     ;;
-  shortcut)
-    echo "Starting iOS Shortcut server..."
-    \$PYTHON "\$INSTALL_DIR/ios_shortcut.py" --file "\$OY_FILE"
-    ;;
-  morning)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-print(oy.morning_brief())
-"
-    ;;
-  context)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-print(oy.copy_context())
-"
-    ;;
   open|edit)
     if command -v libreoffice &>/dev/null; then
       libreoffice "\$OY_FILE" &
@@ -443,26 +451,32 @@ print(oy.copy_context())
     ;;
   help|--help|-h|"")
     echo ""
-    echo "  OpenYantra v${VERSION} — The Sacred Memory Machine"
+    echo "  OpenYantra v${VERSION} -- The Sacred Memory Machine"
     echo "  Inspired by Chitragupta, the Hindu God of Data"
     echo ""
     echo "  COMMANDS:"
     echo "    yantra bootstrap    Interview-based setup (first time)"
     echo "    yantra ui [port]    Browser dashboard → http://localhost:7331"
-    echo "    yantra morning      Morning Briefing"
-    echo "    yantra context      Copy Markdown context for your AI chat"
     echo "    yantra doctor       System health check"
     echo "    yantra health       Memory stats"
     echo "    yantra inbox [text] Quick capture to Inbox"
     echo "    yantra route        Route Inbox items to correct sheets"
-    echo "    yantra digest       Daily summary — loops, projects, insights"
+    echo "    yantra digest       Daily summary -- loops, projects, insights"
     echo "    yantra loops        List open loops (Anishtha)"
     echo "    yantra diff         Belief contradiction check"
     echo "    yantra ttl          Check expired open loops"
     echo "    yantra telegram     Start Telegram bot capture"
-    echo "    yantra shortcut     Start iOS Shortcut server (port 7332)"
     echo "    yantra open         Open Chitrapat in LibreOffice"
-    echo "    yantra version      Show version"
+    echo "    yantra stats        Memory growth analytics
+    yantra morning      Daily brief -- urgent loops, tasks, insight, streak
+    yantra context      Copy full context to clipboard -- paste into any AI chat
+    yantra integrity    Verify Agrasandhani SHA-256 Mudra signatures
+    yantra archive      Rotate session log (default: keep 90 days)
+    yantra shortcut     Start iOS Shortcut server (port 7332)
+    yantra mail         Start Email-to-Inbox SMTP server (port 2525)
+    yantra migrate      Upgrade older Chitrapat to current schema
+    yantra schedule     Schedule daily digest via cron/launchd
+    yantra version      Show version"
     echo ""
     echo "  FILE: \$OY_FILE"
     echo "  Set OPENYANTRA_FILE to change location"
@@ -536,7 +550,7 @@ setup_path() {
 
   PATH_LINE="export PATH=\"\$PATH:$INSTALL_DIR\""
   OY_LINE="export OPENYANTRA_FILE=\"\$HOME/openyantra/chitrapat.ods\""
-  VENV_LINE="# OpenYantra venv — auto-activated by yantra CLI"
+  VENV_LINE="# OpenYantra venv -- auto-activated by yantra CLI"
 
   if [[ -n "$SHELL_RC" ]]; then
     if ! grep -q "OPENYANTRA_FILE" "$SHELL_RC" 2>/dev/null; then
@@ -606,7 +620,6 @@ print_summary() {
   echo "    yantra inbox 'text'  ← quick capture"
   echo "    yantra digest        ← daily summary"
   echo "    yantra telegram      ← start Telegram bot"
-  echo "    yantra shortcut      ← start iOS Shortcut capture"
   echo ""
   echo -e "  ${DIM}Restart terminal or run: source $([[ "$SHELL" == *zsh* ]] && echo ~/.zshrc || echo ~/.bashrc)${RESET}"
   echo -e "  ${DIM}Desktop shortcut: ~/Desktop/OpenYantra.command${RESET}"

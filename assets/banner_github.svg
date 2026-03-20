@@ -1,79 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none" role="img" aria-label="OpenYantra GitHub banner">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400">
   <defs>
-    <!-- Mark gradient diagonal across 280px render area centered at 640,280 -->
-    <linearGradient id="ban-mark" x1="500" y1="140" x2="780" y2="420" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g" x1="0" y1="0" x2="1280" y2="400" gradientUnits="userSpaceOnUse">
       <stop offset="0%"   stop-color="#1c6fff"/>
       <stop offset="33%"  stop-color="#5535e0"/>
       <stop offset="66%"  stop-color="#e84520"/>
       <stop offset="100%" stop-color="#f5a000"/>
     </linearGradient>
-    <!-- Top gradient bar -->
-    <linearGradient id="ban-bar" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="gh" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0%"   stop-color="#1c6fff"/>
       <stop offset="33%"  stop-color="#5535e0"/>
       <stop offset="66%"  stop-color="#e84520"/>
       <stop offset="100%" stop-color="#f5a000"/>
     </linearGradient>
-    <!-- Wordmark gradient horizontal -->
-    <linearGradient id="ban-text" x1="500" y1="0" x2="780" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%"   stop-color="#1c6fff"/>
-      <stop offset="33%"  stop-color="#5535e0"/>
-      <stop offset="66%"  stop-color="#e84520"/>
-      <stop offset="100%" stop-color="#f5a000"/>
-    </linearGradient>
-    <!-- Grid pattern -->
-    <pattern id="ban-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0L0 0 0 40" fill="none" stroke="rgba(255,255,255,0.022)" stroke-width="1"/>
-    </pattern>
   </defs>
-
-  <!-- Background -->
-  <rect width="1280" height="640" fill="#0a0a0b"/>
-  <!-- Grid texture -->
-  <rect width="1280" height="640" fill="url(#ban-grid)"/>
-  <!-- Gradient top bar -->
-  <rect width="1280" height="3" fill="url(#ban-bar)"/>
-
-  <!-- Mark — canonical geometry scaled to 280px, centered at 640,280 -->
-  <!-- scale=2.8, offset: 640-(50*2.8)=640-140=500 ; 280-(50*2.8)=280-140=140 -->
-  <g transform="translate(500,140) scale(2.8)">
-    <circle cx="50" cy="50" r="47" stroke="url(#ban-mark)" stroke-width="0.54" fill="none"/>
-    <circle cx="50" cy="50" r="33" stroke="url(#ban-mark)" stroke-width="0.36" fill="none" opacity="0.5"/>
-    <circle cx="50" cy="50" r="18" stroke="url(#ban-mark)" stroke-width="0.29" fill="none" opacity="0.3"/>
-    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#ban-mark)" stroke-width="0.21" opacity="0.2"/>
-    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#ban-mark)" stroke-width="0.21" opacity="0.2"/>
-    <line x1="17" y1="17" x2="83" y2="83" stroke="url(#ban-mark)" stroke-width="0.18" opacity="0.12"/>
-    <line x1="83" y1="17" x2="17" y2="83" stroke="url(#ban-mark)" stroke-width="0.18" opacity="0.12"/>
-    <circle cx="50" cy="3"  r="2.5" fill="#1c6fff"/>
-    <circle cx="97" cy="50" r="2.5" fill="#5535e0"/>
-    <circle cx="50" cy="97" r="2.5" fill="#e84520"/>
-    <circle cx="3"  cy="50" r="2.5" fill="#f5a000"/>
-    <circle cx="50" cy="17" r="1.5" fill="#1c6fff" opacity="0.6"/>
-    <circle cx="83" cy="50" r="1.5" fill="#5535e0" opacity="0.6"/>
-    <circle cx="50" cy="83" r="1.5" fill="#e84520" opacity="0.6"/>
-    <circle cx="17" cy="50" r="1.5" fill="#f5a000" opacity="0.6"/>
-    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#ban-mark)" stroke-width="0.29" fill="none" opacity="0.42"/>
-    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#ban-mark)" stroke-width="0.29" fill="none" opacity="0.42"/>
-    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#ban-mark)" stroke-width="0.29" fill="none" opacity="0.42"/>
-    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#ban-mark)" stroke-width="0.29" fill="none" opacity="0.42"/>
-    <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#ban-mark)" stroke-width="0.18" fill="none" opacity="0.2"/>
-    <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#ban-mark)" stroke-width="0.18" fill="none" opacity="0.2"/>
-    <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#ban-mark)" stroke-width="0.18" fill="none" opacity="0.2"/>
-    <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#ban-mark)" stroke-width="0.18" fill="none" opacity="0.2"/>
-    <circle cx="50" cy="50" r="4" fill="url(#ban-mark)"/>
-  </g>
-
-  <!-- Wordmark centered below mark -->
-  <text x="640" y="488"
-    font-family="'IBM Plex Mono','Courier New',monospace"
-    font-size="56" font-weight="500" letter-spacing="-1"
-    text-anchor="middle"
-    fill="url(#ban-text)">OpenYantra</text>
-
-  <!-- Tagline -->
-  <text x="640" y="528"
-    font-family="'IBM Plex Mono','Courier New',monospace"
-    font-size="14" font-weight="400" letter-spacing="4"
-    text-anchor="middle"
-    fill="#524f58">PERSONAL COGNITION LEDGER</text>
+  <rect width="1280" height="400" fill="#0b0b0c"/>
+  <pattern id="gr" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.022)" stroke-width="1"/>
+  </pattern>
+  <rect width="1280" height="400" fill="url(#gr)"/>
+  <rect width="1280" height="3" fill="url(#gh)"/>
+  <!-- Mark -->
+  <circle cx="200" cy="200" r="140" stroke="url(#g)" stroke-width="2.5" fill="none"/>
+  <circle cx="200" cy="200" r="90"  stroke="url(#g)" stroke-width="1.5" fill="none" opacity="0.45"/>
+  <circle cx="200" cy="200" r="10"  fill="url(#g)"/>
+  <circle cx="200" cy="60"  r="8" fill="#1c6fff"/>
+  <circle cx="340" cy="200" r="8" fill="#5535e0"/>
+  <circle cx="200" cy="340" r="8" fill="#e84520"/>
+  <circle cx="60"  cy="200" r="8" fill="#f5a000"/>
+  <path d="M200 60 Q242 130 200 200 Q158 130 200 60"  stroke="url(#g)" stroke-width="1.8" fill="none" opacity="0.4"/>
+  <path d="M340 200 Q270 242 200 200 Q270 158 340 200" stroke="url(#g)" stroke-width="1.8" fill="none" opacity="0.4"/>
+  <path d="M200 340 Q158 270 200 200 Q242 270 200 340" stroke="url(#g)" stroke-width="1.8" fill="none" opacity="0.4"/>
+  <path d="M60 200 Q130 158 200 200 Q130 242 60 200"   stroke="url(#g)" stroke-width="1.8" fill="none" opacity="0.4"/>
+  <!-- Text -->
+  <text x="420" y="190" font-family="'IBM Plex Mono',monospace" font-size="56" font-weight="600" fill="url(#g)" letter-spacing="2">Open</text>
+  <text x="590" y="190" font-family="'IBM Plex Mono',monospace" font-size="56" font-weight="300" fill="#e8e5de" letter-spacing="2">Yantra</text>
+  <text x="422" y="235" font-family="'IBM Plex Sans',sans-serif" font-size="18" font-weight="300" fill="rgba(232,229,222,0.45)">The Sacred Memory Machine -- personal AI memory for one human</text>
+  <!-- Stats row -->
+  <text x="422" y="300" font-family="'IBM Plex Mono',monospace" font-size="13" fill="rgba(232,229,222,0.25)" letter-spacing="1">v2.12</text>
+  <text x="480" y="300" font-family="'IBM Plex Mono',monospace" font-size="13" fill="rgba(255,255,255,0.08)">|</text>
+  <text x="494" y="300" font-family="'IBM Plex Mono',monospace" font-size="13" fill="rgba(232,229,222,0.25)" letter-spacing="1">MIT + CC0</text>
+  <text x="600" y="300" font-family="'IBM Plex Mono',monospace" font-size="13" fill="rgba(255,255,255,0.08)">|</text>
+  <text x="614" y="300" font-family="'IBM Plex Mono',monospace" font-size="13" fill="rgba(232,229,222,0.25)" letter-spacing="1">github.com/revanthlevaka/OpenYantra</text>
 </svg>

@@ -9,9 +9,9 @@
 
 In UAM, **the user is the sole data controller**. The memory file lives on the user's device or in storage they own. No third party has access. No data processing agreements required. No cloud jurisdiction risks.
 
-This is structurally different from every other AI memory system — Mem0, Zep, OpenAI Memory, and AWS AgentCore all store your memory on infrastructure they control. UAM puts the file in your hands.
+This is structurally different from every other AI memory system -- Mem0, Zep, OpenAI Memory, and AWS AgentCore all store your memory on infrastructure they control. UAM puts the file in your hands.
 
-LedgerAgent (Chitragupta) is the sole writer — every write is signed with SHA-256 and recorded permanently in the Agrasandhanī (Ledger sheet). The record is transparent, auditable, and owned by the user.
+LedgerAgent (Chitragupta) is the sole writer -- every write is signed with SHA-256 and recorded permanently in the Agrasandhanī (Ledger sheet). The record is transparent, auditable, and owned by the user.
 
 ---
 
@@ -19,17 +19,17 @@ LedgerAgent (Chitragupta) is the sole writer — every write is signed with SHA-
 
 | GDPR Principle | How UAM addresses it |
 |---|---|
-| **Data control** | User owns the `.ods` file — no third-party access |
-| **Right of access** | Open the file in LibreOffice — everything is visible |
-| **Right to rectification** | Edit any cell directly — respected next session |
-| **Right to erasure** | Delete rows/sheets — LedgerAgent logs the deletion |
-| **Data portability** | ISO/IEC 26300 `.ods` — export to CSV or JSON at any time |
+| **Data control** | User owns the `.ods` file -- no third-party access |
+| **Right of access** | Open the file in LibreOffice -- everything is visible |
+| **Right to rectification** | Edit any cell directly -- respected next session |
+| **Right to erasure** | Delete rows/sheets -- LedgerAgent logs the deletion |
+| **Data portability** | ISO/IEC 26300 `.ods` -- export to CSV or JSON at any time |
 | **Privacy by design** | Local by default, minimal by structure |
 | **Transparency** | Every write signed and logged in Agrasandhanī |
 
 ---
 
-## UAM-IN — India Profile
+## UAM-IN -- India Profile
 
 *Applicable law: Digital Personal Data Protection Act 2023 (DPDP Act), IT Act 2000*
 
@@ -39,12 +39,12 @@ India is UAM's home country. The UAM-IN profile is the reference implementation.
 
 | DPDP Principle | UAM-IN implementation |
 |---|---|
-| **Consent** | `Consent_Flag` column on Identity and Beliefs sheets — explicit user consent before sensitive data is written |
-| **Purpose limitation** | Each sheet scoped to a named purpose — agents must not read sheets beyond current task |
+| **Consent** | `Consent_Flag` column on Identity and Beliefs sheets -- explicit user consent before sensitive data is written |
+| **Purpose limitation** | Each sheet scoped to a named purpose -- agents must not read sheets beyond current task |
 | **Data minimisation** | Agents write only what the user explicitly shares (`Source = "User-stated"` preferred) |
 | **Data localisation** | File stored on user device or Indian cloud providers (AWS Mumbai, Azure India, GCP Mumbai) by default |
-| **Right to correction** | User edits any cell — LedgerAgent's conflict resolution respects user-stated data above all |
-| **Right to erasure** | Delete the `.ods` file or specific rows — LedgerAgent records the erasure in Agrasandhanī |
+| **Right to correction** | User edits any cell -- LedgerAgent's conflict resolution respects user-stated data above all |
+| **Right to erasure** | Delete the `.ods` file or specific rows -- LedgerAgent records the erasure in Agrasandhanī |
 | **Grievance redressal** | `Disputes` tab in Agrasandhanī sheet logs all conflicts for user review |
 
 ### Additional columns (UAM-IN)
@@ -57,9 +57,9 @@ India is UAM's home country. The UAM-IN profile is the reference implementation.
 
 ### Cultural context
 
-UAM-IN carries the Chitragupta heritage explicitly. The memory file is the **Chitrapat** (चित्रपट — life scroll). The LedgerAgent is **Chitragupta** (चित्रगुप्त — the hidden recorder). The Ledger sheet is the **Agrasandhanī** (अग्रसंधानी — the cosmic register).
+UAM-IN carries the Chitragupta heritage explicitly. The memory file is the **Chitrapat** (चित्रपट -- life scroll). The LedgerAgent is **Chitragupta** (चित्रगुप्त -- the hidden recorder). The Ledger sheet is the **Agrasandhanī** (अग्रसंधानी -- the cosmic register).
 
-India has a 3,000-year tradition of the trusted record keeper — impartial, incorruptible, serving the subject rather than the judge. UAM-IN carries that tradition into the age of AI.
+India has a 3,000-year tradition of the trusted record keeper -- impartial, incorruptible, serving the subject rather than the judge. UAM-IN carries that tradition into the age of AI.
 
 ### Recommended deployment
 
@@ -73,7 +73,7 @@ India has a 3,000-year tradition of the trusted record keeper — impartial, inc
 
 ---
 
-## UAM-EU — Europe Profile
+## UAM-EU -- Europe Profile
 
 *Applicable law: GDPR, EU AI Act, Data Act 2023*
 
@@ -99,7 +99,7 @@ File stays on EU-jurisdiction storage by default. Compatible with Gaia-X, EUCS-c
 
 ---
 
-## UAM-US — United States Profile
+## UAM-US -- United States Profile
 
 *Applicable law: CCPA/CPRA (California), HIPAA (health data), COPPA (children), FTC Act, state privacy laws*
 
@@ -107,10 +107,10 @@ File stays on EU-jurisdiction storage by default. Compatible with Gaia-X, EUCS-c
 
 | CCPA Right | UAM-US implementation |
 |---|---|
-| **Right to know** | Open the `.ods` file — everything the AI knows is visible |
-| **Right to delete** | Delete rows or the entire file — fully user-controlled |
-| **Right to correct** | Edit any cell — LedgerAgent respects user edits |
-| **Right to opt-out of sale** | UAM does not sell data — file is local, not cloud |
+| **Right to know** | Open the `.ods` file -- everything the AI knows is visible |
+| **Right to delete** | Delete rows or the entire file -- fully user-controlled |
+| **Right to correct** | Edit any cell -- LedgerAgent respects user edits |
+| **Right to opt-out of sale** | UAM does not sell data -- file is local, not cloud |
 | **Right to limit sensitive data use** | `Sensitivity_Tag` column controls which agents read which sheets |
 
 ### Sector-specific compliance
@@ -144,7 +144,7 @@ UAM-US defaults to local file storage. For enterprise deployments, use US-based 
 
 ---
 
-## UAM-CN — China Profile
+## UAM-CN -- China Profile
 
 *Applicable law: PIPL (Personal Information Protection Law), DSL (Data Security Law), Cybersecurity Law*
 
@@ -166,7 +166,7 @@ Audit Layer   → Agrasandhanī, Session Log               (immutable, complianc
 | **Consent** | Explicit consent required before writing any personal data |
 | **Purpose limitation** | `Domain_Tag` scopes each row to a specific use context |
 | **Data localisation** | File stored on mainland China servers by default (Alibaba Cloud, Tencent Cloud, Huawei Cloud) |
-| **Cross-border transfer** | Requires Security Assessment (PIPL Article 38) — flagged by `Cross_Border = "Restricted"` |
+| **Cross-border transfer** | Requires Security Assessment (PIPL Article 38) -- flagged by `Cross_Border = "Restricted"` |
 | **Sensitive personal data** | `Data_Classification = "Confidential"` triggers additional approval workflow |
 
 ### Additional columns (UAM-CN)
@@ -191,7 +191,7 @@ UAM-CN supports integration with DingTalk, Feishu (Lark), and WeCom permission m
 |---|---|
 | Unauthorised file access | LibreOffice password protection (Tools → Macro → Basic) |
 | LLM hallucination corrupting data | LedgerAgent validates all writes; Agrasandhanī provides audit trail |
-| Adversarial memory injection | All writes signed by LedgerAgent — unsigned edits are flagged |
+| Adversarial memory injection | All writes signed by LedgerAgent -- unsigned edits are flagged |
 | Accidental data loss | Daily backup: `chitrapat.YYYY-MM-DD.ods` auto-created each session |
 | Multi-device conflict | WriteQueue and LedgerAgent conflict resolution handles this |
 | Data after user death | See Digital Will section below |
@@ -207,17 +207,17 @@ UAM files persist after the user is no longer alive. Until a formal mechanism is
    - `Agent = "ALL"`, `Instruction = "Posthumous access: [name] may access this file after my death"`
 3. Include the file in estate planning documentation
 
-UAM v2.1 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
+UAM v2.12 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
 
 ---
 
-## Summary — UAM Is Privacy by Architecture
+## Summary -- UAM Is Privacy by Architecture
 
 | Property | UAM | Cloud memory systems |
 |---|---|---|
 | Data controller | User | AI provider |
 | Storage location | User's device | Provider's cloud |
-| Audit trail | Agrasandhanī — complete, signed | Opaque or nonexistent |
+| Audit trail | Agrasandhanī -- complete, signed | Opaque or nonexistent |
 | Right to erasure | Delete the file | Submit deletion request |
 | Format | ISO open standard | Proprietary |
 | Jurisdiction | User's | Provider's |

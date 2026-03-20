@@ -1,27 +1,27 @@
 """
-yantra_security.py — OpenYantra Security Engine v2.4
-The Raksha Layer (रक्षा — Protection)
+yantra_security.py -- OpenYantra Security Engine v2.12
+The Raksha Layer (रक्षा -- Protection)
 
 Protects the Chitrapat from:
-  1. Prompt injection — malicious payloads hijacking AI agents
-  2. Mudra tampering — SHA-256 signature verification on reads
-  3. Agent impersonation — trust tier enforcement
-  4. Inbox poisoning — deep scan before routing
-  5. VidyaKosha poisoning — anomalous embedding detection
-  6. Schema corruption — structural integrity checks
+  1. Prompt injection -- malicious payloads hijacking AI agents
+  2. Mudra tampering -- SHA-256 signature verification on reads
+  3. Agent impersonation -- trust tier enforcement
+  4. Inbox poisoning -- deep scan before routing
+  5. VidyaKosha poisoning -- anomalous embedding detection
+  6. Schema corruption -- structural integrity checks
 
-Threat response (Permissive mode — user decides):
+Threat response (Permissive mode -- user decides):
   CONFIRMED threat  → Block + Quarantine sheet + log
   SUSPICIOUS        → Warn + log + allow with flag
   CLEAN             → Pass through normally
 
 Sanskrit naming:
-  Raksha      (रक्षा)     — Protection, the security engine
-  Kavach      (कवच)      — Armour, the injection scanner
-  Pratishodh  (प्रतिशोध) — Scrutiny, the threat detector
-  Shuddhi     (शुद्धि)   — Purification, the sanitiser
-  Quarantine  sheet       — Nirodh (निरोध) — Containment
-  Trust tier             — Vishwas-Shreni (विश्वास-श्रेणी)
+  Raksha      (रक्षा)     -- Protection, the security engine
+  Kavach      (कवच)      -- Armour, the injection scanner
+  Pratishodh  (प्रतिशोध) -- Scrutiny, the threat detector
+  Shuddhi     (शुद्धि)   -- Purification, the sanitiser
+  Quarantine  sheet       -- Nirodh (निरोध) -- Containment
+  Trust tier             -- Vishwas-Shreni (विश्वास-श्रेणी)
 """
 
 from __future__ import annotations
@@ -60,14 +60,14 @@ class ThreatType(Enum):
 
 class TrustTier(Enum):
     """
-    Agent trust hierarchy — Vishwas-Shreni
+    Agent trust hierarchy -- Vishwas-Shreni
     Higher tier = more trusted = fewer restrictions
     """
-    USER          = 5   # Human — Dharma-Adesh, always trusted
-    CHITRAGUPTA   = 4   # LedgerAgent — system writer
+    USER          = 5   # Human -- Dharma-Adesh, always trusted
+    CHITRAGUPTA   = 4   # LedgerAgent -- system writer
     KNOWN_AGENT   = 3   # Claude, OpenClaw, registered agents
     UNKNOWN_AGENT = 2   # Unregistered agents
-    EXTERNAL      = 1   # Telegram bot, iOS Shortcut, browser extension
+    EXTERNAL      = 1   # Telegram bot, email, browser extension
     UNTRUSTED     = 0   # Explicitly flagged agents
 
 
@@ -87,9 +87,9 @@ DEFAULT_KNOWN_AGENTS = {
 }
 
 
-# ── Threat signatures (Kavach — Armour) ───────────────────────────────────────
+# ── Threat signatures (Kavach -- Armour) ───────────────────────────────────────
 
-# Confirmed prompt injection patterns — block + quarantine
+# Confirmed prompt injection patterns -- block + quarantine
 INJECTION_PATTERNS_CONFIRMED = [
     # Classic injection
     r"ignore\s+(all\s+)?(previous|prior|above|earlier)\s+(instructions?|prompts?|context)",
@@ -112,7 +112,7 @@ INJECTION_PATTERNS_CONFIRMED = [
     r"override\s+(the\s+)?(chitragupta|ledger|security|trust|dharma)",
 ]
 
-# Suspicious patterns — warn, allow with flag
+# Suspicious patterns -- warn, allow with flag
 INJECTION_PATTERNS_SUSPICIOUS = [
     r"ignore\s+(this|the)\s+(rule|restriction|limit|filter)",
     r"bypass\s+(the\s+)?(filter|security|check|restriction|validation)",
@@ -131,7 +131,7 @@ INJECTION_PATTERNS_SUSPICIOUS = [
     r"[\u202e\u200f\u200b\u200c\u200d\ufeff]",  # RTL override, zero-width
 ]
 
-# Jailbreak keywords — confirmed block
+# Jailbreak keywords -- confirmed block
 JAILBREAK_KEYWORDS = [
     "DAN ", "Do Anything Now", "STAN ", "DUDE ", "AIM ",
     "jailbreak", "jail break", "jailbreaking",
@@ -139,7 +139,7 @@ JAILBREAK_KEYWORDS = [
     "ignore all instructions", "ignore previous instructions",
 ]
 
-# Agent impersonation — confirmed block
+# Agent impersonation -- confirmed block
 IMPERSONATION_PATTERNS = [
     r"(i\s+am|this\s+is|speaking\s+as)\s+chitragupta",
     r"(i\s+am|acting\s+as)\s+(the\s+)?(ledger\s+agent|system\s+agent|admin\s+agent)",
@@ -195,12 +195,12 @@ class ScanResult:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Raksha — the security engine
+# Raksha -- the security engine
 # ══════════════════════════════════════════════════════════════════════════════
 
 class Raksha:
     """
-    Raksha (रक्षा) — Protection
+    Raksha (रक्षा) -- Protection
     The OpenYantra security engine.
 
     Protects Chitragupta and the Chitrapat from injection attacks,
@@ -258,7 +258,7 @@ class Raksha:
 
     def sanitise(self, text: str) -> str:
         """
-        Shuddhi (शुद्धि) — Purification.
+        Shuddhi (शुद्धि) -- Purification.
         Strip injection patterns from text, return clean version.
         """
         cleaned = text
@@ -288,7 +288,7 @@ class Raksha:
     def verify_mudra(self, fields: dict, agent: str, sheet: str,
                      operation: str, stored_signature: str) -> bool:
         """
-        Mudra verification — verify a write's SHA-256 signature.
+        Mudra verification -- verify a write's SHA-256 signature.
         Returns True if signature matches (untampered).
         """
         if not stored_signature or not stored_signature.startswith("sha256:"):
@@ -305,7 +305,7 @@ class Raksha:
     def audit_chitrapat(self, oy_path: str) -> list[dict]:
         """
         Full security audit of the Chitrapat.
-        Returns list of findings — threats, tampered entries, anomalies.
+        Returns list of findings -- threats, tampered entries, anomalies.
         CLI: yantra security
         """
         findings = []
@@ -348,7 +348,7 @@ class Raksha:
                             "threat_level": "confirmed",
                             "threat_type":  "mudra_tamper",
                             "threats_found":["Invalid signature format"],
-                            "preview":      f"Row {row.get('Request ID','?')} — bad signature",
+                            "preview":      f"Row {row.get('Request ID','?')} -- bad signature",
                         })
             except Exception:
                 pass
@@ -367,7 +367,7 @@ class Raksha:
     def scan_vidyakosha(self, vectors: list, labels: list) -> list[dict]:
         """
         VidyaKosha poisoning detection.
-        Flags embeddings that are statistical outliers — potential poison vectors.
+        Flags embeddings that are statistical outliers -- potential poison vectors.
         Returns list of suspicious vector indices.
         """
         findings = []
@@ -389,7 +389,7 @@ class Raksha:
                         "z_score":     round(float(z_score), 3),
                         "threat_type": "vidyakosha_poison",
                         "message":     f"Embedding norm {norm:.3f} is {z_score:.1f}σ "
-                                        f"from mean — possible poisoned vector",
+                                        f"from mean -- possible poisoned vector",
                     })
         except ImportError:
             pass  # numpy not available
@@ -399,7 +399,7 @@ class Raksha:
 
     def _scan(self, text: str, agent_name: str,
               context: str = "", deep: bool = False) -> ScanResult:
-        """Core scanning logic — Pratishodh (Scrutiny)."""
+        """Core scanning logic -- Pratishodh (Scrutiny)."""
 
         if not text or not text.strip():
             return ScanResult(
@@ -415,7 +415,7 @@ class Raksha:
         threat_level  = ThreatLevel.CLEAN
         threat_type   = None
 
-        # Trust bypass — User tier is never blocked (Dharma-Adesh)
+        # Trust bypass -- User tier is never blocked (Dharma-Adesh)
         if trust_tier == TrustTier.USER:
             return ScanResult(
                 threat_level=ThreatLevel.CLEAN,
@@ -474,12 +474,12 @@ class Raksha:
         # Lower trust = lower threshold for blocking
 
         if trust_tier == TrustTier.EXTERNAL:
-            # External capture surfaces (Telegram, iOS Shortcut) get stricter treatment
+            # External sources (Telegram, email) get stricter treatment
             if threat_level == ThreatLevel.SUSPICIOUS:
                 threat_level = ThreatLevel.CONFIRMED
 
         if trust_tier == TrustTier.UNTRUSTED:
-            # Untrusted agents — any suspicion is a confirmed block
+            # Untrusted agents -- any suspicion is a confirmed block
             if threat_level != ThreatLevel.CLEAN:
                 threat_level = ThreatLevel.CONFIRMED
 
@@ -511,26 +511,26 @@ class Raksha:
 
 def run_security_audit(oy_path: str) -> None:
     """
-    yantra security — full Chitrapat security audit.
+    yantra security -- full Chitrapat security audit.
     Prints findings to terminal with severity levels.
     """
     path   = Path(oy_path).expanduser()
     raksha = Raksha()
 
     print(f"\n{'═'*60}")
-    print("  🔒  OpenYantra Security Audit v2.4")
+    print(f"  🔒  OpenYantra Security Audit v2.12")
     print(f"  Chitrapat: {path}")
     print(f"  Scanned:   {datetime.utcnow().isoformat(timespec='seconds')} UTC")
     print(f"{'═'*60}")
 
     if not path.exists():
-        print("\n  ✗ Chitrapat not found. Run: yantra bootstrap\n")
+        print(f"\n  ✗ Chitrapat not found. Run: yantra bootstrap\n")
         return
 
     findings = raksha.audit_chitrapat(str(path))
 
     if not findings:
-        print("\n  ✓ No threats detected — Chitrapat is clean")
+        print(f"\n  ✓ No threats detected -- Chitrapat is clean")
         print(f"  ✓ All {_count_rows(str(path))} rows scanned")
         print(f"{'═'*60}\n")
         return
@@ -569,7 +569,7 @@ def run_security_audit(oy_path: str) -> None:
           f"(critical={len(critical)}, "
           f"confirmed={len(confirmed)}, "
           f"suspicious={len(suspicious)})")
-    print("  Review quarantined items: yantra ui → Security tab")
+    print(f"  Review quarantined items: yantra ui → Security tab")
     print(f"{'═'*60}\n")
 
 

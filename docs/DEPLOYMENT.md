@@ -1,6 +1,6 @@
-# OpenYantra Deployment Guide — v2.11
+# OpenYantra Deployment Guide -- v2.12
 
-> OpenClaw · LangChain · AutoGen · raw API clients
+> OpenClaw · LangChain · AutoGen · Raw Anthropic API
 
 ## Install
 
@@ -11,61 +11,41 @@ curl -sSL https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/instal
 # Windows
 irm https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.ps1 | iex
 
-# Manual dependencies
+# Manual
 pip install odfpy pandas scikit-learn faiss-cpu fastapi uvicorn
 pip install sentence-transformers  # optional
 ```
 
-## Session Lifecycle
+## Morning Brief and Context Copy (v2.12+)
 
-```text
-Startup         -> Sanchitta replay (crash recovery)
-Session start   -> load_session_context() + take_pratibimba()
-Conversation    -> request_write() + search() + inbox()
-Pre-compaction  -> flush_open_loop()
-Post-compaction -> re-inject open loops from file
-Session end     -> log_session() + release_pratibimba()
+```python
+# Morning brief -- runs automatically on first yantra command of the day
+oy.morning_brief_auto()
+
+# Full brief as string
+brief = oy.morning_brief(format="terminal")   # or "telegram"
+
+# Copy full context to clipboard for pasting into any AI chat
+md = oy.build_context_markdown()
+oy.copy_context()   # builds + copies to clipboard
 ```
 
-## Browser Dashboard Architecture
-
-The canonical dashboard for v2.11 lives at:
-
-```text
-UI/v3/dashboard.html
+CLI:
+```bash
+yantra morning    # print morning brief
+yantra context    # build + copy context markdown to clipboard
 ```
 
-The UI server in `yantra_ui.py` now serves that file directly with `FileResponse` rather than embedding the dashboard as an inline HTML string.
+## Session lifecycle
 
-Important v2.11 paths:
-
-```text
-UI/v3/dashboard.html   # canonical dashboard source
-UI/v3/index.html       # canonical landing page source
-index.html             # mirrored landing page for root deploys
-yantra_ui.py           # FastAPI server and API surface
 ```
-
-The dashboard keeps the v2.10 backend behaviors while presenting the new 7-tab v3 interface:
-
-- Today
-- Inbox
-- Loops
-- Projects
-- Timeline
-- Review
-- System
-
-The Today view exposes the stable `oracle-card` hook for Oracle work in v2.12.
-
-## Capture Surfaces
-
-Supported optional capture channels:
-
-- Telegram bot
-- iOS Shortcut
-
-Email and SMTP capture are not part of OpenYantra.
+Startup        → sanchitta replay (crash recovery)
+Session Start  → load_session_context() + take_pratibimba()
+Conversation   → request_write() + search() + inbox()
+Pre-Compaction → flush_open_loop()
+Post-Compaction→ re-inject open loops from file
+Session End    → log_session() + release_pratibimba()
+```
 
 ## OpenClaw
 
@@ -88,13 +68,16 @@ oy = OpenYantra("~/openyantra/chitrapat.ods", agent_name="OpenClaw")
 oy.take_pratibimba()
 system_prompt = oy.build_system_prompt_block()
 
+# Writes
 oy.add_project("My Film", status="Active", priority="High", importance=9)
 oy.inbox("Quick thought captured mid-session")
 oy.flush_open_loop("Unresolved decision", "Context here", "High", ttl_days=30)
 
+# Semantic search
 results = oy.search("screenplay structure")
-loops = oy.search_open_loops("unresolved film choices")
+loops   = oy.search_open_loops("unresolved film choices")
 
+# Session end
 oy.log_session(topics=["film"], decisions=["Use 3-act"])
 oy.release_pratibimba()
 ```
@@ -105,11 +88,8 @@ oy.release_pratibimba()
 from openyantra.examples.langchain_adapter import OpenYantraChatMemory
 from langchain.agents import initialize_agent
 
-memory = OpenYantraChatMemory(
-    path="~/openyantra/chitrapat.ods",
-    agent_name="LangChain",
-)
-agent = initialize_agent(tools=[], llm=llm, memory=memory)
+memory = OpenYantraChatMemory(path="~/openyantra/chitrapat.ods", agent_name="LangChain")
+agent  = initialize_agent(tools=[], llm=llm, memory=memory)
 ```
 
 ## AutoGen
@@ -118,57 +98,86 @@ agent = initialize_agent(tools=[], llm=llm, memory=memory)
 import autogen
 from openyantra import OpenYantra
 
-oy = OpenYantra("~/openyantra/chitrapat.ods", agent_name="AutoGen")
-oy_ctx = oy.build_system_prompt_block()
+oy      = OpenYantra("~/openyantra/chitrapat.ods", agent_name="AutoGen")
+oy_ctx  = oy.build_system_prompt_block()
 oy.take_pratibimba()
 
 assistant = autogen.AssistantAgent(
     name="assistant",
     system_message=f"{oy_ctx}\n\nYou are a helpful assistant.",
-    llm_config={"config_list": [{"model": "claude-sonnet-4-20250514"}]},
+    llm_config={"config_list": [{"model": "claude-sonnet-4-20250514"}]}
 )
-
-oy.log_session(topics=["session"])
-oy.release_pratibimba()
+# ... run conversation ...
+oy.log_session(topics=["session"]); oy.release_pratibimba()
 ```
 
-## Raw API Client Pattern
+## Raw Anthropic API
 
 ```python
+import anthropic
 from openyantra import OpenYantra
 
-oy = OpenYantra("~/openyantra/chitrapat.ods", agent_name="Claude")
+oy     = OpenYantra("~/openyantra/chitrapat.ods", agent_name="Claude")
+client = anthropic.Anthropic()
+
 oy.take_pratibimba()
-
-context = oy.build_system_prompt_block()
+context  = oy.build_system_prompt_block()
 relevant = oy.search("topic of conversation", top_k=3)
-extra = "\n".join(
-    f"[Memory] {r['sheet']}: {r['primary_value']}"
-    for r in relevant
+extra    = "\n".join(f"[Memory] {r['sheet']}: {r['primary_value']}" for r in relevant)
+
+response = client.messages.create(
+    model="claude-sonnet-4-20250514", max_tokens=2048,
+    system=f"{context}\n\nRelevant memory:\n{extra}",
+    messages=[{"role": "user", "content": "Help me"}]
 )
-
-system_prompt = f"{context}\n\nRelevant memory:\n{extra}"
-
-# send system_prompt to your model client here
-
-oy.log_session(topics=["session"])
-oy.release_pratibimba()
+oy.log_session(topics=["session"]); oy.release_pratibimba()
 ```
 
-## Local UI
+## Browser Dashboard
 
 ```bash
 yantra ui          # opens http://localhost:7331
 yantra ui 8080     # custom port
 ```
 
+Tabs: Dashboard · Inbox · Projects · Open Loops · Tasks · Corrections · Ledger · Health
+
+## Oracle and Export (v2.12)
+
+```python
+# Oracle -- cross-reference engine, read-only
+insights = oy.oracle(max_insights=8)
+# Returns list of dicts: type, title, detail, action
+for ins in insights:
+    print(f"[{ins['type']}] {ins['title']}")
+    print(f"  {ins['detail']}")
+    print(f"  Action: {ins['action']}")
+
+# Plain text for terminal or morning brief
+print(oy.oracle_text())
+
+# Export -- markdown or JSON
+md = oy.export()                                  # all sheets
+md = oy.export(sheet="loops")                     # just open loops
+md = oy.export(fmt="json", sheet="projects")      # JSON
+oy.export(since="2026-01-01", output_path="~/ctx.md")
+```
+
+CLI:
+```bash
+yantra oracle
+yantra export
+yantra export --sheet loops
+yantra export --format json
+yantra export --since 2026-01-01 --output ~/ctx.md
+```
+
 ## Troubleshooting
 
 | Issue | Fix |
 |---|---|
-| `Chitrapat not found` | Run `yantra bootstrap` first |
-| `Dashboard file missing` | Ensure `UI/v3/dashboard.html` exists in the install or checkout |
-| `Sanchitta replayed` | Normal crash recovery; queued writes were re-applied |
-| `VidyaKosha not available` | Ensure `vidyakosha.py` is present in the same install |
-| Search returns empty | Rebuild the sidecar index with `oy._vidyakosha.sync(oy.path)` |
-| Slow writes at scale | Expected in `.ods`; WAL-backed storage is planned for v3.0 |
+| "Chitrapat not found" | `yantra bootstrap` or `oy.bootstrap()` |
+| "Sanchitta replayed" | Normal -- crashed writes auto-recovered |
+| "VidyaKosha not available" | Ensure `vidyakosha.py` in same directory |
+| Search returns empty | `oy._vidyakosha.sync(oy.path)` to rebuild index |
+| Slow writes at scale | Expected -- full `.ods` rewrite; SQLite backend planned v3.0 |

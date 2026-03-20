@@ -2,3175 +2,515 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OpenYantra v2.11</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OpenYantra v2.12 -- Briefing Room</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
-
-:root,
-[data-theme="dark"] {
-  --ink: #0a0a0b;
-  --surface: #111113;
-  --surface2: #161618;
-  --surface3: #1c1b1f;
-  --border: rgba(255, 255, 255, 0.07);
-  --border2: rgba(255, 255, 255, 0.13);
-  --dim: #242228;
-  --muted: #524f58;
-  --subtle: #7a7682;
-  --text: #e8e5de;
-  --text-dim: rgba(232, 229, 222, 0.56);
-  --grid-line: rgba(255, 255, 255, 0.018);
-  --sidebar-bg: rgba(10, 10, 11, 0.95);
-  --overlay: rgba(5, 5, 6, 0.68);
-  --shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="light"] {
-  --ink: #f4f2ee;
-  --surface: #ffffff;
-  --surface2: #ece9e2;
-  --surface3: #e4e0d8;
-  --border: rgba(0, 0, 0, 0.09);
-  --border2: rgba(0, 0, 0, 0.16);
-  --dim: #d0ccc4;
-  --muted: #888380;
-  --subtle: #555250;
-  --text: #1a1820;
-  --text-dim: rgba(26, 24, 32, 0.56);
-  --grid-line: rgba(0, 0, 0, 0.04);
-  --sidebar-bg: rgba(244, 242, 238, 0.97);
-  --overlay: rgba(18, 16, 21, 0.2);
-  --shadow: 0 24px 64px rgba(21, 17, 26, 0.08);
-}
-
-:root {
-  --blue: #1c6fff;
-  --indigo: #5535e0;
-  --coral: #e84520;
-  --amber: #f5a000;
-  --green: #1aa167;
-  --grad: linear-gradient(135deg, #1c6fff 0%, #5535e0 32%, #e84520 66%, #f5a000 100%);
-  --grad-h: linear-gradient(90deg, #1c6fff 0%, #5535e0 32%, #e84520 66%, #f5a000 100%);
-  --grad-t: linear-gradient(135deg, #1c6fff, #5535e0 38%, #e84520 72%, #f5a000);
-  --mono: "IBM Plex Mono", monospace;
-  --sans: "IBM Plex Sans", sans-serif;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --sidebar-w: 240px;
-  --sidebar-collapsed: 56px;
-  --page-max: 1480px;
-  --page-pad: 32px;
-  --topbar-h: 58px;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  min-height: 100vh;
-  background: var(--ink);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(28, 111, 255, 0.08), transparent 26%),
-    radial-gradient(circle at 78% 12%, rgba(85, 53, 224, 0.07), transparent 24%),
-    radial-gradient(circle at 84% 82%, rgba(232, 69, 32, 0.08), transparent 28%);
-}
-
-button,
-input,
-textarea {
-  font: inherit;
-}
-
-button {
-  color: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--ink);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--dim);
-}
-
-.app-shell,
-main,
-.sidebar,
-.mobile-bar,
-.section-card,
-.metric-card,
-.pill,
-.btn,
-.theme-option {
-  transition:
-    background 0.28s,
-    color 0.28s,
-    border-color 0.28s,
-    box-shadow 0.28s,
-    transform 0.2s;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.app-shell {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-}
-
-.sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  width: var(--sidebar-w);
-  display: flex;
-  flex-direction: column;
-  background: var(--sidebar-bg);
-  backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border);
-  z-index: 30;
-  overflow: hidden;
-}
-
-body.sidebar-collapsed .sidebar {
-  width: var(--sidebar-collapsed);
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 14px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.sidebar-toggle {
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted);
-  flex-shrink: 0;
-}
-
-.sidebar-toggle:hover {
-  border-color: var(--border2);
-  color: var(--text);
-}
-
-.brand {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-.brand-mark {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-}
-
-.brand-copy {
-  min-width: 0;
-}
-
-.brand-name {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-}
-
-.brand-sub {
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-body.sidebar-collapsed .brand-copy,
-body.sidebar-collapsed .tab-copy,
-body.sidebar-collapsed .sidebar-note {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.sidebar-group {
-  padding: 14px 0 8px;
-}
-
-.sidebar-label {
-  font-size: 8px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 18px 10px;
-}
-
-body.sidebar-collapsed .sidebar-label {
-  opacity: 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 8px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.sidebar-tab {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-align: left;
-  padding: 10px 10px 10px 12px;
-  color: var(--muted);
-  border-left: 2px solid transparent;
-}
-
-.sidebar-tab:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.02);
-}
-
-[data-theme="light"] .sidebar-tab:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.sidebar-tab.active {
-  color: var(--text);
-  border-left-color: var(--amber);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-[data-theme="light"] .sidebar-tab.active {
-  background: rgba(0, 0, 0, 0.03);
-}
-
-.tab-index {
-  min-width: 18px;
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  color: var(--dim);
-}
-
-.tab-glyph {
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  font-size: 9px;
-  color: var(--subtle);
-  flex-shrink: 0;
-}
-
-.sidebar-tab.active .tab-glyph {
-  border-color: rgba(245, 160, 0, 0.35);
-  color: var(--amber);
-}
-
-.tab-copy {
-  min-width: 0;
-}
-
-.tab-copy strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
-
-.tab-copy small {
-  display: block;
-  margin-top: 2px;
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.sidebar-footer {
-  border-top: 1px solid var(--border);
-  padding: 14px 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.theme-switch {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px;
-  padding: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-
-.theme-option {
-  padding: 6px 8px;
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.theme-option.active {
-  color: var(--text);
-  background: var(--dim);
-}
-
-.footer-notes {
-  display: grid;
-  gap: 7px;
-}
-
-.sidebar-note {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-}
-
-.sidebar-note strong {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.mobile-bar {
-  display: none;
-  position: sticky;
-  top: 0;
-  z-index: 26;
-  height: var(--topbar-h);
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 16px;
-  background: var(--sidebar-bg);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-}
-
-.mobile-bar button {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.mobile-copy {
-  flex: 1;
-  min-width: 0;
-}
-
-.mobile-title {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-}
-
-.mobile-sub {
-  margin-top: 2px;
-  font-size: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-main {
-  margin-left: var(--sidebar-w);
-  min-height: 100vh;
-}
-
-body.sidebar-collapsed main {
-  margin-left: var(--sidebar-collapsed);
-}
-
-.main-inner {
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: 32px var(--page-pad) 96px;
-}
-
-.page-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-
-.header-copy {
-  max-width: 720px;
-}
-
-.page-kicker {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 9px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
-}
-
-.page-kicker::after {
-  content: "";
-  width: 56px;
-  height: 1px;
-  background: var(--border);
-}
-
-.page-title {
-  font-size: clamp(28px, 3vw, 42px);
-  font-weight: 300;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-}
-
-.page-title strong {
-  font-weight: 600;
-  background: var(--grad-t);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.page-description {
-  margin-top: 14px;
-  max-width: 620px;
-  color: var(--text-dim);
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.8;
-}
-
-.page-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-  min-width: 280px;
-}
-
-.header-badges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.header-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.pill::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.65;
-}
-
-.pill.ok {
-  color: var(--green);
-  border-color: rgba(26, 161, 103, 0.28);
-}
-
-.pill.warn {
-  color: var(--amber);
-  border-color: rgba(245, 160, 0, 0.28);
-}
-
-.pill.alert {
-  color: var(--coral);
-  border-color: rgba(232, 69, 32, 0.28);
-}
-
-.pill.info {
-  color: var(--blue);
-  border-color: rgba(28, 111, 255, 0.28);
-}
-
-.pill.quiet::before {
-  display: none;
-}
-
-.btn,
-.btn-primary {
-  min-height: 38px;
-  padding: 10px 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.btn:hover {
-  border-color: var(--border2);
-  color: var(--text);
-}
-
-.btn-primary {
-  border: none;
-  color: #ffffff;
-  background: var(--grad);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(28, 111, 255, 0.18);
-}
-
-.btn-inline {
-  min-height: 28px;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.btn-inline:hover {
-  color: var(--text);
-  border-color: var(--border2);
-}
-
-.tab-panel {
-  display: none;
-}
-
-.tab-panel.active {
-  display: block;
-}
-
-.loading-card,
-.empty-card {
-  padding: 28px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted);
-}
-
-.loading-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.loading-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
-  transform: translateX(-100%);
-  animation: loadingSweep 1.3s linear infinite;
-}
-
-@keyframes loadingSweep {
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.metric-card {
-  width: 100%;
-  text-align: left;
-  padding: 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: 100%;
-  height: 2px;
-  background: var(--grad-h);
-  opacity: 0.7;
-}
-
-.metric-card:hover {
-  border-color: var(--border2);
-  transform: translateY(-2px);
-}
-
-.metric-card.warn::before {
-  background: linear-gradient(90deg, var(--amber), var(--coral));
-}
-
-.metric-card.ok::before {
-  background: linear-gradient(90deg, var(--green), var(--blue));
-}
-
-.metric-card.alert::before {
-  background: linear-gradient(90deg, var(--coral), var(--amber));
-}
-
-.metric-label {
-  font-size: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.metric-value {
-  margin-top: 10px;
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--text);
-}
-
-.metric-note {
-  margin-top: 10px;
-  font-size: 10px;
-  color: var(--text-dim);
-}
-
-.section-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.section-grid.two {
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
-}
-
-.section-grid.three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.section-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.section-card {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-.section-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: 100%;
-  height: 2px;
-  background: var(--grad-h);
-  opacity: 0.7;
-}
-
-.card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.card-label {
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.card-title {
-  margin-top: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-}
-
-.card-subtitle {
-  margin-top: 6px;
-  color: var(--text-dim);
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 300;
-  line-height: 1.65;
-}
-
-.card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.card-body {
-  padding: 18px;
-}
-
-.insight-card .card-body {
-  display: grid;
-  gap: 14px;
-}
-
-.insight-copy {
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 1.85;
-}
-
-.insight-copy strong {
-  color: var(--amber);
-  font-weight: 500;
-}
-
-.insight-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.list {
-  display: grid;
-  gap: 10px;
-}
-
-.list-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-}
-
-.list-row:last-child {
-  margin-bottom: 0;
-}
-
-.list-meta {
-  min-width: 62px;
-}
-
-.list-copy {
-  min-width: 0;
-}
-
-.list-title {
-  font-size: 12px;
-  color: var(--text);
-  line-height: 1.55;
-}
-
-.list-note {
-  margin-top: 4px;
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--text-dim);
-  line-height: 1.65;
-}
-
-.list-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.table-wrap {
-  overflow: auto;
-  border: 1px solid var(--border);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 680px;
-}
-
-th {
-  padding: 11px 12px;
-  text-align: left;
-  background: var(--surface2);
-  color: var(--muted);
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--border);
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-  color: var(--text);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-tr:hover td {
-  background: rgba(255, 255, 255, 0.018);
-}
-
-[data-theme="light"] tr:hover td {
-  background: rgba(0, 0, 0, 0.018);
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.tiny {
-  font-size: 9px;
-}
-
-.mono-quiet {
-  color: var(--text-dim);
-  font-size: 10px;
-}
-
-.project-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.project-card {
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  padding: 16px;
-  display: grid;
-  gap: 12px;
-}
-
-.project-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.project-name {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.45;
-}
-
-.project-domain {
-  margin-top: 4px;
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.project-statbar {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.project-stat {
-  padding: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.project-stat .metric-label {
-  font-size: 7px;
-}
-
-.project-stat .metric-value {
-  margin-top: 6px;
-  font-size: 16px;
-}
-
-.timeline {
-  display: grid;
-  gap: 12px;
-  position: relative;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 8px;
-  width: 1px;
-  background: var(--border);
-}
-
-.timeline-item {
-  position: relative;
-  margin-left: 18px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.timeline-item::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 18px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 0 4px var(--ink);
-}
-
-.timeline-meta {
-  font-size: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.timeline-body {
-  margin-top: 8px;
-  display: grid;
-  gap: 4px;
-}
-
-.review-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.diff-card {
-  border: 1px solid var(--border);
-  background: var(--surface2);
-}
-
-.diff-head {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.diff-title {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.55;
-}
-
-.diff-subtitle {
-  margin-top: 4px;
-  color: var(--text-dim);
-  font-family: var(--sans);
-  font-size: 11px;
-}
-
-.diff-columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-}
-
-.diff-side {
-  padding: 14px 16px;
-  min-height: 132px;
-}
-
-.diff-side + .diff-side {
-  border-left: 1px solid var(--border);
-}
-
-.diff-side.proposed {
-  background: rgba(232, 69, 32, 0.06);
-}
-
-.diff-side.current {
-  background: rgba(26, 161, 103, 0.06);
-}
-
-.diff-label {
-  font-size: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.diff-value {
-  font-family: var(--sans);
-  font-size: 12px;
-  line-height: 1.75;
-  color: var(--text);
-}
-
-.diff-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 14px 16px;
-  border-top: 1px solid var(--border);
-}
-
-.system-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 12px;
-}
-
-.health-list,
-.chart-list {
-  display: grid;
-  gap: 10px;
-}
-
-.health-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-}
-
-.chart-row {
-  display: grid;
-  grid-template-columns: minmax(110px, 170px) minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.chart-row strong {
-  font-size: 10px;
-  color: var(--text);
-}
-
-.chart-track {
-  height: 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.chart-fill {
-  height: 100%;
-  background: var(--grad-h);
-  opacity: 0.78;
-}
-
-.chart-value {
-  font-size: 10px;
-  color: var(--amber);
-}
-
-.banner {
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  font-size: 11px;
-  line-height: 1.7;
-}
-
-.banner.ok {
-  color: var(--green);
-  border-color: rgba(26, 161, 103, 0.28);
-}
-
-.banner.warn {
-  color: var(--amber);
-  border-color: rgba(245, 160, 0, 0.28);
-}
-
-.banner.alert {
-  color: var(--coral);
-  border-color: rgba(232, 69, 32, 0.28);
-}
-
-.form-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.input,
-.textarea {
-  width: 100%;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
-  padding: 12px 14px;
-  outline: none;
-}
-
-.input:focus,
-.textarea:focus {
-  border-color: rgba(28, 111, 255, 0.35);
-}
-
-.textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-.capture-dock {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 28;
-}
-
-.capture-panel {
-  width: 320px;
-  max-width: calc(100vw - 28px);
-  margin-bottom: 10px;
-  border: 1px solid rgba(245, 160, 0, 0.28);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  display: none;
-}
-
-.capture-panel.open {
-  display: block;
-}
-
-.capture-fab {
-  width: 54px;
-  height: 54px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--grad);
-  color: #ffffff;
-  box-shadow: 0 14px 28px rgba(28, 111, 255, 0.22);
-}
-
-.capture-fab:hover {
-  transform: scale(1.04);
-}
-
-.toast,
-.context-toast {
-  position: fixed;
-  right: 24px;
-  z-index: 40;
-  max-width: 340px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  display: none;
-}
-
-.toast {
-  bottom: 92px;
-}
-
-.context-toast {
-  top: 24px;
-}
-
-.toast.show,
-.context-toast.show {
-  display: block;
-}
-
-.toast.ok {
-  color: var(--green);
-  border-color: rgba(26, 161, 103, 0.28);
-}
-
-.toast.error {
-  color: var(--coral);
-  border-color: rgba(232, 69, 32, 0.28);
-}
-
-.context-toast strong {
-  display: block;
-  color: var(--amber);
-  margin-bottom: 8px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-
-.context-toast p {
-  color: var(--text-dim);
-  font-family: var(--sans);
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.backdrop {
-  display: none;
-}
-
-.copy-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 42;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(10, 10, 11, 0.85);
-}
-
-.copy-modal.open {
-  display: flex;
-}
-
-.copy-modal-card {
-  width: min(820px, 100%);
-  border: 1px solid rgba(245, 160, 0, 0.28);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-
-.copy-modal-card textarea {
-  min-height: 320px;
-}
-
-@media (max-width: 1200px) {
-  .metric-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .section-grid.two,
-  .system-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .project-grid,
-  .review-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 980px) {
-  .mobile-bar {
-    display: flex;
-  }
-
-  .sidebar {
-    transform: translateX(-100%);
-    width: min(320px, calc(100vw - 44px));
-    max-width: 320px;
-  }
-
-  body.sidebar-open .sidebar {
-    transform: translateX(0);
-  }
-
-  .backdrop {
-    position: fixed;
-    inset: 0;
-    background: var(--overlay);
-    z-index: 25;
-  }
-
-  body.sidebar-open .backdrop {
-    display: block;
-  }
-
-  main,
-  body.sidebar-collapsed main {
-    margin-left: 0;
-  }
-
-  .main-inner {
-    padding-top: 22px;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .page-actions,
-  .header-badges,
-  .header-buttons {
-    width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 640px) {
-  :root {
-    --page-pad: 16px;
-  }
-
-  .metric-grid,
-  .section-grid.three {
-    grid-template-columns: 1fr;
-  }
-
-  .card-header,
-  .card-body {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .list-row {
-    grid-template-columns: 1fr;
-  }
-
-  .list-actions {
-    justify-content: flex-start;
-  }
-
-  .diff-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .diff-side + .diff-side {
-    border-left: none;
-    border-top: 1px solid var(--border);
-  }
-
-  .capture-dock {
-    right: 16px;
-    bottom: 16px;
-  }
-}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400&display=swap');
+:root,[data-theme="dark"]{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;--border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);--dim:#252328;--muted:#524f58;--subtle:#7a7682;
+  --text:#e8e5de;--text-dim:rgba(232,229,222,0.52);--nav-bg:rgba(10,10,11,0.95);
+  --term-bg:#060607;
+}
+[data-theme="light"]{
+  --ink:#f3f1ec;--surface:#fff;--surface2:#ece9e2;--border:rgba(0,0,0,0.09);
+  --border2:rgba(0,0,0,0.16);--dim:#d0ccc4;--muted:#888380;--subtle:#555250;
+  --text:#1a1820;--text-dim:rgba(26,24,32,0.56);--nav-bg:rgba(243,241,236,0.96);
+  --term-bg:#1a1820;
+}
+:root{
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad:linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-h:linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--ink);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--mono);cursor:pointer;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--dim);}
+.grad-text{background:linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--grad-h);}
+.hdr-l{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:0.06em;}
+.hdr-mark{width:22px;height:22px;animation:spin 90s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hdr-badge{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--dim);color:var(--muted);margin-left:6px;}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.theme-row{display:flex;background:var(--surface);border:1px solid var(--border);padding:2px;gap:1px;}
+.th-btn{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 8px;background:transparent;border:none;color:var(--muted);cursor:pointer;}
+.th-btn.active{background:var(--dim);color:var(--text);}
+
+nav{position:fixed;top:52px;left:0;right:0;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;}
+nav::-webkit-scrollbar{height:2px;}
+.ntab{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 20px;background:transparent;border:none;border-right:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color 0.15s,background 0.15s;}
+.ntab:hover{color:var(--text);background:var(--surface2);}
+.ntab.active{color:var(--text);border-bottom-color:var(--amber);}
+
+main{margin-top:100px;padding:20px;max-width:1200px;margin-left:auto;margin-right:auto;padding-bottom:80px;}
+.pane{display:none;}
+.pane.active{display:block;}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:18px;}
+.card{background:var(--surface2);border:1px solid var(--border);padding:13px;cursor:pointer;transition:border-color 0.15s;}
+.card:hover{border-color:rgba(255,153,51,0.4);}
+.card.warn{border-color:rgba(245,160,0,0.35);}
+.card.alert{border-color:rgba(232,69,32,0.35);}
+.cn{font-size:1.8rem;font-weight:300;line-height:1;margin-bottom:4px;}
+.ck{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* Section header */
+.sh{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px;margin:16px 0 10px;}
+.sh::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th{background:var(--surface2);color:var(--muted);padding:7px 10px;text-align:left;font-weight:400;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+td{padding:6px 10px;border-bottom:1px solid var(--border);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+tr:hover td{background:var(--surface2);}
+.badge{display:inline-block;font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid;}
+.b-ok{border-color:rgba(26,161,103,0.35);color:var(--green);}
+.b-hi{border-color:rgba(232,69,32,0.35);color:var(--coral);}
+.b-md{border-color:rgba(245,160,0,0.35);color:var(--amber);}
+.b-lo{border-color:rgba(28,111,255,0.35);color:var(--blue);}
+
+/* Ts-card (Today) */
+.ts-card{background:var(--surface2);border:1px solid var(--border);padding:13px;margin-bottom:10px;position:relative;overflow:hidden;}
+.ts-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.ts-card h3{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
+.ti{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.ti:last-child{border-bottom:none;}
+.ti-pri{min-width:52px;font-size:8px;text-align:center;letter-spacing:0.08em;}
+.ti-con{flex:1;font-size:11px;}
+.ti-con small{color:var(--muted);font-size:10px;display:block;margin-top:2px;}
+.ti-act button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:9px;cursor:pointer;}
+.ti-act button:hover{border-color:var(--amber);color:var(--amber);}
+
+/* Oracle card */
+.oracle-card{background:linear-gradient(135deg,#0e1628,#161830);border:1px solid rgba(28,111,255,0.25);padding:14px 18px;margin-bottom:12px;}
+.oracle-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.oracle-card-title{font-size:11px;font-weight:500;color:var(--blue);letter-spacing:0.04em;}
+.oracle-item{padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.oracle-item:last-child{border-bottom:none;}
+.oracle-type{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px;}
+.oracle-detail{font-size:10px;color:var(--text-dim);}
+.oracle-action{font-size:9px;color:var(--blue);margin-top:2px;}
+
+/* Insight card (morning brief) */
+.insight-card{background:linear-gradient(135deg,#1e1630,#241832);border:1px solid rgba(255,153,51,0.25);padding:14px 18px;margin-bottom:12px;}
+
+/* Inbox */
+.ibf{display:flex;gap:8px;margin-bottom:12px;}
+.ibf input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;outline:none;}
+.ibf input:focus{border-color:var(--amber);}
+.btn-p{background:var(--grad);color:#fff;border:none;padding:8px 18px;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;}
+.btn-p:hover{opacity:0.88;}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+.btn:hover{border-color:var(--amber);}
+.btn-ok{border-color:rgba(26,161,103,0.4);color:var(--green);}
+.btn-x{border-color:rgba(232,69,32,0.4);color:var(--coral);}
+
+/* Timeline */
+.tl{position:relative;padding-left:20px;}
+.tl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--border);}
+.tli{position:relative;margin-bottom:10px;}
+.tli::before{content:'';position:absolute;left:-16px;top:5px;width:7px;height:7px;border-radius:50%;background:var(--amber);border:2px solid var(--ink);}
+.tl-ts{font-size:9px;color:var(--muted);margin-bottom:2px;}
+.tl-body{background:var(--surface2);border:1px solid var(--border);padding:7px 11px;font-size:11px;}
+.tl-ag{color:var(--amber);font-size:9px;margin-bottom:2px;}
+
+/* Health grid */
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;}
+.hi{background:var(--surface2);border:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.hi-k{font-size:9px;letter-spacing:0.08em;color:var(--muted);}
+.hi-v{font-size:13px;font-weight:500;}
+.hi-v.ok{color:var(--green);}.hi-v.warn{color:var(--amber);}
+
+/* Security */
+.sec-clean{background:rgba(26,161,103,0.07);border:1px solid rgba(26,161,103,0.25);padding:12px 16px;margin-bottom:14px;font-size:11px;color:var(--green);}
+.q-item{background:var(--surface2);border:1px solid rgba(232,69,32,0.25);padding:10px 14px;margin-bottom:8px;}
+.q-type{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--coral);margin-bottom:4px;}
+
+/* Copy context */
+.ctx-btn{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ctx-hint{font-size:10px;color:var(--muted);}
+
+/* Float capture */
+#fcap{position:fixed;bottom:20px;right:20px;z-index:200;}
+#fbtn{background:var(--amber);color:var(--ink);border:none;width:48px;height:48px;border-radius:50%;font-size:1.4rem;font-weight:700;box-shadow:0 4px 16px rgba(245,160,0,0.4);}
+#fbtn:hover{transform:scale(1.08);}
+#fform{display:none;position:absolute;bottom:56px;right:0;background:var(--surface);border:1px solid var(--amber);padding:12px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+#fform.open{display:block;}
+#fform p{font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;}
+#finput{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px;font-family:var(--mono);font-size:11px;margin-bottom:7px;resize:none;height:54px;outline:none;}
+#finput:focus{border-color:var(--amber);}
+.fbrow{display:flex;gap:6px;}
+
+/* Toast */
+#toast{position:fixed;bottom:76px;right:22px;background:var(--surface);border:1px solid var(--green);color:var(--green);padding:8px 14px;font-size:10px;display:none;z-index:300;}
+
+.empty{color:var(--muted);text-align:center;padding:24px;font-size:11px;}
+
+@media(max-width:600px){nav{gap:0;}main{padding:12px;}.cards{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
-<div class="app-shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Collapse sidebar">
-        <span aria-hidden="true">[]</span>
-      </button>
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="brandGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#1c6fff"/>
-              <stop offset="33%" stop-color="#5535e0"/>
-              <stop offset="66%" stop-color="#e84520"/>
-              <stop offset="100%" stop-color="#f5a000"/>
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="50" r="46" stroke="url(#brandGradient)" stroke-width="2.5"/>
-          <circle cx="50" cy="50" r="28" stroke="url(#brandGradient)" stroke-width="1.4" opacity="0.45"/>
-          <circle cx="50" cy="50" r="5" fill="url(#brandGradient)"/>
-          <circle cx="50" cy="4" r="3.5" fill="#1c6fff"/>
-          <circle cx="96" cy="50" r="3.5" fill="#5535e0"/>
-          <circle cx="50" cy="96" r="3.5" fill="#e84520"/>
-          <circle cx="4" cy="50" r="3.5" fill="#f5a000"/>
-        </svg>
-        <div class="brand-copy">
-          <div class="brand-name">OpenYantra</div>
-          <div class="brand-sub">Briefing Room v2.11</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="sidebar-group">
-      <div class="sidebar-label">Rooms</div>
-      <nav class="sidebar-nav" aria-label="Dashboard tabs">
-        <button class="sidebar-tab active" data-tab-target="today">
-          <span class="tab-index">01</span>
-          <span class="tab-glyph">T</span>
-          <span class="tab-copy">
-            <strong>Today</strong>
-            <small>Resolve now</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="inbox">
-          <span class="tab-index">02</span>
-          <span class="tab-glyph">I</span>
-          <span class="tab-copy">
-            <strong>Inbox</strong>
-            <small>Capture queue</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="loops">
-          <span class="tab-index">03</span>
-          <span class="tab-glyph">L</span>
-          <span class="tab-copy">
-            <strong>Loops</strong>
-            <small>Anishtha</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="projects">
-          <span class="tab-index">04</span>
-          <span class="tab-glyph">P</span>
-          <span class="tab-copy">
-            <strong>Projects</strong>
-            <small>Work map</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="timeline">
-          <span class="tab-index">05</span>
-          <span class="tab-glyph">R</span>
-          <span class="tab-copy">
-            <strong>Timeline</strong>
-            <small>Agrasandhani</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="review">
-          <span class="tab-index">06</span>
-          <span class="tab-glyph">V</span>
-          <span class="tab-copy">
-            <strong>Review</strong>
-            <small>User decisions</small>
-          </span>
-        </button>
-        <button class="sidebar-tab" data-tab-target="system">
-          <span class="tab-index">07</span>
-          <span class="tab-glyph">S</span>
-          <span class="tab-copy">
-            <strong>System</strong>
-            <small>Raksha and health</small>
-          </span>
-        </button>
-      </nav>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="theme-switch" role="group" aria-label="Theme">
-        <button class="theme-option" data-theme-mode="light">Light</button>
-        <button class="theme-option" data-theme-mode="dark">Dark</button>
-        <button class="theme-option" data-theme-mode="auto">Auto</button>
-      </div>
-      <div class="footer-notes">
-        <div class="sidebar-note">
-          <span>Capture</span>
-          <strong>Press I</strong>
-        </div>
-        <div class="sidebar-note">
-          <span>Context</span>
-          <strong>One-click copy</strong>
-        </div>
-        <div class="sidebar-note">
-          <span>Status</span>
-          <strong id="sidebarStatus">Syncing</strong>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <div class="backdrop" id="backdrop"></div>
-
-  <div class="mobile-bar">
-    <button id="mobileMenu" aria-label="Open sidebar">|||</button>
-    <div class="mobile-copy">
-      <div class="mobile-title">OpenYantra</div>
-      <div class="mobile-sub" id="mobileTabLabel">Today</div>
-    </div>
-    <button id="mobileTheme" aria-label="Toggle theme">T</button>
+<header>
+  <div class="hdr-l">
+    <svg class="hdr-mark" width="22" height="22" viewBox="0 0 100 100" fill="none">
+      <defs><linearGradient id="hG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="46" stroke="url(#hG)" stroke-width="2.5" fill="none"/>
+      <circle cx="50" cy="50" r="28" stroke="url(#hG)" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <circle cx="50" cy="50" r="5" fill="url(#hG)"/>
+      <circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/>
+      <circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/>
+    </svg>
+    OpenYantra
+    <span class="hdr-badge">v2.12</span>
   </div>
-
-  <main>
-    <div class="main-inner">
-      <header class="page-header">
-        <div class="header-copy">
-          <div class="page-kicker" id="pageKicker">Capture. Review. Resolve.</div>
-          <h1 class="page-title" id="pageTitle"><strong>Today</strong></h1>
-          <p class="page-description" id="pageDescription">
-            The daily briefing room. Resolve the next right thing in under ten seconds.
-          </p>
-        </div>
-        <div class="page-actions">
-          <div class="header-badges" id="headerBadges"></div>
-          <div class="header-buttons">
-            <button class="btn" data-action="open-capture">Quick Capture</button>
-            <button class="btn-primary" data-action="copy-context">Copy Context</button>
-          </div>
-        </div>
-      </header>
-
-      <section class="tab-panel active" id="today" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="inbox" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="loops" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="projects" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="timeline" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="review" aria-labelledby="pageTitle"></section>
-      <section class="tab-panel" id="system" aria-labelledby="pageTitle"></section>
-    </div>
-  </main>
-</div>
-
-<div class="capture-dock">
-  <div class="capture-panel" id="capturePanel">
-    <div class="card-header">
-      <div>
-        <div class="card-label">Quick Capture</div>
-        <div class="card-title">Inbox</div>
-        <div class="card-subtitle">Raw notes land in Avagraha first. Route them later.</div>
-      </div>
-      <div class="card-actions">
-        <button class="btn-inline" data-action="close-capture">Close</button>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="form-grid">
-        <textarea class="textarea" id="captureInput" placeholder="Capture anything..."></textarea>
-        <div class="header-buttons" style="justify-content:flex-start;">
-          <button class="btn-primary" data-action="save-floating-inbox">Save</button>
-        </div>
-      </div>
+  <div class="hdr-r">
+    <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green)"><span class="status-dot"></span>Chitragupta active</span>
+    <div class="theme-row" id="tr">
+      <button class="th-btn" data-mode="light">Light</button>
+      <button class="th-btn" data-mode="dark">Dark</button>
+      <button class="th-btn" data-mode="auto">Auto</button>
     </div>
   </div>
-  <button class="capture-fab" id="captureFab" aria-label="Quick capture">+</button>
-</div>
+</header>
 
-<div class="toast" id="toast"></div>
+<nav>
+  <button class="ntab active" onclick="go('today',this)">🌅 Today</button>
+  <button class="ntab" onclick="go('inbox',this)">📥 Inbox</button>
+  <button class="ntab" onclick="go('loops',this)">🔓 Loops</button>
+  <button class="ntab" onclick="go('projects',this)">🚀 Projects</button>
+  <button class="ntab" onclick="go('oracle',this)">🔮 Oracle</button>
+  <button class="ntab" onclick="go('review',this)">✏️ Review</button>
+  <button class="ntab" onclick="go('timeline',this)">📅 Timeline</button>
+  <button class="ntab" onclick="go('security',this)">🔒 Security</button>
+  <button class="ntab" onclick="go('ledger',this)">📒 Ledger</button>
+  <button class="ntab" onclick="go('health',this)">💚 Health</button>
+</nav>
 
-<div class="context-toast" id="contextToast">
-  <strong>Context copied</strong>
-  <p>Paste it into Claude, ChatGPT, OpenClaw, or any personal agent chat.</p>
-</div>
+<main>
+  <div id="today" class="pane active"></div>
+  <div id="inbox" class="pane"></div>
+  <div id="loops" class="pane"></div>
+  <div id="projects" class="pane"></div>
+  <div id="oracle" class="pane"></div>
+  <div id="review" class="pane"></div>
+  <div id="timeline" class="pane"></div>
+  <div id="security" class="pane"></div>
+  <div id="ledger" class="pane"></div>
+  <div id="health" class="pane"></div>
+</main>
 
-<div class="copy-modal" id="copyModal">
-  <div class="copy-modal-card">
-    <div class="card-header">
-      <div>
-        <div class="card-label">Clipboard Fallback</div>
-        <div class="card-title">Copy this context manually</div>
-        <div class="card-subtitle">Your browser blocked direct clipboard access, so the markdown is ready here.</div>
-      </div>
-      <div class="card-actions">
-        <button class="btn-inline" data-action="close-copy-modal">Close</button>
-      </div>
-    </div>
-    <div class="card-body">
-      <textarea class="textarea" id="copyModalTextarea" readonly></textarea>
+<div id="fcap">
+  <div id="fform">
+    <p>QUICK CAPTURE -- INBOX</p>
+    <textarea id="finput" placeholder="Capture anything..."></textarea>
+    <div class="fbrow">
+      <button class="btn-p" onclick="floatSave()" style="flex:1">Save</button>
+      <button class="btn" onclick="floatClose()">X</button>
     </div>
   </div>
+  <button id="fbtn" onclick="floatToggle()" title="Quick capture (i)">+</button>
 </div>
+<div id="toast"></div>
 
 <script>
-const TAB_META = {
-  today: {
-    title: "Today",
-    richTitle: "<strong>Today</strong>",
-    label: "Daily Briefing",
-    description: "The daily briefing room. Resolve the next right thing in under ten seconds."
-  },
-  inbox: {
-    title: "Inbox",
-    richTitle: "<strong>Inbox</strong>",
-    label: "Capture Queue",
-    description: "Capture fast. Categorize later. Every note lands in Avagraha before routing."
-  },
-  loops: {
-    title: "Loops",
-    richTitle: "<strong>Loops</strong>",
-    label: "Anishtha",
-    description: "Unresolved threads survive context compaction. This is the strongest part of the system."
-  },
-  projects: {
-    title: "Projects",
-    richTitle: "<strong>Projects</strong>",
-    label: "Work Map",
-    description: "Active projects, next concrete steps, and pending tasks in one project room."
-  },
-  timeline: {
-    title: "Timeline",
-    richTitle: "<strong>Timeline</strong>",
-    label: "Agrasandhani",
-    description: "Every write, every signer, every moment. The ledger made readable."
-  },
-  review: {
-    title: "Review",
-    richTitle: "<strong>Review</strong>",
-    label: "User Decisions",
-    description: "Conflict resolution and correction review. Dharma-Adesh lives here."
-  },
-  system: {
-    title: "System",
-    richTitle: "<strong>System</strong>",
-    label: "Raksha and Health",
-    description: "Health, security, analytics, and the live system surface under one roof."
-  }
+const api = async(url,opts={})=>{try{const r=await fetch(url,opts);return await r.json();}catch(e){return{};}};
+const toast = (m,ok=true)=>{const t=document.getElementById('toast');t.textContent=m;t.style.borderColor=ok?'var(--green)':'var(--coral)';t.style.color=ok?'var(--green)':'var(--coral)';t.style.display='block';setTimeout(()=>t.style.display='none',2500);};
+const ptag = s=>{if(!s)return'';const m={'Active':'b-ok','Pending':'b-md','High':'b-hi','Critical':'b-hi','Medium':'b-md','Low':'b-lo','Done':'b-lo','written':'b-ok','confirmed':'b-hi','suspicious':'b-md','clean':'b-ok'};return`<span class="badge ${m[s]||''}">${s}</span>`;};
+const tbl = (rows,cols)=>{
+  if(!rows||!rows.length)return'<div class="empty">No data yet.</div>';
+  let h='<table><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+  rows.forEach(r=>{h+='<tr>'+cols.map(c=>{const v=String(r[c]||'');if(['Status','Priority','Threat Level'].includes(c))return`<td>${ptag(v)}</td>`;return`<td title="${v}">${v.substring(0,55)}</td>`;}).join('')+'</tr>';});
+  return h+'</table>';
 };
 
-const SHEET_ENDPOINTS = {
-  "🚀 Projects": "projects",
-  "✅ Tasks": "tasks",
-  "🔓 Open Loops": "open_loops",
-  "👥 People": "people",
-  "🎯 Goals": "goals",
-  "💡 Preferences": "preferences",
-  "🧠 Beliefs": "beliefs",
-  "📅 Session Log": "session_log",
-  "📥 Inbox": "inbox",
-  "✏️ Corrections": "corrections",
-  "📒 Agrasandhanī": "ledger",
-  "🔒 Quarantine": "quarantine",
-  "🛡️ Security Log": "security_log"
-};
-
-const STATE = {
-  currentTab: "today",
-  themeMode: "auto",
-  health: null,
-  sheetCache: new Map(),
-  scanResult: "",
-  mobileOpen: false
-};
-
-const body = document.body;
-const headerBadges = document.getElementById("headerBadges");
-const sidebarStatus = document.getElementById("sidebarStatus");
-const backdrop = document.getElementById("backdrop");
-const capturePanel = document.getElementById("capturePanel");
-const captureFab = document.getElementById("captureFab");
-const toast = document.getElementById("toast");
-const contextToast = document.getElementById("contextToast");
-const copyModal = document.getElementById("copyModal");
-const copyModalTextarea = document.getElementById("copyModalTextarea");
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+let cur='today';
+function go(name,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  cur=name; load(name);
 }
 
-function truncate(value, max = 120) {
-  const text = String(value ?? "");
-  return text.length > max ? text.slice(0, max - 1) + "..." : text;
+async function load(name){
+  const L={today:loadToday,inbox:loadInbox,loops:loadLoops,
+    projects:()=>loadTable('projects',['Project','Domain','Status','Priority','Next Step'],'projects'),
+    oracle:loadOracle,review:loadReview,timeline:loadTimeline,
+    security:loadSecurity,ledger:()=>loadTable('ledger',['Timestamp','Agent','Sheet','Operation','Status'],'ledger'),
+    health:loadHealth};
+  if(L[name])await L[name]();
 }
 
-function formatDate(value) {
-  if (!value) {
-    return "-";
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return escapeHtml(String(value).slice(0, 10));
-  }
-  return parsed.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  });
-}
-
-function formatDateTime(value) {
-  if (!value) {
-    return "-";
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return escapeHtml(String(value).replace("T", " ").slice(0, 16));
-  }
-  return parsed.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
-function numberValue(value) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function resolveTone(value) {
-  const normalized = String(value ?? "").toLowerCase();
-  if (
-    normalized.includes("healthy") ||
-    normalized === "ok" ||
-    normalized === "available" ||
-    normalized === "active" ||
-    normalized === "done" ||
-    normalized === "completed" ||
-    normalized === "written" ||
-    normalized === "approved"
-  ) {
-    return "ok";
-  }
-  if (
-    normalized.includes("warning") ||
-    normalized.includes("pending") ||
-    normalized.includes("stale") ||
-    normalized.includes("suspicious") ||
-    normalized.includes("high") ||
-    normalized.includes("critical")
-  ) {
-    return "warn";
-  }
-  if (
-    normalized.includes("error") ||
-    normalized.includes("blocked") ||
-    normalized.includes("quarantined") ||
-    normalized.includes("confirmed") ||
-    normalized.includes("rejected")
-  ) {
-    return "alert";
-  }
-  return "info";
-}
-
-function pill(label, tone = "quiet") {
-  return `<span class="pill ${tone}">${escapeHtml(label)}</span>`;
-}
-
-function notify(message, ok = true) {
-  toast.textContent = message;
-  toast.className = `toast show ${ok ? "ok" : "error"}`;
-  window.clearTimeout(notify._timer);
-  notify._timer = window.setTimeout(() => {
-    toast.className = "toast";
-  }, 2600);
-}
-
-function showContextToast() {
-  contextToast.classList.add("show");
-  window.clearTimeout(showContextToast._timer);
-  showContextToast._timer = window.setTimeout(() => {
-    contextToast.classList.remove("show");
-  }, 4200);
-}
-
-function loadingBlock(message) {
-  return `<div class="loading-card">${escapeHtml(message)}</div>`;
-}
-
-function emptyBlock(title, note) {
-  return `
-    <div class="empty-card">
-      <div class="card-label">${escapeHtml(title)}</div>
-      <div style="margin-top:10px;color:var(--text);font-size:13px;">${escapeHtml(note)}</div>
-    </div>
-  `;
-}
-
-function metricCard(label, value, note, tab, tone = "") {
-  return `
-    <button class="metric-card ${tone}" data-action="goto" data-tab="${escapeHtml(tab)}">
-      <div class="metric-label">${escapeHtml(label)}</div>
-      <div class="metric-value">${escapeHtml(value)}</div>
-      <div class="metric-note">${escapeHtml(note)}</div>
-    </button>
-  `;
-}
-
-function rowMatch(row, rowIdentifier) {
-  if (!rowIdentifier) {
-    return false;
-  }
-  const target = String(rowIdentifier).trim();
-  return Object.values(row || {}).some((value) => String(value ?? "").trim() === target) ||
-    Object.values(row || {}).some((value) => String(value ?? "").includes(target));
-}
-
-function countdownForLoop(loop) {
-  const ttl = numberValue(loop["TTL_Days"] || 0);
-  const openedRaw = loop["Opened"];
-  if (!ttl || !openedRaw) {
-    return { label: "No TTL", tone: "quiet" };
-  }
-  const opened = new Date(openedRaw);
-  if (Number.isNaN(opened.getTime())) {
-    return { label: `${ttl}d`, tone: "quiet" };
-  }
-  const age = Math.floor((Date.now() - opened.getTime()) / 86400000);
-  const left = ttl - age;
-  if (left < 0) {
-    return { label: `${Math.abs(left)}d overdue`, tone: "alert" };
-  }
-  if (left <= 3) {
-    return { label: `${left}d left`, tone: "warn" };
-  }
-  return { label: `${left}d left`, tone: "ok" };
-}
-
-function priorityTone(value) {
-  const normalized = String(value ?? "").toLowerCase();
-  if (normalized === "critical" || normalized === "high") {
-    return "warn";
-  }
-  if (normalized === "medium" || normalized === "in progress" || normalized === "pending") {
-    return "info";
-  }
-  if (normalized === "done" || normalized === "completed") {
-    return "ok";
-  }
-  return "quiet";
-}
-
-function markdownToHtml(markdown) {
-  const lines = String(markdown || "").split("\n");
-  const rendered = [];
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) {
-      continue;
-    }
-    if (line.startsWith("## ")) {
-      rendered.push(`<div class="card-label">${escapeHtml(line.replace(/^##\s+/, ""))}</div>`);
-      continue;
-    }
-    const content = escapeHtml(line)
-      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.+?)\*/g, "<em>$1</em>");
-    if (line.startsWith("- ")) {
-      rendered.push(`<div>${content.replace(/^- /, "&#8226; ")}</div>`);
-    } else {
-      rendered.push(`<div>${content}</div>`);
-    }
-  }
-  return rendered.join("");
-}
-
-function renderTable(rows, columns) {
-  if (!rows.length) {
-    return emptyBlock("No rows", "Nothing to show here yet.");
-  }
-
-  const header = columns
-    .map((column) => `<th>${escapeHtml(column.label)}</th>`)
-    .join("");
-  const bodyRows = rows
-    .map((row) => {
-      const cells = columns
-        .map((column) => {
-          const value = column.render ? column.render(row) : escapeHtml(row[column.key] ?? "-");
-          return `<td>${value}</td>`;
-        })
-        .join("");
-      return `<tr>${cells}</tr>`;
-    })
-    .join("");
-  return `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>${header}</tr></thead>
-        <tbody>${bodyRows}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-async function api(url, options = {}) {
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`OpenYantra dashboard error for ${url}`, error);
-    return null;
-  }
-}
-
-async function fetchSheet(name, force = false) {
-  if (!force && STATE.sheetCache.has(name)) {
-    return STATE.sheetCache.get(name);
-  }
-  const data = await api(`/api/sheet/${name}`);
-  const rows = (data && data.rows) || [];
-  STATE.sheetCache.set(name, rows);
-  return rows;
-}
-
-async function getHealth(force = false) {
-  if (STATE.health && !force) {
-    return STATE.health;
-  }
-  STATE.health = await api("/api/health");
-  renderChrome();
-  return STATE.health;
-}
-
-function renderChrome() {
-  const health = STATE.health || {};
-  const version = health.version || "2.11";
-  const statusTone = resolveTone(health.status || "warning");
-  const vidyaTone = health.vidyakosha === "available" ? "ok" : "warn";
-  headerBadges.innerHTML = [
-    pill(`Chitragupta ${health.chitragupta_alive ? "live" : "quiet"}`, health.chitragupta_alive ? "ok" : "warn"),
-    pill(`VidyaKosha ${health.vidyakosha || "unknown"}`, vidyaTone),
-    pill(`Inbox ${health.inbox_pending ?? 0}`, numberValue(health.inbox_pending) > 0 ? "warn" : "quiet"),
-    pill(`Review ${health.corrections_pending ?? 0}`, numberValue(health.corrections_pending) > 0 ? "warn" : "quiet"),
-    pill(`v${version}`, statusTone)
-  ].join("");
-  sidebarStatus.textContent = health.status || "Offline";
-}
-
-function setPageHeader(tabName) {
-  const meta = TAB_META[tabName] || TAB_META.today;
-  document.getElementById("pageKicker").textContent = meta.label;
-  document.getElementById("pageTitle").innerHTML = meta.richTitle;
-  document.getElementById("pageDescription").textContent = meta.description;
-  document.getElementById("mobileTabLabel").textContent = meta.title;
-}
-
-function applyTheme(mode) {
-  STATE.themeMode = mode;
-  const root = document.documentElement;
-  if (mode === "auto") {
-    const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-    root.setAttribute("data-theme", prefersLight ? "light" : "dark");
-  } else {
-    root.setAttribute("data-theme", mode);
-  }
-  localStorage.setItem("oy-v3-theme", mode);
-  document.querySelectorAll("[data-theme-mode]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.themeMode === mode);
-  });
-}
-
-function toggleMobileTheme() {
-  const current = document.documentElement.getAttribute("data-theme");
-  applyTheme(current === "dark" ? "light" : "dark");
-}
-
-function applySidebarState(collapsed) {
-  body.classList.toggle("sidebar-collapsed", collapsed && window.innerWidth > 980);
-  localStorage.setItem("oy-v3-sidebar", collapsed ? "collapsed" : "expanded");
-}
-
-function openMobileSidebar(open) {
-  STATE.mobileOpen = open;
-  body.classList.toggle("sidebar-open", open);
-}
-
-function openCapture(open) {
-  capturePanel.classList.toggle("open", open);
-  if (open) {
-    document.getElementById("captureInput").focus();
-  }
-}
-
-async function activateTab(tabName) {
-  if (!TAB_META[tabName]) {
-    tabName = "today";
-  }
-  STATE.currentTab = tabName;
-  localStorage.setItem("oy-v3-tab", tabName);
-  setPageHeader(tabName);
-  document.querySelectorAll(".sidebar-tab").forEach((button) => {
-    const active = button.dataset.tabTarget === tabName;
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-current", active ? "page" : "false");
-  });
-  document.querySelectorAll(".tab-panel").forEach((panel) => {
-    panel.classList.toggle("active", panel.id === tabName);
-  });
-  openMobileSidebar(false);
-  await loadTab(tabName);
-}
-
-async function loadTab(tabName) {
-  const panel = document.getElementById(tabName);
-  panel.innerHTML = loadingBlock(`Loading ${TAB_META[tabName].title.toLowerCase()}...`);
-  const loader = {
-    today: loadToday,
-    inbox: loadInbox,
-    loops: loadLoops,
-    projects: loadProjects,
-    timeline: loadTimeline,
-    review: loadReview,
-    system: loadSystem
-  }[tabName];
-  if (loader) {
-    await loader();
-  }
-}
-
-async function loadToday() {
-  const panel = document.getElementById("today");
-  const [health, loopsRows, projectRows, taskRows, inboxRows, morning] = await Promise.all([
-    getHealth(true),
-    fetchSheet("open_loops", true),
-    fetchSheet("projects", true),
-    fetchSheet("tasks", true),
-    fetchSheet("inbox", true),
-    api("/api/morning")
+async function loadToday(){
+  const [h,ld,pd,td,id,od]=await Promise.all([
+    api('/api/health'),api('/api/sheet/open_loops'),api('/api/sheet/projects'),
+    api('/api/sheet/tasks'),api('/api/sheet/inbox'),api('/api/oracle')
   ]);
+  const cards=[
+    {n:h.open_loops||0,k:'Open Loops',c:(h.open_loops||0)>10?'warn':''},
+    {n:h.inbox_pending||0,k:'Inbox',c:(h.inbox_pending||0)>0?'warn':''},
+    {n:h.corrections_pending||0,k:'Corrections',c:(h.corrections_pending||0)>0?'warn':''},
+    {n:h.stale_projects||0,k:'Stale Projects',c:(h.stale_projects||0)>0?'alert':''},
+  ].map(c=>`<div class="card ${c.c}" onclick="goTo('${c.k.toLowerCase().replace(' ','')}')"><div class="cn" style="color:var(--amber)">${c.n}</div><div class="ck">${c.k}</div></div>`).join('');
 
-  if (!health) {
-    panel.innerHTML = emptyBlock("Today unavailable", "The backend did not answer. Start yantra ui to hydrate the room.");
-    return;
+  // Copy context button
+  const ctxBtn=`<div class="ctx-btn"><button class="btn-p" onclick="copyCtx()">📋 Copy Context</button><span class="ctx-hint">Paste into Claude.ai, ChatGPT, or any AI chat</span></div>`;
+
+  // Morning brief card
+  const brief=await api('/api/morning');
+  let briefCard='';
+  if(brief&&brief.brief){
+    const bHtml=brief.brief.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--amber)">$1</strong>').replace(/\*(.*?)\*/g,'<em style="color:var(--muted)">$1</em>').replace(/^##.*$/gm,'').split('\n').filter(l=>l.trim()).join('<br>');
+    briefCard=`<div class="insight-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="color:var(--amber);font-size:11px;font-weight:500">🌅 Morning Brief</span>${brief.streak>0?`<span style="color:var(--coral);font-size:10px">🔥 ${brief.streak}d streak</span>`:''}</div><div style="color:var(--text-dim);font-family:var(--sans);font-size:12px;line-height:1.7">${bHtml}</div></div>`;
   }
 
-  const unresolvedLoops = loopsRows
-    .filter((row) => row["Resolved?"] === "No")
-    .sort((left, right) => numberValue(right["Importance"]) - numberValue(left["Importance"]));
-  const activeProjects = projectRows.filter((row) => row["Status"] === "Active");
-  const staleCutoff = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
-  const staleProjects = activeProjects.filter((row) => String(row["Last Updated"] || "") < staleCutoff);
-  const highTasks = taskRows.filter((row) => row["Status"] !== "Done").sort((left, right) => {
-    const priorities = { Critical: 4, High: 3, Medium: 2, Low: 1 };
-    return (priorities[right["Priority"]] || 0) - (priorities[left["Priority"]] || 0);
-  }).slice(0, 5);
-  const inboxPending = inboxRows.filter((row) => row["Routed?"] === "No");
-
-  const resolveRows = [];
-  unresolvedLoops.slice(0, 3).forEach((loop) => {
-    const countdown = countdownForLoop(loop);
-    resolveRows.push(`
-      <div class="list-row">
-        <div class="list-meta">${pill(loop["Priority"] || "Loop", priorityTone(loop["Priority"]))}</div>
-        <div class="list-copy">
-          <div class="list-title">${escapeHtml(truncate(loop["Topic"], 90))}</div>
-          <div class="list-note">${escapeHtml(truncate(loop["Context / What's Unresolved"], 140))}</div>
-          <div class="list-note">${pill(countdown.label, countdown.tone)} ${pill(`Imp ${loop["Importance"] || "-"}`, "info")}</div>
-        </div>
-        <div class="list-actions">
-          <button class="btn-inline" data-action="resolve-loop" data-topic="${escapeHtml(loop["Topic"] || "")}">Resolve</button>
-        </div>
-      </div>
-    `);
-  });
-  highTasks.slice(0, 3).forEach((task) => {
-    resolveRows.push(`
-      <div class="list-row">
-        <div class="list-meta">${pill(task["Priority"] || "Task", priorityTone(task["Priority"]))}</div>
-        <div class="list-copy">
-          <div class="list-title">${escapeHtml(truncate(task["Task"], 90))}</div>
-          <div class="list-note">${escapeHtml(task["Project"] || "No project linked")}</div>
-        </div>
-        <div class="list-actions">
-          <button class="btn-inline" data-action="done-task" data-task="${escapeHtml(task["Task"] || "")}">Mark Done</button>
-        </div>
-      </div>
-    `);
-  });
-
-  const staleRows = staleProjects.slice(0, 4).map((project) => `
-    <div class="list-row">
-      <div class="list-meta">${pill(project["Priority"] || "Project", priorityTone(project["Priority"]))}</div>
-      <div class="list-copy">
-        <div class="list-title">${escapeHtml(project["Project"] || "Untitled project")}</div>
-        <div class="list-note">Next step: ${escapeHtml(project["Next Step"] || "Not set")}</div>
-      </div>
-      <div class="list-actions">
-        <button class="btn-inline" data-action="goto" data-tab="projects">Open</button>
-      </div>
-    </div>
-  `).join("");
-
-  const inboxCards = inboxPending.slice(0, 4).map((item) => `
-    <div class="list-row">
-      <div class="list-meta">${pill(item["Importance"] ? `Imp ${item["Importance"]}` : "Inbox", "info")}</div>
-      <div class="list-copy">
-        <div class="list-title">${escapeHtml(truncate(item["Content"], 100))}</div>
-        <div class="list-note">${escapeHtml(item["Captured"] || item["Source"] || "Captured")}</div>
-      </div>
-      <div class="list-actions">
-        <button class="btn-inline" data-action="goto" data-tab="inbox">Review</button>
-      </div>
-    </div>
-  `).join("");
-
-  const oracleHtml = markdownToHtml(morning && morning.brief ? morning.brief : "## Daily Insight\nAll clear. No proactive insight surfaced yet.");
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Open loops", String(unresolvedLoops.length), "Unresolved threads waiting for closure", "loops", unresolvedLoops.length > 10 ? "warn" : "")}
-      ${metricCard("Inbox", String(inboxPending.length), "Unrouted captures awaiting sorting", "inbox", inboxPending.length > 0 ? "warn" : "ok")}
-      ${metricCard("Review", String(health.corrections_pending || 0), "Pending corrections need your choice", "review", numberValue(health.corrections_pending) > 0 ? "warn" : "ok")}
-      ${metricCard("File size", `${health.chitrapat_size_kb || 0} KB`, "Canonical file health in one glance", "system", "info")}
-    </div>
-
-    <div class="section-grid two">
-      <div class="section-stack">
-        <section class="section-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Resolve</div>
-              <div class="card-title">What needs attention now</div>
-              <div class="card-subtitle">High-importance loops and actionable tasks, surfaced before context drifts.</div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="list">
-              ${resolveRows.length ? resolveRows.join("") : emptyBlock("All clear", "No urgent loops or tasks are blocking the day.")}
-            </div>
-          </div>
-        </section>
-
-        <section class="section-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Projects</div>
-              <div class="card-title">Projects drifting</div>
-              <div class="card-subtitle">Active work with no update in the last 7 days.</div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="list">
-              ${staleRows || emptyBlock("No stale projects", "Every active project has recent movement.")}
-            </div>
-          </div>
-        </section>
-
-        <section class="section-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Capture</div>
-              <div class="card-title">Inbox pressure</div>
-              <div class="card-subtitle">Raw captures that still need routing.</div>
-            </div>
-            <div class="card-actions">
-              <button class="btn-inline" data-action="route-all">Route all</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="list">
-              ${inboxCards || emptyBlock("Inbox clear", "Nothing is waiting in Avagraha right now.")}
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div class="section-stack">
-        <section class="section-card insight-card" id="oracle-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Daily Insight</div>
-              <div class="card-title">Oracle surface</div>
-              <div class="card-subtitle">Stable hook reserved for proactive resurfacing. Morning Briefing lives here until Oracle v0 ships.</div>
-            </div>
-            <div class="card-actions">
-              ${morning && numberValue(morning.streak) > 0 ? pill(`${morning.streak}d streak`, "warn") : ""}
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="insight-copy">${oracleHtml}</div>
-            <div class="insight-meta">
-              ${pill(`Loops ${morning && morning.loops ? morning.loops : unresolvedLoops.length}`, unresolvedLoops.length ? "warn" : "ok")}
-              ${pill(`Inbox ${inboxPending.length}`, inboxPending.length ? "warn" : "ok")}
-              ${pill(`Review ${health.corrections_pending || 0}`, numberValue(health.corrections_pending) ? "warn" : "ok")}
-            </div>
-          </div>
-        </section>
-
-        <section class="section-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Context</div>
-              <div class="card-title">Copy the full memory block</div>
-              <div class="card-subtitle">One click. Paste into Claude, ChatGPT, OpenClaw, or any custom agent.</div>
-            </div>
-            <div class="card-actions">
-              <button class="btn-primary" data-action="copy-context">Copy Context</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="banner ok">
-              OpenYantra keeps the spreadsheet invisible in daily use. The dashboard is the interface. The file remains the engine.
-            </div>
-          </div>
-        </section>
-
-        <section class="section-card">
-          <div class="card-header">
-            <div>
-              <div class="card-label">Posture</div>
-              <div class="card-title">System posture at open</div>
-              <div class="card-subtitle">A fast read on the writer, retrieval engine, and review load.</div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="health-list">
-              <div class="health-row"><span class="muted">Chitragupta</span><span>${pill(health.chitragupta_alive ? "Live" : "Quiet", health.chitragupta_alive ? "ok" : "warn")}</span></div>
-              <div class="health-row"><span class="muted">VidyaKosha</span><span>${pill(health.vidyakosha || "Unknown", health.vidyakosha === "available" ? "ok" : "warn")}</span></div>
-              <div class="health-row"><span class="muted">Active projects</span><span class="mono-quiet">${activeProjects.length}</span></div>
-              <div class="health-row"><span class="muted">Stale projects</span><span>${pill(String(staleProjects.length), staleProjects.length ? "warn" : "ok")}</span></div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  `;
-}
-
-async function loadInbox() {
-  const panel = document.getElementById("inbox");
-  const [health, inboxRows] = await Promise.all([getHealth(true), fetchSheet("inbox", true)]);
-  if (!health) {
-    panel.innerHTML = emptyBlock("Inbox unavailable", "The backend did not answer.");
-    return;
+  // Oracle card
+  let oCard='';
+  if(od&&od.count>0){
+    let oItems=od.insights.slice(0,3).map(ins=>{
+      const tc={'inbox_loop_match':'var(--amber)','task_loop_block':'var(--coral)','belief_conflict':'var(--amber)','stale_project':'var(--blue)','person_missing':'var(--green)','loop_aging':'var(--coral)','orphan_task':'var(--muted)'}[ins.type]||'var(--muted)';
+      return`<div class="oracle-item"><div class="oracle-type" style="color:${tc}">${ins.type}</div><div class="oracle-detail">${ins.detail.substring(0,90)}</div><div class="oracle-action">-- ${ins.action.substring(0,65)}</div></div>`;
+    }).join('');
+    oCard=`<div class="oracle-card" id="oracle-card"><div class="oracle-card-head"><span class="oracle-card-title">🔮 Oracle -- ${od.count} insight${od.count!==1?'s':''}</span><button class="btn" style="font-size:9px;padding:4px 10px" onclick="goTo('oracle')">All</button></div>${oItems}</div>`;
   }
 
-  const pending = inboxRows.filter((row) => row["Routed?"] === "No");
-  const highImportance = pending.filter((row) => numberValue(row["Importance"]) >= 8);
-  const latestCapture = pending[0] ? formatDateTime(pending[0]["Captured"]) : "No recent capture";
+  // Urgent items
+  const cutoff=new Date(Date.now()-7*86400000).toISOString().slice(0,10);
+  const loops=(ld.rows||[]).filter(r=>r['Resolved?']==='No').sort((a,b)=>(b['Importance']||5)-(a['Importance']||5)).slice(0,4);
+  const stale=(pd.rows||[]).filter(r=>r['Status']==='Active'&&(r['Last Updated']||'')<cutoff).slice(0,3);
+  const uTasks=(td.rows||[]).filter(r=>r['Status']==='Pending'&&r['Priority']==='High').slice(0,3);
+  const inbox=(id.rows||[]).filter(r=>r['Routed?']==='No').slice(0,3);
 
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Pending", String(pending.length), "Inbox items waiting for routing", "inbox", pending.length ? "warn" : "ok")}
-      ${metricCard("High importance", String(highImportance.length), "Captures marked 8 or above", "inbox", highImportance.length ? "warn" : "ok")}
-      ${metricCard("Quick capture", "I", "Keyboard shortcut opens the floating inbox", "inbox", "info")}
-      ${metricCard("Latest capture", latestCapture, "Most recent arrival in Avagraha", "inbox", "info")}
-    </div>
+  let body='';
+  if(loops.length){
+    body+='<div class="ts-card"><h3>Open Loops -- Needing Attention</h3>';
+    loops.forEach(l=>{body+=`<div class="ti"><div class="ti-pri">${ptag(l['Priority']||'?')}</div><div class="ti-con">${(l['Topic']||'').substring(0,60)}<small>${(l["Context / What's Unresolved"]||'').substring(0,70)}</small></div><div class="ti-act"><button onclick="resolveLoop('${(l['Topic']||'').replace(/'/g,"\\'")}')">Resolve</button></div></div>`;});
+    body+='</div>';
+  }
+  if(stale.length){
+    body+='<div class="ts-card"><h3>Stale Projects -- No Update 7+ Days</h3>';
+    stale.forEach(p=>{body+=`<div class="ti"><div class="ti-pri">${ptag(p['Priority']||'?')}</div><div class="ti-con">${(p['Project']||'').substring(0,55)}<small>Next: ${(p['Next Step']||'not set').substring(0,60)}</small></div><div class="ti-act"><button onclick="goTo('projects')">View</button></div></div>`;});
+    body+='</div>';
+  }
+  if(uTasks.length){
+    body+='<div class="ts-card"><h3>High Priority Tasks</h3>';
+    uTasks.forEach(t=>{body+=`<div class="ti"><div class="ti-pri">${ptag('High')}</div><div class="ti-con">${(t['Task']||'').substring(0,60)}<small>${t['Project']||''}</small></div><div class="ti-act"><button onclick="doneTask('${(t['Task']||'').replace(/'/g,"\\'")}')">Done</button></div></div>`;});
+    body+='</div>';
+  }
+  if(inbox.length){
+    body+=`<div class="ts-card"><h3>Inbox -- ${inbox.length} Items Need Routing</h3>`;
+    inbox.forEach(i=>{body+=`<div class="ti"><div class="ti-pri" style="color:var(--muted);font-size:9px">Inbox</div><div class="ti-con">${(i['Content']||'').substring(0,75)}</div><div class="ti-act"><button onclick="routeAll()">Route All</button></div></div>`;});
+    body+='</div>';
+  }
+  if(!body)body='<div class="ts-card"><h3 style="color:var(--green)">All clear -- nothing urgent today</h3></div>';
 
-    <div class="section-grid two">
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Capture</div>
-            <div class="card-title">Drop something into Inbox</div>
-            <div class="card-subtitle">Fast capture stays lightweight. Chitragupta sorts later.</div>
-          </div>
-          <div class="card-actions">
-            <button class="btn-inline" data-action="open-capture">Floating capture</button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="form-grid">
-            <textarea class="textarea" id="inboxInput" placeholder="Capture a note, task idea, loop, or observation..."></textarea>
-            <div class="header-buttons" style="justify-content:flex-start;">
-              <button class="btn-primary" data-action="save-inbox">Save to Inbox</button>
-              <button class="btn" data-action="route-all">Route all pending</button>
-            </div>
-          </div>
-        </div>
-      </section>
+  document.getElementById('today').innerHTML='<div class="cards">'+cards+'</div>'+briefCard+oCard+ctxBtn+body;
+}
 
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Routing</div>
-            <div class="card-title">Queue health</div>
-            <div class="card-subtitle">Keep .ods invisible in daily use by clearing the raw queue quickly.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="health-list">
-            <div class="health-row"><span class="muted">Pending captures</span><span>${pill(String(pending.length), pending.length ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">High importance</span><span>${pill(String(highImportance.length), highImportance.length ? "warn" : "quiet")}</span></div>
-            <div class="health-row"><span class="muted">Source of truth</span><span class="mono-quiet">Chitrapat.ods</span></div>
-            <div class="health-row"><span class="muted">Writer path</span><span class="mono-quiet">Inbox -> Sanchitta -> Chitragupta</span></div>
-          </div>
-        </div>
-      </section>
-    </div>
+async function loadOracle(){
+  const od=await api('/api/oracle');
+  const el=document.getElementById('oracle');
+  if(!od||od.count===0){el.innerHTML='<div class="sh"><span>Oracle</span></div><div class="empty">Nothing to surface today -- all memory connections look healthy.</div>';return;}
+  const typeColor={'inbox_loop_match':'var(--amber)','task_loop_block':'var(--coral)','belief_conflict':'var(--amber)','stale_project':'var(--blue)','person_missing':'var(--green)','loop_aging':'var(--coral)','orphan_task':'var(--muted)'};
+  let html=`<div class="sh"><span>Oracle -- ${od.count} Insight${od.count!==1?'s':''}</span></div>`;
+  html+='<p style="font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-bottom:16px">Cross-reference engine -- read-only, never writes. Surfaces non-obvious connections across all sheets.</p>';
+  od.insights.forEach((ins,i)=>{
+    const tc=typeColor[ins.type]||'var(--muted)';
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${tc};padding:12px 16px;margin-bottom:8px">
+      <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${tc};margin-bottom:5px">${i+1}. ${ins.type}</div>
+      <div style="font-size:12px;font-weight:500;margin-bottom:4px">${ins.title}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">${ins.detail}</div>
+      <div style="font-size:10px;color:var(--blue)">Action: ${ins.action}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
 
-    <section class="section-card" style="margin-top:12px;">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Avagraha</div>
-          <div class="card-title">Unrouted captures</div>
-          <div class="card-subtitle">Raw notes waiting to become structured memory.</div>
-        </div>
+async function loadInbox(){
+  const d=await api('/api/sheet/inbox');
+  const rows=(d.rows||[]).filter(r=>r['Routed?']==='No');
+  let html=`<div class="sh"><span>Inbox -- Quick Capture</span></div>`;
+  html+=`<div class="ibf"><input id="ii" placeholder="Capture a thought..."/><button class="btn-p" onclick="saveInbox()">Save</button></div>`;
+  html+=tbl(rows,['Content','Captured','Importance','Source']);
+  if(rows.length)html+=`<br><button class="btn btn-ok" onclick="routeAll()">Route All (${rows.length} items)</button>`;
+  document.getElementById('inbox').innerHTML=html;
+}
+
+async function loadLoops(){
+  const d=await api('/api/sheet/open_loops');
+  const open=(d.rows||[]).filter(r=>r['Resolved?']==='No');
+  document.getElementById('loops').innerHTML='<div class="sh"><span>Open Loops (Anishtha)</span></div>'+tbl(open,['Topic',"Context / What's Unresolved",'Priority','Importance','Opened','TTL_Days']);
+}
+
+async function loadTable(sheet,cols,elId){
+  const d=await api(`/api/sheet/${sheet}`);
+  document.getElementById(elId).innerHTML='<div class="sh"><span>'+sheet+'</span></div>'+tbl(d.rows||[],cols);
+}
+
+async function loadReview(){
+  const d=await api('/api/sheet/corrections');
+  const pending=(d.rows||[]).filter(r=>r['Status']==='Pending');
+  const el=document.getElementById('review');
+  if(!pending.length){el.innerHTML='<div class="sh"><span>Review (Corrections + Conflicts)</span></div><div class="empty">Nothing pending approval.</div>';return;}
+  let html='<div class="sh"><span>Corrections Pending Approval</span></div>';
+  html+='<p style="font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-bottom:14px">Your choice is Dharma-Adesh -- it always wins.</p>';
+  pending.forEach((c,i)=>{
+    html+=`<div style="background:var(--surface2);border:1px solid rgba(245,160,0,0.25);padding:13px;margin-bottom:10px">
+      <div style="font-size:10px;color:var(--amber);margin-bottom:8px">${c['Target Sheet']||'?'} -- ${c['Row Identifier']||'?'} -- ${c['Field']||'?'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div style="background:rgba(245,160,0,0.07);border:1px solid rgba(245,160,0,0.2);padding:10px"><div style="font-size:9px;color:var(--amber);margin-bottom:3px">Agent proposes</div><div style="font-size:12px">${c['Proposed Value']||'?'}</div></div>
+        <div style="background:rgba(26,161,103,0.07);border:1px solid rgba(26,161,103,0.2);padding:10px"><div style="font-size:9px;color:var(--green);margin-bottom:3px">Your version (current)</div><div style="font-size:12px;color:var(--muted)">--</div></div>
       </div>
-      <div class="card-body">
-        ${renderTable(
-          pending,
-          [
-            { label: "Captured", render: (row) => `<div>${escapeHtml(formatDateTime(row["Captured"]))}</div>` },
-            { label: "Content", render: (row) => `<div>${escapeHtml(truncate(row["Content"], 160))}</div>` },
-            { label: "Importance", render: (row) => pill(`Imp ${row["Importance"] || "-"}`, "info") },
-            { label: "Source", render: (row) => `<span class="muted">${escapeHtml(row["Source"] || row["Source Agent"] || "-")}</span>` }
-          ]
-        )}
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ok" onclick="revC(${i},'Approved')">Accept change</button>
+        <button class="btn btn-x" onclick="revC(${i},'Rejected')">Keep mine</button>
       </div>
-    </section>
-  `;
-}
-
-async function loadLoops() {
-  const panel = document.getElementById("loops");
-  const loopsRows = await fetchSheet("open_loops", true);
-  const openLoops = loopsRows
-    .filter((row) => row["Resolved?"] === "No")
-    .sort((left, right) => numberValue(right["Importance"]) - numberValue(left["Importance"]));
-  const expiringSoon = openLoops.filter((loop) => {
-    const countdown = countdownForLoop(loop);
-    return countdown.tone === "warn" || countdown.tone === "alert";
+    </div>`;
   });
-  const highPriority = openLoops.filter((loop) => ["High", "Critical"].includes(loop["Priority"]));
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Open loops", String(openLoops.length), "All unresolved threads", "loops", openLoops.length ? "warn" : "ok")}
-      ${metricCard("High priority", String(highPriority.length), "High or critical loops", "loops", highPriority.length ? "warn" : "ok")}
-      ${metricCard("Expiring soon", String(expiringSoon.length), "TTL pressure across Anishtha", "loops", expiringSoon.length ? "warn" : "ok")}
-      ${metricCard("Compaction safety", "On", "Open loops are preserved across context compression", "loops", "ok")}
-    </div>
-
-    <div class="section-grid two">
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Anishtha</div>
-            <div class="card-title">Resolve open loops</div>
-            <div class="card-subtitle">The Zeigarnik safety net. Protect it forever.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="list">
-            ${openLoops.slice(0, 6).map((loop) => {
-              const countdown = countdownForLoop(loop);
-              return `
-                <div class="list-row">
-                  <div class="list-meta">${pill(loop["Priority"] || "Loop", priorityTone(loop["Priority"]))}</div>
-                  <div class="list-copy">
-                    <div class="list-title">${escapeHtml(loop["Topic"] || "Untitled loop")}</div>
-                    <div class="list-note">${escapeHtml(truncate(loop["Context / What's Unresolved"], 160))}</div>
-                    <div class="list-note">${pill(countdown.label, countdown.tone)} ${pill(`Imp ${loop["Importance"] || "-"}`, "info")} ${pill(formatDate(loop["Opened"]), "quiet")}</div>
-                  </div>
-                  <div class="list-actions">
-                    <button class="btn-inline" data-action="resolve-loop" data-topic="${escapeHtml(loop["Topic"] || "")}">Resolve</button>
-                  </div>
-                </div>
-              `;
-            }).join("") || emptyBlock("No open loops", "Anishtha is currently clear.")}
-          </div>
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Loop posture</div>
-            <div class="card-title">Why this room matters</div>
-            <div class="card-subtitle">Open loops are the strongest feature in OpenYantra. They preserve unresolved work before compaction and return it after.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="health-list">
-            <div class="health-row"><span class="muted">Total unresolved</span><span>${pill(String(openLoops.length), openLoops.length ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">High priority</span><span>${pill(String(highPriority.length), highPriority.length ? "warn" : "quiet")}</span></div>
-            <div class="health-row"><span class="muted">TTL pressure</span><span>${pill(String(expiringSoon.length), expiringSoon.length ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">Rule</span><span class="mono-quiet">Never remove Anishtha</span></div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <section class="section-card" style="margin-top:12px;">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Ledger view</div>
-          <div class="card-title">All unresolved loops</div>
-          <div class="card-subtitle">Human-readable, sortable, and close to the sheet structure.</div>
-        </div>
-      </div>
-      <div class="card-body">
-        ${renderTable(
-          openLoops,
-          [
-            { label: "Topic", render: (row) => `<div>${escapeHtml(truncate(row["Topic"], 100))}</div>` },
-            { label: "Context", render: (row) => `<span class="muted">${escapeHtml(truncate(row["Context / What's Unresolved"], 140))}</span>` },
-            { label: "Priority", render: (row) => pill(row["Priority"] || "-", priorityTone(row["Priority"])) },
-            { label: "Importance", render: (row) => pill(`Imp ${row["Importance"] || "-"}`, "info") },
-            { label: "TTL", render: (row) => {
-              const countdown = countdownForLoop(row);
-              return `${pill(countdown.label, countdown.tone)}`;
-            }},
-            { label: "Action", render: (row) => `<button class="btn-inline" data-action="resolve-loop" data-topic="${escapeHtml(row["Topic"] || "")}">Resolve</button>` }
-          ]
-        )}
-      </div>
-    </section>
-  `;
+  el.innerHTML=html;
 }
 
-async function loadProjects() {
-  const panel = document.getElementById("projects");
-  const [projectRows, taskRows] = await Promise.all([
-    fetchSheet("projects", true),
-    fetchSheet("tasks", true)
-  ]);
-
-  const activeProjects = projectRows.filter((row) => row["Status"] === "Active");
-  const pendingTasks = taskRows.filter((row) => row["Status"] !== "Done");
-  const staleCutoff = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
-  const staleProjects = activeProjects.filter((row) => String(row["Last Updated"] || "") < staleCutoff);
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Active", String(activeProjects.length), "Projects currently in motion", "projects", activeProjects.length ? "info" : "quiet")}
-      ${metricCard("Pending tasks", String(pendingTasks.length), "Tasks still open across projects", "projects", pendingTasks.length ? "warn" : "ok")}
-      ${metricCard("Stale", String(staleProjects.length), "Active projects with no update in 7 days", "projects", staleProjects.length ? "warn" : "ok")}
-      ${metricCard("Next steps", String(activeProjects.filter((row) => row["Next Step"]).length), "Projects with concrete next moves", "projects", "ok")}
-    </div>
-
-    <div class="section-grid two">
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Karma</div>
-            <div class="card-title">Active projects</div>
-            <div class="card-subtitle">The work map. Each project should expose a next concrete step.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="project-grid">
-            ${activeProjects.slice(0, 6).map((project) => `
-              <article class="project-card">
-                <div class="project-head">
-                  <div>
-                    <div class="project-name">${escapeHtml(project["Project"] || "Untitled project")}</div>
-                    <div class="project-domain">${escapeHtml(project["Domain"] || "Unspecified domain")}</div>
-                  </div>
-                  <div>${pill(project["Priority"] || project["Status"] || "Project", priorityTone(project["Priority"] || project["Status"]))}</div>
-                </div>
-                <div class="banner ${String(project["Last Updated"] || "") < staleCutoff ? "warn" : "ok"}">
-                  Next step: ${escapeHtml(project["Next Step"] || "Not set")}
-                </div>
-                <div class="project-statbar">
-                  <div class="project-stat">
-                    <div class="metric-label">Status</div>
-                    <div class="metric-value">${escapeHtml(project["Status"] || "-")}</div>
-                  </div>
-                  <div class="project-stat">
-                    <div class="metric-label">Updated</div>
-                    <div class="metric-value">${escapeHtml(formatDate(project["Last Updated"]))}</div>
-                  </div>
-                  <div class="project-stat">
-                    <div class="metric-label">Importance</div>
-                    <div class="metric-value">${escapeHtml(String(project["Importance"] || "-"))}</div>
-                  </div>
-                </div>
-              </article>
-            `).join("") || emptyBlock("No active projects", "Add a project and the room will start to fill out.")}
-          </div>
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Kartavya</div>
-            <div class="card-title">Pending tasks</div>
-            <div class="card-subtitle">Tasks move here because the dedicated task tab is gone in v3. The work still stays visible.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          ${renderTable(
-            pendingTasks.slice(0, 12),
-            [
-              { label: "Task", render: (row) => `<div>${escapeHtml(truncate(row["Task"], 120))}</div>` },
-              { label: "Project", render: (row) => `<span class="muted">${escapeHtml(row["Project"] || "-")}</span>` },
-              { label: "Priority", render: (row) => pill(row["Priority"] || "-", priorityTone(row["Priority"])) },
-              { label: "Status", render: (row) => pill(row["Status"] || "-", priorityTone(row["Status"])) },
-              { label: "Action", render: (row) => `<button class="btn-inline" data-action="done-task" data-task="${escapeHtml(row["Task"] || "")}">Done</button>` }
-            ]
-          )}
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-async function loadTimeline() {
-  const panel = document.getElementById("timeline");
-  const [ledgerRows, stats] = await Promise.all([
-    fetchSheet("ledger", true),
-    api("/api/stats")
-  ]);
-  const writtenRows = ledgerRows.filter((row) => row["Status"] === "written").slice(-80).reverse();
-  const topSheet = stats && stats.writes_by_sheet ? Object.entries(stats.writes_by_sheet)[0] : null;
-  const topAgent = stats && stats.writes_by_agent ? Object.entries(stats.writes_by_agent)[0] : null;
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Total writes", String(stats && stats.total_writes ? stats.total_writes : writtenRows.length), "All committed ledger writes", "timeline", "info")}
-      ${metricCard("This week", String(stats && stats.writes_last_7_days ? stats.writes_last_7_days : 0), "Writes in the last 7 days", "timeline", "ok")}
-      ${metricCard("Top sheet", topSheet ? topSheet[0] : "-", "Most-written sheet in the current dataset", "timeline", "info")}
-      ${metricCard("Top agent", topAgent ? topAgent[0] : "-", "Most active writer according to the ledger", "timeline", "info")}
-    </div>
-
-    <section class="section-card">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Agrasandhani</div>
-          <div class="card-title">Chronological activity feed</div>
-          <div class="card-subtitle">The ledger turned into a readable timeline. Every write is still signed, logged, and inspectable.</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="timeline">
-          ${writtenRows.length ? writtenRows.map((row) => `
-            <article class="timeline-item">
-              <div class="timeline-meta">${escapeHtml(formatDateTime(row["Timestamp"]))}</div>
-              <div class="timeline-body">
-                <div class="list-title">${escapeHtml(row["Agent"] || "Unknown agent")} / ${escapeHtml(row["Operation"] || "write")}</div>
-                <div class="list-note">${escapeHtml(row["Sheet"] || "Unknown sheet")}</div>
-                <div class="mono-quiet">${escapeHtml(truncate(row["Row Identifier"] || row["Request ID"] || "", 120))}</div>
-              </div>
-            </article>
-          `).join("") : emptyBlock("No timeline yet", "No written ledger entries are available yet.")}
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-async function buildCurrentValueMap(corrections) {
-  const endpointNames = [...new Set(corrections
-    .map((correction) => SHEET_ENDPOINTS[correction["Target Sheet"]])
-    .filter(Boolean))];
-  const endpointRows = {};
-  await Promise.all(endpointNames.map(async (name) => {
-    endpointRows[name] = await fetchSheet(name, true);
-  }));
-
-  const currentValues = new Map();
-  corrections.forEach((correction, index) => {
-    const endpoint = SHEET_ENDPOINTS[correction["Target Sheet"]];
-    const rows = endpointRows[endpoint] || [];
-    const matchedRow = rows.find((row) => rowMatch(row, correction["Row Identifier"]));
-    currentValues.set(index, matchedRow ? (matchedRow[correction["Field"]] || "Current value not found") : "Current value not found");
+async function loadTimeline(){
+  const d=await api('/api/sheet/ledger');
+  const rows=(d.rows||[]).filter(r=>r['Status']==='written').slice(-50).reverse();
+  const em={'🚀 Projects':'🚀','✅ Tasks':'✅','🔓 Open Loops':'🔓','👤 Identity':'👤','🎯 Goals':'🎯','👥 People':'👥','📥 Inbox':'📥','🧠 Beliefs':'🧠','💡 Preferences':'💡'};
+  if(!rows.length){document.getElementById('timeline').innerHTML='<div class="sh"><span>Timeline</span></div><div class="empty">No activity yet.</div>';return;}
+  let html='<div class="sh"><span>Activity Timeline</span></div><div class="tl">';
+  rows.forEach(r=>{
+    const sh=r['Sheet']||'';const ico=em[sh]||'📝';
+    const ts=(r['Timestamp']||'').substring(0,16).replace('T',' ');
+    const rid=r['Row Identifier']||'';
+    html+=`<div class="tli"><div class="tl-ts">${ts}</div><div class="tl-body"><div class="tl-ag">${r['Agent']||'?'} -- ${r['Operation']||'?'}</div><div>${ico} ${sh.replace(/^[^\s]+\s*/,'').substring(0,40)}${rid?' -- '+rid.substring(0,40):''}</div></div></div>`;
   });
-  return currentValues;
+  html+='</div>';
+  document.getElementById('timeline').innerHTML=html;
 }
 
-async function loadReview() {
-  const panel = document.getElementById("review");
-  const corrections = await fetchSheet("corrections", true);
-  const pending = corrections.filter((row) => row["Status"] === "Pending");
-  const decided = corrections.filter((row) => row["Status"] && row["Status"] !== "Pending").slice(-6).reverse();
-  const currentValueMap = await buildCurrentValueMap(pending);
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Pending", String(pending.length), "Corrections waiting for user choice", "review", pending.length ? "warn" : "ok")}
-      ${metricCard("Approved", String(corrections.filter((row) => row["Status"] === "Approved").length), "Accepted edits so far", "review", "ok")}
-      ${metricCard("Rejected", String(corrections.filter((row) => row["Status"] === "Rejected").length), "User overrides kept in place", "review", "info")}
-      ${metricCard("Authority", "User", "Dharma-Adesh always wins", "review", "ok")}
-    </div>
-
-    <section class="section-card">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Review queue</div>
-          <div class="card-title">Pending corrections and conflicts</div>
-          <div class="card-subtitle">All user-facing review decisions have been collapsed into one room for v3.</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="review-grid">
-          ${pending.length ? pending.map((correction, index) => `
-            <article class="diff-card">
-              <div class="diff-head">
-                <div class="diff-title">${escapeHtml(correction["Target Sheet"] || "Unknown sheet")} / ${escapeHtml(correction["Field"] || "Unknown field")}</div>
-                <div class="diff-subtitle">${escapeHtml(correction["Row Identifier"] || "No row identifier")} / Proposed by ${escapeHtml(correction["Proposed By"] || "agent")}</div>
-              </div>
-              <div class="diff-columns">
-                <div class="diff-side proposed">
-                  <div class="diff-label">Proposed</div>
-                  <div class="diff-value">${escapeHtml(correction["Proposed Value"] || "No proposed value")}</div>
-                </div>
-                <div class="diff-side current">
-                  <div class="diff-label">Current</div>
-                  <div class="diff-value">${escapeHtml(currentValueMap.get(index) || "Current value not found")}</div>
-                </div>
-              </div>
-              <div class="diff-actions">
-                <button class="btn-primary" data-action="review-correction" data-index="${index}" data-decision="Approved">Accept</button>
-                <button class="btn" data-action="review-correction" data-index="${index}" data-decision="Rejected">Keep mine</button>
-              </div>
-            </article>
-          `).join("") : emptyBlock("No pending review", "There are no pending corrections or conflicts right now.")}
-        </div>
-      </div>
-    </section>
-
-    <section class="section-card" style="margin-top:12px;">
-      <div class="card-header">
-        <div>
-          <div class="card-label">History</div>
-          <div class="card-title">Recent review decisions</div>
-          <div class="card-subtitle">A short trail of your accepted and rejected corrections.</div>
-        </div>
-      </div>
-      <div class="card-body">
-        ${renderTable(
-          decided,
-          [
-            { label: "Sheet", render: (row) => `<div>${escapeHtml(row["Target Sheet"] || "-")}</div>` },
-            { label: "Field", render: (row) => `<div>${escapeHtml(row["Field"] || "-")}</div>` },
-            { label: "Decision", render: (row) => pill(row["Status"] || "-", resolveTone(row["Status"])) },
-            { label: "By", render: (row) => `<span class="muted">${escapeHtml(row["Reviewed By"] || row["Proposed By"] || "-")}</span>` },
-            { label: "Reason", render: (row) => `<span class="muted">${escapeHtml(truncate(row["Reason"], 120))}</span>` }
-          ]
-        )}
-      </div>
-    </section>
-  `;
+async function loadSecurity(){
+  const [q,sl]=await Promise.all([api('/api/sheet/quarantine'),api('/api/sheet/security_log')]);
+  const qr=(q.rows||[]).filter(r=>r['Status']==='Quarantined');
+  let html='<div class="sh"><span>Security (Raksha)</span></div>';
+  html+=`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn-p" onclick="scanSec()">Run Full Scan</button><button class="btn" onclick="load('security')">Refresh</button></div>`;
+  html+='<div id="scanres" style="margin-bottom:12px"></div>';
+  if(!qr.length){html+='<div class="sec-clean">No quarantined writes -- Chitrapat is clean.</div>';}
+  else{
+    html+='<div class="sh"><span>Quarantined Writes</span></div>';
+    qr.forEach(r=>{html+=`<div class="q-item"><div class="q-type">${r['Threat Level']||''} -- ${r['Threat Type']||''}</div><div style="font-size:11px;margin-bottom:6px">${(r['Threats Found']||'').substring(0,80)}</div><div style="display:flex;gap:8px"><button class="btn btn-ok" onclick="releaseQ('${r['Request ID']||''}')">Release (Dharma-Adesh)</button></div></div>`;});
+  }
+  html+='<div class="sh" style="margin-top:14px"><span>Security Log</span></div>';
+  html+=tbl((sl.rows||[]).slice(-15).reverse(),['Timestamp','Agent','Sheet','Threat Level','Status']);
+  document.getElementById('security').innerHTML=html;
 }
 
-function renderChart(title, data) {
-  const entries = Object.entries(data || {});
-  if (!entries.length) {
-    return emptyBlock(title, "No analytics are available yet.");
-  }
-  const max = Math.max(...entries.map(([, value]) => numberValue(value)), 1);
-  return `
-    <div class="chart-list">
-      ${entries.map(([label, value]) => `
-        <div class="chart-row">
-          <strong>${escapeHtml(label)}</strong>
-          <div class="chart-track"><div class="chart-fill" style="width:${Math.max(8, Math.round(numberValue(value) / max * 100))}%"></div></div>
-          <span class="chart-value">${escapeHtml(String(value))}</span>
-        </div>
-      `).join("")}
-    </div>
-  `;
+async function loadHealth(){
+  const h=await api('/api/health');
+  const items=[
+    {k:'Status',v:h.status,ok:h.status==='healthy'},
+    {k:'Chitragupta',v:h.chitragupta_alive?'alive':'silent',ok:h.chitragupta_alive},
+    {k:'VidyaKosha',v:h.vidyakosha,ok:h.vidyakosha==='available'},
+    {k:'File Size',v:(h.chitrapat_size_kb||0)+' KB',ok:true},
+    {k:'Open Loops',v:h.open_loops||0,ok:(h.open_loops||0)<20},
+    {k:'Inbox Pending',v:h.inbox_pending||0,ok:(h.inbox_pending||0)===0},
+    {k:'Corrections',v:h.corrections_pending||0,ok:(h.corrections_pending||0)===0},
+    {k:'Stale Projects',v:h.stale_projects||0,ok:(h.stale_projects||0)===0},
+  ];
+  let html='<div class="sh"><span>System Health</span></div><div class="hgrid">';
+  html+=items.map(i=>`<div class="hi"><span class="hi-k">${i.k}</span><span class="hi-v ${i.ok?'ok':'warn'}">${i.v}</span></div>`).join('');
+  if(h.rows){html+='</div><div class="sh" style="margin-top:14px"><span>Row Counts</span></div><div class="hgrid">';html+=Object.entries(h.rows).map(([s,n])=>`<div class="hi"><span class="hi-k" style="font-size:8px">${s}</span><span class="hi-v">${n}</span></div>`).join('');}
+  html+='</div>';
+  document.getElementById('health').innerHTML=html;
 }
 
-async function loadSystem() {
-  const panel = document.getElementById("system");
-  const [health, stats, quarantineRows, securityRows, ledgerRows] = await Promise.all([
-    getHealth(true),
-    api("/api/stats"),
-    fetchSheet("quarantine", true),
-    fetchSheet("security_log", true),
-    fetchSheet("ledger", true)
-  ]);
-
-  if (!health || !stats) {
-    panel.innerHTML = emptyBlock("System unavailable", "The backend did not answer. Start yantra ui to inspect the system.");
-    return;
-  }
-
-  const quarantined = quarantineRows.filter((row) => row["Status"] === "Quarantined");
-  const recentSecurity = securityRows.slice(-8).reverse();
-  const recentLedger = ledgerRows.filter((row) => row["Status"] === "written").slice(-8).reverse();
-
-  panel.innerHTML = `
-    <div class="metric-grid">
-      ${metricCard("Status", health.status || "unknown", "System health from the writer process", "system", resolveTone(health.status))}
-      ${metricCard("Total rows", String(stats.total_rows || 0), "Rows across tracked sheets", "system", "info")}
-      ${metricCard("Writes / 7d", String(stats.writes_last_7_days || 0), "Recent write activity", "system", "ok")}
-      ${metricCard("Quarantine", String(quarantined.length), "Blocked writes under Raksha", "system", quarantined.length ? "alert" : "ok")}
-    </div>
-
-    <div class="system-grid">
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Health</div>
-            <div class="card-title">Core system state</div>
-            <div class="card-subtitle">The writer, retrieval engine, queue pressure, and row counts in one panel.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="health-list">
-            <div class="health-row"><span class="muted">Overall status</span><span>${pill(health.status || "unknown", resolveTone(health.status))}</span></div>
-            <div class="health-row"><span class="muted">Chitragupta</span><span>${pill(health.chitragupta_alive ? "Live" : "Quiet", health.chitragupta_alive ? "ok" : "warn")}</span></div>
-            <div class="health-row"><span class="muted">VidyaKosha</span><span>${pill(health.vidyakosha || "Unknown", health.vidyakosha === "available" ? "ok" : "warn")}</span></div>
-            <div class="health-row"><span class="muted">File size</span><span class="mono-quiet">${escapeHtml(String(health.chitrapat_size_kb || 0))} KB</span></div>
-            <div class="health-row"><span class="muted">Open loops</span><span>${pill(String(health.open_loops || 0), numberValue(health.open_loops) ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">Inbox pending</span><span>${pill(String(health.inbox_pending || 0), numberValue(health.inbox_pending) ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">Corrections pending</span><span>${pill(String(health.corrections_pending || 0), numberValue(health.corrections_pending) ? "warn" : "ok")}</span></div>
-            <div class="health-row"><span class="muted">Stale projects</span><span>${pill(String(health.stale_projects || 0), numberValue(health.stale_projects) ? "warn" : "ok")}</span></div>
-          </div>
-
-          <div style="height:12px;"></div>
-
-          <div class="card-label" style="margin-bottom:10px;">Tracked row counts</div>
-          <div class="chart-list">
-            ${Object.entries(health.rows || {}).map(([label, value]) => `
-              <div class="health-row">
-                <span class="muted">${escapeHtml(label)}</span>
-                <span class="mono-quiet">${escapeHtml(String(value))}</span>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Analytics</div>
-            <div class="card-title">Memory activity</div>
-            <div class="card-subtitle">Writes by sheet, writes by agent, loop resolution, and file growth.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="section-stack">
-            <section>
-              <div class="card-label" style="margin-bottom:10px;">Writes by sheet</div>
-              ${renderChart("Writes by sheet", stats.writes_by_sheet)}
-            </section>
-            <section>
-              <div class="card-label" style="margin:14px 0 10px;">Writes by agent</div>
-              ${renderChart("Writes by agent", stats.writes_by_agent)}
-            </section>
-            <section>
-              <div class="health-list" style="margin-top:14px;">
-                <div class="health-row"><span class="muted">Loop resolution</span><span class="mono-quiet">${escapeHtml(String(stats.loop_resolution_rate || 0))}%</span></div>
-                <div class="health-row"><span class="muted">High importance items</span><span class="mono-quiet">${escapeHtml(String(stats.high_importance_items || 0))}</span></div>
-                <div class="health-row"><span class="muted">Total writes</span><span class="mono-quiet">${escapeHtml(String(stats.total_writes || 0))}</span></div>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="section-grid two" style="margin-top:12px;">
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Raksha</div>
-            <div class="card-title">Security watch</div>
-            <div class="card-subtitle">Prompt injection review, quarantine control, and security event history.</div>
-          </div>
-          <div class="card-actions">
-            <button class="btn-inline" data-action="scan-security">Run full scan</button>
-          </div>
-        </div>
-        <div class="card-body">
-          ${STATE.scanResult ? `<div class="banner ${STATE.scanResult.tone}" style="margin-bottom:12px;">${escapeHtml(STATE.scanResult.message)}</div>` : ""}
-          <div class="card-label" style="margin-bottom:10px;">Quarantine</div>
-          ${renderTable(
-            quarantined,
-            [
-              { label: "Agent", render: (row) => `<div>${escapeHtml(row["Agent"] || "-")}</div>` },
-              { label: "Sheet", render: (row) => `<div>${escapeHtml(row["Target Sheet"] || "-")}</div>` },
-              { label: "Threat", render: (row) => pill(row["Threat Level"] || "-", resolveTone(row["Threat Level"])) },
-              { label: "Details", render: (row) => `<span class="muted">${escapeHtml(truncate(row["Threats Found"], 100))}</span>` },
-              { label: "Action", render: (row) => `<button class="btn-inline" data-action="release-quarantine" data-request-id="${escapeHtml(row["Request ID"] || "")}">Release</button>` }
-            ]
-          )}
-
-          <div class="card-label" style="margin:18px 0 10px;">Recent security log</div>
-          ${renderTable(
-            recentSecurity,
-            [
-              { label: "When", render: (row) => `<div>${escapeHtml(formatDateTime(row["Timestamp"]))}</div>` },
-              { label: "Agent", render: (row) => `<div>${escapeHtml(row["Agent"] || "-")}</div>` },
-              { label: "Threat", render: (row) => pill(row["Threat Level"] || "-", resolveTone(row["Threat Level"])) },
-              { label: "Status", render: (row) => `<span class="muted">${escapeHtml(row["Status"] || "-")}</span>` }
-            ]
-          )}
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="card-header">
-          <div>
-            <div class="card-label">Ledger</div>
-            <div class="card-title">Recent writes</div>
-            <div class="card-subtitle">A compact read of the latest committed entries.</div>
-          </div>
-        </div>
-        <div class="card-body">
-          ${renderTable(
-            recentLedger,
-            [
-              { label: "When", render: (row) => `<div>${escapeHtml(formatDateTime(row["Timestamp"]))}</div>` },
-              { label: "Agent", render: (row) => `<div>${escapeHtml(row["Agent"] || "-")}</div>` },
-              { label: "Sheet", render: (row) => `<div>${escapeHtml(row["Sheet"] || "-")}</div>` },
-              { label: "Operation", render: (row) => `<div>${escapeHtml(row["Operation"] || "-")}</div>` },
-              { label: "Status", render: (row) => pill(row["Status"] || "-", resolveTone(row["Status"])) }
-            ]
-          )}
-        </div>
-      </section>
-    </div>
-  `;
+/* Actions */
+function goTo(name){
+  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health'];
+  const idx=tabs.indexOf(name);
+  if(idx>=0)go(name,document.querySelectorAll('.ntab')[idx]);
 }
 
-async function saveInboxFromField(fieldId) {
-  const element = document.getElementById(fieldId);
-  if (!element) {
-    return;
-  }
-  const text = element.value.trim();
-  if (!text) {
-    notify("Capture text is empty.", false);
-    return;
-  }
-  const response = await api("/api/inbox", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text })
-  });
-  if (response && response.status === "written") {
-    element.value = "";
-    STATE.sheetCache.delete("inbox");
-    STATE.health = null;
-    notify("Captured to Inbox.");
-    openCapture(false);
-    if (STATE.currentTab === "inbox") {
-      await loadInbox();
-    } else if (STATE.currentTab === "today") {
-      await loadToday();
-    } else {
-      await getHealth(true);
-    }
-  } else {
-    notify("Inbox capture failed.", false);
-  }
+async function saveInbox(){
+  const el=document.getElementById('ii');const t=el.value.trim();if(!t)return;
+  const r=await api('/api/inbox',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+  if(r.status==='written'){toast('Captured to Inbox');el.value='';await loadInbox();}else toast(r.reason||r.status,false);
 }
 
-async function routeAll() {
-  const response = await api("/api/inbox/route", { method: "POST" });
-  if (!response) {
-    notify("Routing failed.", false);
-    return;
-  }
-  STATE.sheetCache.delete("inbox");
-  STATE.health = null;
-  notify(`Routed ${response.routed || 0} inbox item(s).`);
-  await loadTab(STATE.currentTab);
+async function routeAll(){
+  const r=await api('/api/inbox/route',{method:'POST'});
+  toast(`Routed ${r.routed||0} items`);await loadInbox();if(cur==='today')await loadToday();
 }
 
-async function resolveLoop(topic) {
-  const response = await api(`/api/loops/${encodeURIComponent(topic)}/resolve`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ resolution: "Resolved via v3 dashboard" })
-  });
-  if (response && response.status === "written") {
-    STATE.sheetCache.delete("open_loops");
-    STATE.health = null;
-    notify("Loop resolved.");
-    if (STATE.currentTab === "loops") {
-      await loadLoops();
-    } else {
-      await loadToday();
-    }
-  } else {
-    notify("Loop resolution failed.", false);
-  }
+async function resolveLoop(topic){
+  const r=await api(`/api/loops/${encodeURIComponent(topic)}/resolve`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({resolution:'Resolved via Today view'})});
+  toast(r.status==='written'?'Loop resolved':'Status: '+r.status);await loadToday();if(cur==='loops')await loadLoops();
 }
 
-async function doneTask(task) {
-  const response = await api("/api/tasks/complete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ task })
-  });
-  if (response && response.status === "written") {
-    STATE.sheetCache.delete("tasks");
-    STATE.health = null;
-    notify("Task marked done.");
-    await loadTab(STATE.currentTab === "timeline" ? "projects" : STATE.currentTab);
-  } else {
-    notify("Task update failed.", false);
-  }
+async function doneTask(task){
+  const r=await api('/api/tasks/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task})});
+  toast(r.status==='written'?'Task marked done':'Status: '+r.status);if(cur==='today')await loadToday();
 }
 
-async function reviewCorrection(index, decision) {
-  const response = await api("/api/corrections/review", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ index: Number(index), decision })
-  });
-  if (response) {
-    STATE.sheetCache.delete("corrections");
-    STATE.health = null;
-    notify(decision === "Approved" ? "Correction accepted." : "Current value kept.");
-    await loadReview();
-  } else {
-    notify("Correction review failed.", false);
-  }
+async function revC(idx,decision){
+  await api('/api/corrections/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx,decision})});
+  toast(decision==='Approved'?'Change applied':'Your version kept');await loadReview();
 }
 
-async function scanSecurity() {
-  const response = await api("/api/security/scan", { method: "POST" });
-  if (!response) {
-    notify("Security scan failed.", false);
-    return;
-  }
-  const total = numberValue(response.total_findings);
-  STATE.scanResult = total === 0
-    ? { tone: "ok", message: "Clean scan. No threats detected." }
-    : {
-        tone: numberValue(response.confirmed) > 0 ? "alert" : "warn",
-        message: `${total} finding(s): ${response.critical || 0} critical, ${response.confirmed || 0} confirmed, ${response.suspicious || 0} suspicious.`
-      };
-  STATE.sheetCache.delete("quarantine");
-  STATE.sheetCache.delete("security_log");
-  notify("Security scan complete.", total === 0);
-  await loadSystem();
+async function scanSec(){
+  const el=document.getElementById('scanres');el.innerHTML='<span style="color:var(--muted)">Scanning...</span>';
+  const r=await api('/api/security/scan',{method:'POST'});
+  const t=r.total_findings||0;
+  const col=t===0?'var(--green)':(r.confirmed||0)>0?'var(--coral)':'var(--amber)';
+  el.innerHTML=`<div style="color:${col};padding:9px;border:1px solid ${col};font-size:11px">${t===0?'Clean -- no threats detected':`${t} findings: ${r.critical||0} critical, ${r.confirmed||0} confirmed, ${r.suspicious||0} suspicious`}</div>`;
+  await loadSecurity();
 }
 
-async function releaseQuarantine(requestId) {
-  const response = await api("/api/security/quarantine/release", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ request_id: requestId })
-  });
-  if (response && response.status === "released") {
-    STATE.sheetCache.delete("quarantine");
-    STATE.health = null;
-    notify("Quarantined write released.");
-    await loadSystem();
-  } else {
-    notify("Release failed.", false);
-  }
+async function releaseQ(id){
+  const r=await api('/api/security/quarantine/release',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:id})});
+  toast(r.status==='released'?'Released':'Status: '+r.status);await loadSecurity();
 }
 
-async function copyContext() {
-  const response = await api("/api/context/markdown");
-  if (!response || !response.markdown) {
-    notify("No context available to copy.", false);
-    return;
-  }
-  const markdown = response.markdown;
-  let copied = false;
-  try {
-    await navigator.clipboard.writeText(markdown);
-    copied = true;
-  } catch (error) {
-    const helper = document.createElement("textarea");
-    helper.value = markdown;
-    helper.style.position = "fixed";
-    helper.style.opacity = "0";
-    document.body.appendChild(helper);
-    helper.select();
-    copied = document.execCommand("copy");
-    document.body.removeChild(helper);
-  }
-
-  if (copied) {
-    showContextToast();
-    notify("Context copied.");
-    return;
-  }
-
-  copyModalTextarea.value = markdown;
-  copyModal.classList.add("open");
+async function copyCtx(){
+  const r=await api('/api/context/copy',{method:'POST'});
+  if(r.markdown){try{await navigator.clipboard.writeText(r.markdown);toast('Context copied to clipboard');}catch(e){toast('Context ready (clipboard unavailable)',false);}}
 }
 
-function installEventHandlers() {
-  document.querySelectorAll(".sidebar-tab").forEach((button) => {
-    button.addEventListener("click", () => activateTab(button.dataset.tabTarget));
-  });
-
-  document.querySelectorAll("[data-theme-mode]").forEach((button) => {
-    button.addEventListener("click", () => applyTheme(button.dataset.themeMode));
-  });
-
-  document.getElementById("sidebarToggle").addEventListener("click", () => {
-    applySidebarState(!body.classList.contains("sidebar-collapsed"));
-  });
-
-  document.getElementById("mobileMenu").addEventListener("click", () => {
-    openMobileSidebar(true);
-  });
-
-  document.getElementById("mobileTheme").addEventListener("click", () => {
-    toggleMobileTheme();
-  });
-
-  backdrop.addEventListener("click", () => openMobileSidebar(false));
-  captureFab.addEventListener("click", () => openCapture(!capturePanel.classList.contains("open")));
-
-  document.addEventListener("click", async (event) => {
-    const actionNode = event.target.closest("[data-action]");
-    if (!actionNode) {
-      return;
-    }
-
-    const { action, tab, topic, task, index, decision, requestId } = actionNode.dataset;
-    switch (action) {
-      case "goto":
-        await activateTab(tab);
-        break;
-      case "open-capture":
-        openCapture(true);
-        break;
-      case "close-capture":
-        openCapture(false);
-        break;
-      case "save-floating-inbox":
-        await saveInboxFromField("captureInput");
-        break;
-      case "save-inbox":
-        await saveInboxFromField("inboxInput");
-        break;
-      case "route-all":
-        await routeAll();
-        break;
-      case "resolve-loop":
-        await resolveLoop(topic);
-        break;
-      case "done-task":
-        await doneTask(task);
-        break;
-      case "review-correction":
-        await reviewCorrection(index, decision);
-        break;
-      case "scan-security":
-        await scanSecurity();
-        break;
-      case "release-quarantine":
-        await releaseQuarantine(requestId);
-        break;
-      case "copy-context":
-        await copyContext();
-        break;
-      case "close-copy-modal":
-        copyModal.classList.remove("open");
-        break;
-      default:
-        break;
-    }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    const tag = document.activeElement ? document.activeElement.tagName : "";
-    const editing = tag === "INPUT" || tag === "TEXTAREA";
-    if (!editing && event.key.toLowerCase() === "i") {
-      event.preventDefault();
-      openCapture(!capturePanel.classList.contains("open"));
-    }
-    if (event.key === "Escape") {
-      openCapture(false);
-      copyModal.classList.remove("open");
-      openMobileSidebar(false);
-    }
-  });
-
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: light)");
-  const syncTheme = () => {
-    if (STATE.themeMode === "auto") {
-      applyTheme("auto");
-    }
-  };
-  if (typeof mediaQuery.addEventListener === "function") {
-    mediaQuery.addEventListener("change", syncTheme);
-  } else if (typeof mediaQuery.addListener === "function") {
-    mediaQuery.addListener(syncTheme);
-  }
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth <= 980) {
-      body.classList.remove("sidebar-collapsed");
-    } else {
-      const remembered = localStorage.getItem("oy-v3-sidebar") === "collapsed";
-      applySidebarState(remembered);
-      openMobileSidebar(false);
-    }
-  });
+/* Float capture */
+function floatToggle(){const f=document.getElementById('fform');f.classList.toggle('open');if(f.classList.contains('open'))setTimeout(()=>document.getElementById('finput').focus(),80);}
+function floatClose(){document.getElementById('fform').classList.remove('open');}
+async function floatSave(){
+  const el=document.getElementById('finput');const t=el.value.trim();if(!t)return;
+  const r=await api('/api/inbox',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+  if(r.status==='written'){toast('Captured');el.value='';floatClose();}else toast('Failed',false);
 }
 
-async function bootstrap() {
-  installEventHandlers();
+/* Keyboard shortcuts */
+document.addEventListener('keydown',e=>{
+  if(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA')return;
+  if(e.key==='i')floatToggle();
+  if(e.key==='Escape')floatClose();
+});
 
-  const storedTheme = localStorage.getItem("oy-v3-theme") || "auto";
-  applyTheme(storedTheme);
+/* Theme */
+(function(){
+  const root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme:light)');
+  function apply(m){root.setAttribute('data-theme',m==='auto'?(mq.matches?'light':'dark'):m);document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));localStorage.setItem('oy-t',m);}
+  apply(localStorage.getItem('oy-t')||'auto');
+  mq.addEventListener('change',()=>{if((localStorage.getItem('oy-t')||'auto')==='auto')apply('auto');});
+  document.querySelectorAll('.th-btn').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.mode)));
+})();
 
-  const rememberedSidebar = localStorage.getItem("oy-v3-sidebar") === "collapsed";
-  applySidebarState(rememberedSidebar);
-
-  const storedTab = localStorage.getItem("oy-v3-tab");
-  const initialTab = storedTab && TAB_META[storedTab] ? storedTab : "today";
-  setPageHeader(initialTab);
-  await activateTab(initialTab);
-
-  window.setInterval(async () => {
-    if (STATE.currentTab === "today") {
-      await loadToday();
-    }
-  }, 30000);
-}
-
-bootstrap();
+/* Auto refresh Today */
+setInterval(()=>{if(cur==='today')loadToday();},30000);
+load('today');
 </script>
 </body>
 </html>

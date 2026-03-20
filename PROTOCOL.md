@@ -1,9 +1,9 @@
-# OpenYantra Protocol Specification — v2.5
+# OpenYantra Protocol Specification -- v2.12
 
 > *"Your purpose is to stay in the minds of all people and record their thoughts and deeds."*
-> — Brahma to Chitragupta
+> -- Brahma to Chitragupta
 
-> **OpenYantra** — The Sacred Memory Machine
+> **OpenYantra** -- The Sacred Memory Machine
 > Protocol License: CC0 1.0 Universal (Public Domain)
 
 ---
@@ -12,11 +12,12 @@
 
 | Version | Key additions |
 |---|---|
-| v1.0 | Core protocol — Chitragupta pattern, Agrasandhanī, Anishtha, Sanchitta |
+| v1.0 | Core protocol -- Chitragupta pattern, Agrasandhanī, Anishtha, Sanchitta |
 | v2.0 | VidyaKosha sidecar semantic index, Pratibimba snapshots |
 | v2.1 | Inbox sheet, Importance column, TTL, Admission rules, Belief diffing, Corrections sheet |
-| v2.5 | Packaging — complete repo, PROTOCOL.md, SKILL.md, DEPLOYMENT.md restored |
-| v2.10 | Morning Briefing — `yantra morning`, Daily Insight card, streak counter |
+| v2.4 | Raksha security engine, trust tiers, Quarantine sheet |
+| v2.9 | Morning Briefing, stats analytics, integrity check |
+| v2.12 | Oracle cross-reference engine, export, doc unification |
 
 ---
 
@@ -36,14 +37,14 @@
 | Dharma-Adesh | User Override | User always wins |
 | VidyaKosha | Sidecar Index | Semantic search |
 | Pratibimba | Snapshot | Per-agent frozen index |
-| Avagraha | Inbox | Quick capture sheet (v2.1) |
-| Sanshodhan | Corrections | Pending edits sheet (v2.1) |
+| Avagraha | Inbox | Quick capture sheet (v2.12) |
+| Sanshodhan | Corrections | Pending edits sheet (v2.12) |
 
 ---
 
 ## 1. File Format
 
-OpenYantra uses **OpenDocument Spreadsheet (`.ods`)** — ISO/IEC 26300.
+OpenYantra uses **OpenDocument Spreadsheet (`.ods`)** -- ISO/IEC 26300.
 
 Free on: Linux (LibreOffice), macOS (LibreOffice), Windows (LibreOffice), Android (Collabora), iOS (Collabora).
 
@@ -61,7 +62,7 @@ Free on: Linux (LibreOffice), macOS (LibreOffice), Windows (LibreOffice), Androi
 
 ---
 
-## 2. Schema — 14 Sheets (v2.5)
+## 2. Schema -- 14 Sheets (v2.12)
 
 | Sheet | Sanskrit | English | Mutability |
 |---|---|---|---|
@@ -80,14 +81,14 @@ Free on: Linux (LibreOffice), macOS (LibreOffice), Windows (LibreOffice), Androi
 | `📥 Inbox` | Avagraha | Inbox | Chitragupta-write, user-override |
 | `✏️ Corrections` | Sanshodhan | Corrections | Chitragupta-write, user-override |
 
-### Universal columns — every sheet
+### Universal columns -- every sheet
 
 | Column | Sanskrit | Values |
 |---|---|---|
 | `Confidence` | Nishchaya | `High` / `Medium` / `Low` / `Inferred` |
 | `Source` | Strot | `User-stated` / `Agent-observed` / `Agent-inferred` / `System` |
 | `Last Updated` | Samay | ISO 8601 timestamp |
-| `Importance` | Pradhanta-Ank | 1–10 integer (v2.1) |
+| `Importance` | Pradhanta-Ank | 1–10 integer (v2.12) |
 
 ---
 
@@ -96,17 +97,17 @@ Free on: Linux (LibreOffice), macOS (LibreOffice), Windows (LibreOffice), Androi
 Only Chitragupta (LedgerAgent) writes. All other agents read.
 
 ```
-chitrapat.ods — READ (any agent, Smarana)
+chitrapat.ods -- READ (any agent, Smarana)
         ↑
-Chitragupta (LedgerAgent) — sole writer
+Chitragupta (LedgerAgent) -- sole writer
   admission gate → validate → seal Mudra → commit → audit → sync VidyaKosha
         ↑
 Karma-Lekha (WriteRequest) from any agent
         ↑
-User — Dharma-Adesh overrides all
+User -- Dharma-Adesh overrides all
 ```
 
-### Admission Rules (v2.1)
+### Admission Rules (v2.12)
 
 Before committing, Chitragupta filters:
 - Noise patterns ("user said thanks", "acknowledged", etc.)
@@ -116,7 +117,7 @@ Before committing, Chitragupta filters:
 
 ---
 
-## 4. VidyaKosha — Semantic Search
+## 4. VidyaKosha -- Semantic Search
 
 Sidecar index auto-synced on every Chitragupta commit.
 
@@ -127,8 +128,8 @@ score = α × vector_score + (1-α) × bm25_score
 Default α = 0.7.
 
 **Embedder stack (progressive):**
-- TF-IDF + SVD (zero deps, auto-sized) — default
-- sentence-transformers/all-MiniLM-L6-v2 — when installed
+- TF-IDF + SVD (zero deps, auto-sized) -- default
+- sentence-transformers/all-MiniLM-L6-v2 -- when installed
 
 **API:**
 ```python
@@ -142,7 +143,7 @@ oy.release_pratibimba()   # release at session end
 
 ---
 
-## 5. Inbox — Quick Capture (v2.1)
+## 5. Inbox -- Quick Capture (v2.12)
 
 The `📥 Inbox` sheet accepts any content without forced categorisation.
 
@@ -157,7 +158,7 @@ CLI: `yantra inbox "text"`
 
 ---
 
-## 6. Smarana — Session Load Sequence
+## 6. Smarana -- Session Load Sequence
 
 ```
 1. LOAD  👤 Svarupa (Identity)
@@ -168,16 +169,16 @@ CLI: `yantra inbox "text"`
 6. LOAD  ✅ Kartavya (Tasks)          → Status != "Done"
 7. CHECK 📥 Inbox                     → count unrouted
 8. CHECK ✏️ Corrections               → count pending
-9. (v2.1) take_pratibimba()           → if snapshot_mode = per-session
+9. (v2.12) take_pratibimba()           → if snapshot_mode = per-session
 ```
 
-### System Prompt Block (v2.5)
+### System Prompt Block (v2.12)
 
 ```
-[OPENYANTRA CONTEXT — v2.5 | Chitragupta-secured]
+[OPENYANTRA CONTEXT -- v2.12 | Chitragupta-secured]
 User: {Name} | {Occupation} | {Location}
 Active Projects (Karma): {Project} → {NextStep}
-Open Loops (Anishtha, top 15): [{Priority}] {Topic} — {Context}
+Open Loops (Anishtha, top 15): [{Priority}] {Topic} -- {Context}
 Goals (Sankalpa): {Goal}
 Tasks (Kartavya): {Task}
 Alerts: 📥 {N} unrouted · ✏️ {N} corrections pending
@@ -199,7 +200,7 @@ Agent Instructions (Niyama): {Instruction}
 
 ---
 
-## 8. Belief Diffing (v2.1)
+## 8. Belief Diffing (v2.12)
 
 Monthly contradiction detection:
 
@@ -212,7 +213,7 @@ Flags same-topic beliefs with different positions. Surfaced at session start or 
 
 ---
 
-## 9. Open Loop TTL (v2.1)
+## 9. Open Loop TTL (v2.12)
 
 Each loop carries `TTL_Days` (default 90). Expired loops surfaced via:
 
@@ -225,7 +226,7 @@ CLI: `yantra ttl`
 
 ---
 
-## 10. Corrections Flow (v2.1)
+## 10. Corrections Flow (v2.12)
 
 ```
 Agent calls propose_correction()
@@ -240,10 +241,10 @@ User rejects  → Status = "Rejected"
 
 ---
 
-## 11. Vivada — Conflict Resolution
+## 11. Vivada -- Conflict Resolution
 
 Priority order:
-1. `User-stated` (Chitra) beats `Agent-*` (Gupta) — Dharma-Adesh
+1. `User-stated` (Chitra) beats `Agent-*` (Gupta) -- Dharma-Adesh
 2. Higher Importance beats lower
 3. Newer Last Updated beats older
 4. If all equal → escalate to user
@@ -286,9 +287,9 @@ Priority order:
 
 ---
 
-## 15. Agent Implementation Checklist v2.5
+## 15. Agent Implementation Checklist v2.12
 
-- [ ] All writes via `request_write()` — no direct file access
+- [ ] All writes via `request_write()` -- no direct file access
 - [ ] Smarana at session start
 - [ ] Chitragupta Context Block in system prompt
 - [ ] Anishtha flush before compaction
