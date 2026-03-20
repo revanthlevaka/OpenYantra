@@ -1,5 +1,5 @@
 """
-examples/bootstrap.py -- Chitragupta Puja quickstart v2.2
+examples/bootstrap.py -- Chitragupta Puja quickstart v2.12
 Run once: python examples/bootstrap.py
 Or use the CLI: yantra bootstrap
 """

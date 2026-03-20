@@ -207,7 +207,7 @@ UAM files persist after the user is no longer alive. Until a formal mechanism is
    - `Agent = "ALL"`, `Instruction = "Posthumous access: [name] may access this file after my death"`
 3. Include the file in estate planning documentation
 
-UAM v2.1 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
+UAM v2.12 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
 
 ---
 

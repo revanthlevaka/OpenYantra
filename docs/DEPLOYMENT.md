@@ -16,7 +16,7 @@ pip install odfpy pandas scikit-learn faiss-cpu fastapi uvicorn
 pip install sentence-transformers  # optional
 ```
 
-## Morning Brief and Context Copy (v2.10+)
+## Morning Brief and Context Copy (v2.12+)
 
 ```python
 # Morning brief -- runs automatically on first yantra command of the day

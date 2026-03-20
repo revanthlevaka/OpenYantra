@@ -271,7 +271,7 @@ def run_scheduled(oy_path: str, time_str: str = "08:00"):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OpenYantra Daily Digest v2.3"
+        description="OpenYantra Daily Digest v2.12"
     )
     parser.add_argument(
         "--file", "-f",

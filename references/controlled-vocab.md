@@ -1,4 +1,4 @@
-# OpenYantra Controlled Vocabulary v2.2
+# OpenYantra Controlled Vocabulary v2.12
 
 ## Project Status (Karma-Sthiti)
 `Active` / `Paused` / `Completed` / `Cancelled`

@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-#  OpenYantra v2.3 Installer -- Windows (PowerShell)
+#  OpenYantra v2.12 Installer -- Windows (PowerShell)
 #  The Sacred Memory Machine
 #  Inspired by Chitragupta, the Hindu God of Data
 #

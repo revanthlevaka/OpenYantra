@@ -1,5 +1,5 @@
 """
-openclaw/plugin.py -- OpenYantra plugin for OpenClaw v2.2
+openclaw/plugin.py -- OpenYantra plugin for OpenClaw v2.12
 """
 import os
 from pathlib import Path

@@ -1,5 +1,5 @@
 """
-openclaw/hooks.py -- OpenYantra hooks for OpenClaw v2.2
+openclaw/hooks.py -- OpenYantra hooks for OpenClaw v2.12
 
 Register in openclaw config.toml:
     [hooks]

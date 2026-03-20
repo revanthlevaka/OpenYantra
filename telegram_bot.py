@@ -247,7 +247,7 @@ async def handle_error(update: object, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OpenYantra Telegram Bot v2.3"
+        description="OpenYantra Telegram Bot v2.12"
     )
     parser.add_argument(
         "--file", "-f",

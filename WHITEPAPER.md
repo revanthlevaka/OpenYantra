@@ -302,7 +302,7 @@ Key quotes from Round 4:
 | v2.2 | Complete repo -- all docs, openclaw/, examples/, references/ |
 | v2.3 | Self-contained installer (auto Python + LibreOffice + all deps), Telegram bot, daily digest |
 | v2.4 | Raksha security -- injection scanner, agent trust tiers 0–5, Mudra verification, quarantine |
-| v2.5 | Today tab, Timeline, Conflict Resolver, floating capture, mobile CSS, VISUAL_GUIDE.html |
+| v2.5 | Today tab, Timeline, Conflict Resolver, floating capture, mobile CSS, docs/docs/visual-guide.html |
 | v2.6 | 12-question Bootstrap interview, first-launch onboarding tour, brand assets |
 | v2.7 | Importance-weighted retrieval (relevance × importance × recency), `yantra stats` |
 | v2.8 | iOS Shortcut server, email-to-inbox SMTP, `yantra migrate`, `yantra schedule` |

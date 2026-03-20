@@ -435,7 +435,7 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API → [docs/
 | v2.2 | Complete repo -- all docs, openclaw/, examples/, references/, DEPLOYMENT.md |
 | v2.3 | Self-contained installer (auto Python + LibreOffice + all deps), Telegram bot, daily digest |
 | v2.4 | Raksha security -- injection scanner, agent trust tiers 0–5, Mudra verification, quarantine |
-| v2.5 | Today tab, Timeline, Conflict Resolver, floating capture button, mobile CSS, VISUAL_GUIDE.html |
+| v2.5 | Today tab, Timeline, Conflict Resolver, floating capture button, mobile CSS, docs/docs/visual-guide.html |
 | v2.6 | 12-question Bootstrap interview, first-launch onboarding tour, brand assets rebuilt |
 | v2.7 | Importance-weighted retrieval (relevance × importance × recency), `yantra stats` |
 | v2.12 | iOS Shortcut server, email-to-inbox SMTP, `yantra migrate`, `yantra schedule` |
@@ -473,7 +473,7 @@ See [WHITEPAPER.md](WHITEPAPER.md) for the complete four-round synthesis.
 | Raksha | Divine protection | Security engine |
 | VidyaKosha | Knowledge repository | Semantic search index |
 
-See [MYTHOLOGY.md](MYTHOLOGY.md) · [WHITEPAPER.md](WHITEPAPER.md) · [VISUAL_GUIDE.html](VISUAL_GUIDE.html)
+See [MYTHOLOGY.md](MYTHOLOGY.md) · [WHITEPAPER.md](WHITEPAPER.md) · [docs/docs/visual-guide.html](docs/docs/visual-guide.html)
 
 ---
 
@@ -506,7 +506,7 @@ openyantra/
 ├── install.sh                ← Mac/Linux self-contained installer
 ├── install.ps1               ← Windows self-contained installer
 ├── chitrapat_template.ods    ← Blank memory file (open in LibreOffice)
-├── VISUAL_GUIDE.html         ← Interactive architecture diagram
+├── docs/docs/visual-guide.html         ← Interactive architecture diagram
 ├── WHITEPAPER.md             ← Research document
 ├── PROTOCOL.md               ← Open spec (CC0)
 ├── SKILL.md                  ← AI skill definition
@@ -542,3 +542,14 @@ Library: **MIT License**
 *Named in honour of Chitragupta -- the Hindu God of Data.*
 
 *The record exists to serve the remembered, not the recorder.*
+
+## Screenshots
+
+| Today Tab | CLI Terminal | Web UI |
+|---|---|---|
+| ![Today](screenshots/screenshot_today.png) | ![CLI](screenshots/screenshot_cli.png) | ![Web UI](screenshots/screenshot_webui.png) |
+
+| Mobile | Architecture | Brand Manual |
+|---|---|---|
+| ![Mobile](screenshots/screenshot_mobile.png) | ![Architecture](screenshots/screenshot_architecture.png) | ![Brand](screenshots/screenshot_brand_manual.png) |
+

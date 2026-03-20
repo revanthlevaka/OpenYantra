@@ -101,7 +101,7 @@ All versions use the `v2.x` scheme.
 - Today tab, Timeline tab, Conflict Resolver tab.
 - Floating quick-capture button (keyboard shortcut `i`).
 - Mobile-responsive CSS.
-- `VISUAL_GUIDE.html` added.
+- `docs/docs/visual-guide.html` added.
 
 ---
 

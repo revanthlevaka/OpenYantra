@@ -366,8 +366,8 @@ openyantra/
 ├── UI/v3/dashboard.html   Briefing Room HTML
 ├── docs/
 │   ├── DEPLOYMENT.md      Framework integration guide
-│   ├── BRAND_MANUAL.md    Design system
-│   └── VISUAL_GUIDE.md    Architecture diagrams
+│   ├── brand-manual.html    Design system
+│   └── visual-guide.html    Architecture diagrams
 ├── assets/                SVG brand assets
 ├── openclaw/              OpenClaw hooks + plugin
 └── examples/              Quickstart + LangChain adapter
