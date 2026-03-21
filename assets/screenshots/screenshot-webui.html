@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;--surface3:#1c1b1f;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --dim:#242228;--muted:#524f58;--subtle:#7a7682;--text:#e8e5de;
+  --text-dim:rgba(232,229,222,0.52);
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad:linear-gradient(90deg,#1c6fff,#5535e0,#e84520,#f5a000);
+  --mono:'IBM Plex Mono',monospace;
+}
+body{
+  width:1280px;height:800px;overflow:hidden;
+  background:var(--ink);font-family:var(--mono);font-size:12px;color:var(--text);
+  position:relative;
+}
+body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.017) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.017) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.app{display:flex;flex-direction:column;height:100%;position:relative;z-index:1;}
+.titlebar{
+  height:38px;background:var(--surface);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.tb-dots{display:flex;gap:6px;align-items:center;}
+.dot{width:11px;height:11px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+.tb-url{font-size:10px;color:var(--muted);background:var(--surface2);padding:4px 14px;border-radius:4px;letter-spacing:0.04em;}
+.tb-right{font-size:10px;color:var(--dim);letter-spacing:0.06em;}
+.grad-strip{height:2px;background:var(--grad);flex-shrink:0;}
+.layout{display:flex;flex:1;overflow:hidden;}
+
+/* Sidebar */
+.sidebar{
+  width:190px;background:rgba(9,9,10,0.98);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 14px 12px;border-bottom:1px solid var(--border);
+}
+.sidebar-logo-text{font-size:11px;font-weight:500;letter-spacing:0.05em;}
+.sidebar-logo-sub{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:1px;}
+.nav-section{padding:8px 0;}
+.nav-group-lbl{font-size:7px;letter-spacing:0.24em;text-transform:uppercase;color:var(--dim);padding:6px 14px 3px;}
+.nav-item{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 14px;font-size:10px;color:var(--muted);
+  border-left:2px solid transparent;
+}
+.nav-item.active{color:var(--text);border-left-color:var(--amber);background:rgba(255,255,255,0.02);}
+.nav-badge{margin-left:auto;font-size:7px;letter-spacing:0.08em;padding:1px 5px;border:1px solid;border-radius:8px;}
+.nav-badge.warn{border-color:rgba(245,160,0,0.4);color:var(--amber);}
+.nav-badge.alert{border-color:rgba(232,69,32,0.4);color:var(--coral);}
+.sidebar-footer{
+  margin-top:auto;padding:10px 14px;border-top:1px solid var(--border);
+  font-size:9px;
+}
+.status-dot{display:flex;align-items:center;gap:5px;color:var(--green);}
+.led{width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* Main content */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.topbar-title{font-size:13px;font-weight:500;letter-spacing:0.03em;}
+.topbar-actions{display:flex;gap:8px;}
+.btn-sm{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  padding:5px 12px;background:transparent;border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;
+}
+.btn-primary{background:var(--grad);border:none;color:#fff;padding:5px 14px;}
+
+/* Stats bar */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.stat-cell{padding:12px 16px;border-right:1px solid var(--border);}
+.stat-cell:last-child{border-right:none;}
+.stat-num{font-size:22px;font-weight:300;line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* Daily Insight Card */
+.insight-card{
+  margin:16px 20px 0;
+  background:rgba(28,111,255,0.05);
+  border:1px solid rgba(28,111,255,0.2);
+  padding:14px 18px;
+  position:relative;overflow:hidden;
+  flex-shrink:0;
+}
+.insight-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.insight-tag{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+.insight-heading{font-size:12px;font-weight:500;margin-bottom:6px;}
+.insight-loops{display:flex;flex-direction:column;gap:4px;}
+.insight-loop{display:flex;align-items:center;gap:8px;font-size:10px;}
+.loop-pri{font-size:8px;letter-spacing:0.1em;padding:2px 6px;border:1px solid;border-radius:3px;}
+.pri-high{border-color:rgba(232,69,32,0.4);color:var(--coral);}
+.pri-medium{border-color:rgba(245,160,0,0.4);color:var(--amber);}
+.pri-low{border-color:rgba(28,111,255,0.3);color:var(--blue);}
+.loop-ttl{margin-left:auto;font-size:8px;color:var(--coral);}
+
+/* Content area */
+.content{flex:1;overflow:hidden;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+}
+.panel-title{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.panel-status{font-size:9px;color:var(--green);display:flex;align-items:center;gap:4px;}
+.panel-body{padding:14px;}
+
+/* Memory bars */
+.mem-row{display:grid;grid-template-columns:62px 1fr 38px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.mem-row:last-child{border-bottom:none;}
+.mem-lbl{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.mem-track{height:2px;background:var(--dim);}
+.mem-fill{height:100%;}
+.mem-cnt{font-size:10px;text-align:right;color:var(--amber);}
+
+/* Open loops list */
+.loop-row{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.loop-row:last-child{border-bottom:none;}
+.loop-content{flex:1;}
+.loop-topic{font-size:10px;font-weight:500;margin-bottom:2px;}
+.loop-ctx{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
+.loop-meta{font-size:8px;color:var(--dim);margin-top:2px;}
+.loop-actions{display:flex;gap:4px;flex-shrink:0;}
+.loop-btn{font-family:var(--mono);font-size:8px;padding:2px 7px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;}
+
+/* Stale projects */
+.proj-row{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.proj-row:last-child{border-bottom:none;}
+.proj-name{font-size:10px;font-weight:500;margin-bottom:2px;}
+.proj-ns{font-size:9px;color:var(--muted);}
+.proj-meta{font-size:8px;color:var(--coral);margin-top:2px;}
+
+/* Panel grid (stat cells at bottom of panel) */
+.panel-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);}
+.pg-cell{padding:10px 12px;border-right:1px solid var(--border);}
+.pg-cell:last-child{border-right:none;}
+.pg-num{font-size:16px;font-weight:500;line-height:1;margin-bottom:2px;}
+.pg-key{font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Title bar -->
+  <div class="titlebar">
+    <div class="tb-dots">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+    </div>
+    <div class="tb-url">localhost:7331 -- OpenYantra v3.0.0</div>
+    <div class="tb-right">yantra ui</div>
+  </div>
+  <div class="grad-strip"></div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
+          <defs><linearGradient id="sg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
+          <circle cx="50" cy="50" r="46" stroke="url(#sg)" stroke-width="2.5" fill="none"/>
+          <circle cx="50" cy="50" r="28" stroke="url(#sg)" stroke-width="1.5" fill="none" opacity="0.4"/>
+          <circle cx="50" cy="50" r="5" fill="url(#sg)"/>
+          <circle cx="50" cy="4" r="4" fill="#1c6fff"/>
+          <circle cx="96" cy="50" r="4" fill="#5535e0"/>
+          <circle cx="50" cy="96" r="4" fill="#e84520"/>
+          <circle cx="4" cy="50" r="4" fill="#f5a000"/>
+        </svg>
+        <div>
+          <div class="sidebar-logo-text">OpenYantra</div>
+          <div class="sidebar-logo-sub">v3.0.0</div>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-group-lbl">Daily</div>
+        <div class="nav-item active">🌅 Today</div>
+        <div class="nav-item">📥 Inbox <span class="nav-badge warn">3</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-group-lbl">Memory</div>
+        <div class="nav-item">🚀 Projects</div>
+        <div class="nav-item">🔓 Open Loops <span class="nav-badge warn">12</span></div>
+        <div class="nav-item">✅ Tasks</div>
+        <div class="nav-item">🎯 Goals</div>
+        <div class="nav-item">👥 People</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-group-lbl">Audit</div>
+        <div class="nav-item">📅 Timeline</div>
+        <div class="nav-item">⚡ Conflicts <span class="nav-badge alert">1</span></div>
+        <div class="nav-item">✏️ Corrections</div>
+        <div class="nav-item">🔒 Security</div>
+        <div class="nav-item">📒 Ledger</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-group-lbl">System</div>
+        <div class="nav-item">💚 Health</div>
+        <div class="nav-item">📊 Stats</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="status-dot"><div class="led"></div>Chitrapat.ods active</div>
+        <div style="color:var(--dim);font-size:8px;margin-top:4px;">SQLite WAL backend</div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title">🌅 Today</div>
+        <div class="topbar-actions">
+          <button class="btn-sm">Refresh</button>
+          <button class="btn-sm btn-primary">+ Inbox</button>
+        </div>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar">
+        <div class="stat-cell"><div class="stat-num" style="color:var(--blue);">247</div><div class="stat-lbl">Records</div></div>
+        <div class="stat-cell"><div class="stat-num" style="color:var(--amber);">12</div><div class="stat-lbl">Open Loops</div></div>
+        <div class="stat-cell"><div class="stat-num" style="color:var(--coral);">3</div><div class="stat-lbl">Inbox</div></div>
+        <div class="stat-cell"><div class="stat-num" style="color:var(--green);">OK</div><div class="stat-lbl">Health</div></div>
+        <div class="stat-cell"><div class="stat-num" style="color:var(--indigo);">489</div><div class="stat-lbl">Ledger</div></div>
+      </div>
+
+      <!-- Daily Insight card -->
+      <div class="insight-card">
+        <div class="insight-tag">🔥 Daily Insight -- 3 day streak</div>
+        <div class="insight-heading">3 loops need attention today</div>
+        <div class="insight-loops">
+          <div class="insight-loop">
+            <span class="loop-pri pri-high">High</span>
+            <span>Decide screenplay structure</span>
+            <span class="loop-ttl">2d left</span>
+          </div>
+          <div class="insight-loop">
+            <span class="loop-pri pri-medium">Medium</span>
+            <span>Follow up with Priya on budget</span>
+          </div>
+          <div class="insight-loop">
+            <span class="loop-pri pri-medium">Medium</span>
+            <span>Add SHA-256 tests to test suite</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content panels -->
+      <div class="content">
+        <!-- Memory panel -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Memory Distribution</span>
+            <span class="panel-status"><div class="led"></div>Live</span>
+          </div>
+          <div class="panel-body">
+            <div class="mem-row">
+              <div class="mem-lbl">Episodic</div>
+              <div class="mem-track"><div class="mem-fill" style="width:74%;background:linear-gradient(90deg,#1c6fff,#5535e0);"></div></div>
+              <div class="mem-cnt">247</div>
+            </div>
+            <div class="mem-row">
+              <div class="mem-lbl">Semantic</div>
+              <div class="mem-track"><div class="mem-fill" style="width:51%;background:linear-gradient(90deg,#5535e0,#e84520);"></div></div>
+              <div class="mem-cnt">133</div>
+            </div>
+            <div class="mem-row">
+              <div class="mem-lbl">Prospective</div>
+              <div class="mem-track"><div class="mem-fill" style="width:63%;background:linear-gradient(90deg,#e84520,#f5a000);"></div></div>
+              <div class="mem-cnt">89</div>
+            </div>
+            <div class="mem-row">
+              <div class="mem-lbl">Beliefs</div>
+              <div class="mem-track"><div class="mem-fill" style="width:38%;background:linear-gradient(90deg,#1c6fff,#1aa167);"></div></div>
+              <div class="mem-cnt">41</div>
+            </div>
+          </div>
+          <div class="panel-grid">
+            <div class="pg-cell"><div class="pg-num" style="color:var(--blue);">12</div><div class="pg-key">Loops</div></div>
+            <div class="pg-cell"><div class="pg-num" style="color:var(--indigo);">4</div><div class="pg-key">Agents</div></div>
+            <div class="pg-cell"><div class="pg-num" style="color:var(--coral);">3</div><div class="pg-key">Inbox</div></div>
+            <div class="pg-cell"><div class="pg-num" style="color:var(--green);">OK</div><div class="pg-key">Health</div></div>
+          </div>
+        </div>
+
+        <!-- Open loops panel -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Open Loops (Anishtha)</span>
+            <span style="font-size:9px;color:var(--amber);">12 unresolved</span>
+          </div>
+          <div class="panel-body">
+            <div class="loop-row">
+              <div><span class="loop-pri pri-high" style="font-size:8px;padding:2px 6px;border:1px solid rgba(232,69,32,0.4);color:var(--coral);border-radius:3px;">High</span></div>
+              <div class="loop-content">
+                <div class="loop-topic">Decide screenplay structure</div>
+                <div class="loop-ctx">3-act vs 5-act -- still undecided after 14 days</div>
+                <div class="loop-meta">TTL: 2 days left</div>
+              </div>
+              <div class="loop-actions">
+                <button class="loop-btn">Resolve</button>
+              </div>
+            </div>
+            <div class="loop-row">
+              <div><span class="loop-pri pri-medium" style="font-size:8px;padding:2px 6px;border:1px solid rgba(245,160,0,0.4);color:var(--amber);border-radius:3px;">Med</span></div>
+              <div class="loop-content">
+                <div class="loop-topic">Follow up with Priya on budget</div>
+                <div class="loop-ctx">Budget revision needed, mentioned 5 days ago</div>
+                <div class="loop-meta">TTL: 25 days left</div>
+              </div>
+              <div class="loop-actions">
+                <button class="loop-btn">Resolve</button>
+              </div>
+            </div>
+            <div class="loop-row">
+              <div><span class="loop-pri pri-low" style="font-size:8px;padding:2px 6px;border:1px solid rgba(28,111,255,0.3);color:var(--blue);border-radius:3px;">Low</span></div>
+              <div class="loop-content">
+                <div class="loop-topic">Add SHA-256 tests to test suite</div>
+                <div class="loop-ctx">VidyaKosha signature verification untested</div>
+                <div class="loop-meta">TTL: 60 days left</div>
+              </div>
+              <div class="loop-actions">
+                <button class="loop-btn">Resolve</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

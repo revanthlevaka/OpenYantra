@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;
+  --border:rgba(255,255,255,0.07);
+  --dim:#242228;--muted:#524f58;--text:#e8e5de;
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad:linear-gradient(90deg,#1c6fff,#5535e0,#e84520,#f5a000);
+  --mono:'IBM Plex Mono',monospace;
+}
+body{
+  width:1280px;height:540px;overflow:hidden;
+  background:var(--ink);font-family:var(--mono);font-size:12px;color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+}
+body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.017) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.017) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+
+.window{
+  width:900px;background:#070708;
+  border:1px solid var(--border);overflow:hidden;
+  position:relative;z-index:1;
+  box-shadow:0 24px 60px rgba(0,0,0,0.7);
+}
+.window-bar{
+  height:36px;background:var(--surface);
+  display:flex;align-items:center;gap:7px;
+  padding:0 14px;border-bottom:1px solid var(--border);
+}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+.window-title{margin-left:8px;font-size:10px;color:var(--muted);letter-spacing:0.06em;}
+.grad-strip{height:2px;background:var(--grad);}
+.terminal{padding:24px 28px;display:flex;flex-direction:column;gap:0;}
+
+/* CLI lines */
+.line{margin-bottom:3px;}
+.prompt{color:var(--coral);}
+.cmd{color:var(--amber);}
+.arg{color:var(--blue);}
+.str{color:var(--green);}
+.flag{color:var(--muted);}
+.hash{color:var(--indigo);}
+.out{color:rgba(232,229,222,0.42);padding-left:20px;display:block;margin-bottom:10px;line-height:1.75;}
+.ok{color:var(--green);font-style:normal;}
+.warn{color:var(--amber);font-style:normal;}
+.num{color:var(--text);font-style:normal;}
+.section-comment{color:var(--dim);margin-top:6px;margin-bottom:4px;display:block;}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--text);vertical-align:middle;animation:blink 1.1s step-start infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="window-bar">
+    <div class="dot dot-r"></div>
+    <div class="dot dot-y"></div>
+    <div class="dot dot-g"></div>
+    <span class="window-title">yantra -- zsh -- OpenYantra v3.0.0</span>
+  </div>
+  <div class="grad-strip"></div>
+  <div class="terminal">
+
+    <span class="section-comment"># Morning brief -- runs automatically on first command of the day</span>
+    <div class="line"><span class="prompt">$</span> <span class="cmd">yantra</span> <span class="arg">morning</span></div>
+    <span class="out">
+========================================================<br>
+&nbsp;&nbsp;Good morning, Revanth. OpenYantra v3.0.0 &nbsp;&nbsp;2026-03-21<br>
+========================================================<br>
+&nbsp;&nbsp;🔓&nbsp;&nbsp;Open Loops (12 total):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[High&nbsp;&nbsp;&nbsp;&nbsp;] Decide screenplay structure&nbsp;&nbsp;(2d left)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Medium&nbsp;&nbsp;] Follow up with Priya on budget<br>
+&nbsp;&nbsp;🚀&nbsp;&nbsp;Stale Projects:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Feature Screenplay -- no update in 9 days -&gt; Write act 2<br>
+&nbsp;&nbsp;📥&nbsp;&nbsp;Inbox: 3 items unrouted<br>
+&nbsp;&nbsp;🔥&nbsp;&nbsp;Streak: 3 days<br>
+========================================================
+    </span>
+
+    <span class="section-comment"># Quick capture -- lands in Inbox instantly</span>
+    <div class="line"><span class="prompt">$</span> <span class="cmd">yantra</span> <span class="arg">inbox</span> <span class="str">"Priya confirmed budget revision needed by Friday"</span></div>
+    <span class="out"><span class="ok">Queued</span> WriteID: <span class="hash">#a3f9d2c1</span> -- Sanchitta<br>Chitragupta signing... <span class="ok">SHA-256 OK</span><br><span class="ok">Written</span> to SQLite WAL -- Records: <span class="num">248</span></span>
+
+    <span class="section-comment"># Copy context to clipboard -- paste into any AI chat</span>
+    <div class="line"><span class="prompt">$</span> <span class="cmd">yantra</span> <span class="arg">context</span></div>
+    <span class="out"><span class="ok">Context copied to clipboard.</span><br>Paste into Claude.ai, ChatGPT, or any AI chat.<br><span class="num">12</span> projects, <span class="num">12</span> loops, <span class="num">6</span> goals, <span class="num">8</span> preferences included.</span>
+
+    <div class="line"><span class="prompt">$</span> <span class="cursor"></span></div>
+
+  </div>
+</div>
+</body>
+</html>

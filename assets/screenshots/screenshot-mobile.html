@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --dim:#242228;--muted:#524f58;--text:#e8e5de;
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad:linear-gradient(90deg,#1c6fff,#5535e0,#e84520,#f5a000);
+  --mono:'IBM Plex Mono',monospace;
+}
+body{
+  width:1280px;height:800px;overflow:hidden;
+  background:var(--ink);font-family:var(--mono);font-size:12px;color:var(--text);
+  display:flex;align-items:center;justify-content:center;gap:32px;
+}
+body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.017) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.017) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+
+/* Phone frame */
+.phone{
+  width:240px;background:#0c0c0d;border-radius:28px;
+  border:2px solid rgba(255,255,255,0.14);overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,0.7);
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+}
+.notch{height:26px;background:#090909;display:flex;align-items:center;justify-content:center;}
+.pill{width:72px;height:9px;background:rgba(255,255,255,0.14);border-radius:5px;}
+.screen{flex:1;overflow:hidden;}
+.home-indicator{height:20px;background:#090909;display:flex;align-items:center;justify-content:center;}
+.hbar{width:72px;height:3px;background:rgba(255,255,255,0.18);border-radius:2px;}
+
+/* Screen elements */
+.status-bar{display:flex;justify-content:space-between;padding:5px 14px;font-size:9px;color:var(--muted);}
+.screen-head{padding:8px 14px 10px;border-bottom:1px solid var(--border);}
+.screen-title{font-size:12px;font-weight:500;margin-bottom:2px;}
+.screen-sub{font-size:9px;color:var(--muted);}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:10px 10px;}
+.stat-cell-m{background:var(--surface);padding:9px 8px;}
+.stat-num-m{font-size:18px;font-weight:300;line-height:1;margin-bottom:2px;}
+.stat-lbl-m{font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+
+/* Loop list mobile */
+.loop-item-m{
+  border-left:2px solid;margin:0 10px 4px;
+  padding:7px 8px;background:var(--surface);
+}
+.loop-title-m{font-size:9px;font-weight:500;margin-bottom:1px;}
+.loop-meta-m{font-size:7px;color:var(--muted);}
+
+/* Quick capture */
+.capture-box{
+  margin:10px;background:rgba(28,111,255,0.08);
+  border:1px solid rgba(28,111,255,0.2);padding:9px 10px;
+}
+.capture-label{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:5px;}
+.capture-input{background:var(--ink);border:1px solid var(--border);padding:6px 8px;font-size:9px;color:var(--muted);width:100%;}
+
+/* Bottom nav */
+.bottom-nav{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--border);padding:6px 0 2px;}
+.nav-icon-m{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.nav-dot-m{width:14px;height:2px;border-radius:1px;}
+.nav-lbl-m{font-size:6px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+
+/* Memory bars mobile */
+.mem-row-m{display:grid;grid-template-columns:50px 1fr 28px;gap:6px;align-items:center;padding:4px 0;}
+.mem-lbl-m{font-size:7px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.mem-track-m{height:2px;background:var(--dim);}
+.mem-cnt-m{font-size:8px;text-align:right;color:var(--amber);}
+
+/* Health items */
+.health-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;background:var(--surface);margin:0 10px 4px;
+}
+.hi-left{}
+.hi-name{font-size:9px;font-weight:500;margin-bottom:1px;}
+.hi-sub{font-size:7px;color:var(--muted);}
+.hi-badge{font-size:7px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 6px;border:1px solid rgba(26,161,103,0.3);color:var(--green);}
+
+/* Screen label */
+.screen-label{
+  position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+  font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;
+}
+.phone-wrap{position:relative;margin-bottom:32px;}
+</style>
+</head>
+<body>
+
+<!-- Screen 1: Home -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="notch"><div class="pill"></div></div>
+    <div class="screen" style="background:var(--ink);">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-head">
+        <div class="screen-title">OpenYantra</div>
+        <div class="screen-sub" style="display:flex;align-items:center;gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;"></span>Chitrapat.ods -- v3.0.0</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-cell-m"><div class="stat-num-m" style="color:var(--blue);">247</div><div class="stat-lbl-m">Records</div></div>
+        <div class="stat-cell-m"><div class="stat-num-m" style="color:var(--amber);">12</div><div class="stat-lbl-m">Loops</div></div>
+        <div class="stat-cell-m"><div class="stat-num-m" style="color:var(--green);">OK</div><div class="stat-lbl-m">Health</div></div>
+        <div class="stat-cell-m"><div class="stat-num-m" style="color:var(--indigo);">489</div><div class="stat-lbl-m">Ledger</div></div>
+      </div>
+      <div class="capture-box">
+        <div class="capture-label">Quick Capture</div>
+        <div class="capture-input">Capture anything...</div>
+      </div>
+      <div style="padding:0 10px;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Recent</div>
+      <div style="margin:0 10px;background:var(--surface);border:1px solid var(--border);padding:7px 8px;margin-bottom:3px;"><div style="font-size:9px;font-weight:500;margin-bottom:1px;">async write batching</div><div style="font-size:7px;color:var(--green);">4m ago</div></div>
+      <div style="margin:0 10px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);padding:7px 8px;"><div style="font-size:9px;font-weight:500;margin-bottom:1px;">screenplay structure undecided</div><div style="font-size:7px;color:var(--muted);">2h ago</div></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--blue);"></div><div class="nav-lbl-m" style="color:var(--blue);">Home</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Loops</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Memory</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Health</div></div>
+    </div>
+    <div class="home-indicator"><div class="hbar"></div></div>
+  </div>
+  <div class="screen-label">Home</div>
+</div>
+
+<!-- Screen 2: Open Loops -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="notch"><div class="pill"></div></div>
+    <div class="screen" style="background:var(--ink);">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-head">
+        <div class="screen-title">Open Loops</div>
+        <div class="screen-sub" style="color:var(--amber);">12 unresolved</div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="loop-item-m" style="border-color:var(--coral);">
+        <div class="loop-title-m">Decide screenplay structure</div>
+        <div class="loop-meta-m" style="color:var(--coral);">High -- 2 days left</div>
+      </div>
+      <div class="loop-item-m" style="border-color:var(--amber);">
+        <div class="loop-title-m">Follow up with Priya on budget</div>
+        <div class="loop-meta-m" style="color:var(--amber);">Medium -- 25 days left</div>
+      </div>
+      <div class="loop-item-m" style="border-color:var(--indigo);">
+        <div class="loop-title-m">Add SHA-256 tests</div>
+        <div class="loop-meta-m" style="color:var(--indigo);">Medium -- 60 days left</div>
+      </div>
+      <div class="loop-item-m" style="border-color:var(--blue);">
+        <div class="loop-title-m">Review AgentConfig schema</div>
+        <div class="loop-meta-m" style="color:var(--blue);">Low -- open</div>
+      </div>
+      <div class="loop-item-m" style="border-color:var(--dim);">
+        <div class="loop-title-m" style="color:var(--muted);">Explore embedding support</div>
+        <div class="loop-meta-m">Low -- open</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Home</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--amber);"></div><div class="nav-lbl-m" style="color:var(--amber);">Loops</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Memory</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Health</div></div>
+    </div>
+    <div class="home-indicator"><div class="hbar"></div></div>
+  </div>
+  <div class="screen-label">Open Loops</div>
+</div>
+
+<!-- Screen 3: Memory -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="notch"><div class="pill"></div></div>
+    <div class="screen" style="background:var(--ink);">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-head">
+        <div class="screen-title">Memory</div>
+        <div class="screen-sub">Chitrapat.ods -- 1.2MB</div>
+      </div>
+      <div style="margin:10px;background:var(--surface);border:1px solid var(--border);padding:12px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#1c6fff,#5535e0,#e84520,#f5a000);"></div>
+        <div class="mem-row-m"><div class="mem-lbl-m">Episodic</div><div class="mem-track-m"><div style="height:100%;width:74%;background:linear-gradient(90deg,#1c6fff,#5535e0);"></div></div><div class="mem-cnt-m">247</div></div>
+        <div class="mem-row-m"><div class="mem-lbl-m">Semantic</div><div class="mem-track-m"><div style="height:100%;width:51%;background:linear-gradient(90deg,#5535e0,#e84520);"></div></div><div class="mem-cnt-m">133</div></div>
+        <div class="mem-row-m"><div class="mem-lbl-m">Prospect.</div><div class="mem-track-m"><div style="height:100%;width:63%;background:linear-gradient(90deg,#e84520,#f5a000);"></div></div><div class="mem-cnt-m">89</div></div>
+      </div>
+      <div style="padding:0 10px;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Recent Records</div>
+      <div style="margin:0 10px;background:var(--surface);border:1px solid var(--border);padding:7px 8px;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:9px;font-weight:500;margin-bottom:1px;">async write batching</div><div style="font-size:7px;color:var(--indigo);">#a3f9d2c1</div></div>
+        <span style="font-size:7px;letter-spacing:0.08em;color:var(--green);border:1px solid rgba(26,161,103,0.3);padding:2px 5px;">Signed</span>
+      </div>
+      <div style="margin:0 10px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);padding:7px 8px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:9px;font-weight:500;margin-bottom:1px;">preference updated</div><div style="font-size:7px;color:var(--indigo);">#b9e124a0</div></div>
+        <span style="font-size:7px;letter-spacing:0.08em;color:var(--green);border:1px solid rgba(26,161,103,0.3);padding:2px 5px;">Signed</span>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Home</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Loops</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--blue);"></div><div class="nav-lbl-m" style="color:var(--blue);">Memory</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Health</div></div>
+    </div>
+    <div class="home-indicator"><div class="hbar"></div></div>
+  </div>
+  <div class="screen-label">Memory</div>
+</div>
+
+<!-- Screen 4: Health -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="notch"><div class="pill"></div></div>
+    <div class="screen" style="background:var(--ink);">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-head">
+        <div class="screen-title">System Health</div>
+        <div class="screen-sub" style="display:flex;align-items:center;gap:4px;color:var(--green);"><span style="width:4px;height:4px;border-radius:50%;background:var(--green);display:inline-block;"></span>All systems nominal</div>
+      </div>
+      <div style="height:6px;"></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">Chitrapat.ods</div><div class="hi-sub">1.2MB -- Readable</div></div><div class="hi-badge">OK</div></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">SQLite WAL</div><div class="hi-sub">2ms writes -- v3.0</div></div><div class="hi-badge">OK</div></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">Ledger</div><div class="hi-sub">489 entries -- Valid</div></div><div class="hi-badge">OK</div></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">Signatures</div><div class="hi-sub">SHA-256 -- All valid</div></div><div class="hi-badge">OK</div></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">WriteQueue</div><div class="hi-sub">0 pending</div></div><div class="hi-badge">OK</div></div>
+      <div class="health-item"><div class="hi-left"><div class="hi-name">Chitragupta</div><div class="hi-sub">Last write: 4m ago</div></div><div class="hi-badge">OK</div></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Home</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Loops</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--dim);"></div><div class="nav-lbl-m">Memory</div></div>
+      <div class="nav-icon-m"><div class="nav-dot-m" style="background:var(--green);"></div><div class="nav-lbl-m" style="color:var(--green);">Health</div></div>
+    </div>
+    <div class="home-indicator"><div class="hbar"></div></div>
+  </div>
+  <div class="screen-label">Health</div>
+</div>
+
+</body>
+</html>

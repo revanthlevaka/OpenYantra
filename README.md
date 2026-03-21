@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/logo-horizontal.svg" alt="OpenYantra" width="480"/>
+  <img src="assets/brand/logo-horizontal.svg" alt="OpenYantra" width="540"/>
 </p>
 
 <h1 align="center">OpenYantra</h1>
@@ -7,11 +7,11 @@
 <h4 align="center"><em>यन्त्र -- Inspired by Chitragupta, the Hindu God of Data</em></h4>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.13.0-saffron?style=flat-square&color=FF9933" />
+  <img src="https://img.shields.io/badge/Version-3.0.0-saffron?style=flat-square&color=FF9933" />
   <img src="https://img.shields.io/badge/Protocol-CC0%201.0-gold?style=flat-square&color=D4AF37" />
   <img src="https://img.shields.io/badge/Library-MIT-green?style=flat-square" />
   <img src="https://img.shields.io/badge/Format-.ods%20ISO%2FIEC%2026300-blue?style=flat-square" />
-  <img src="https://img.shields.io/badge/UI-Browser%20Dashboard-orange?style=flat-square" />
+  <img src="https://img.shields.io/badge/Backend-SQLite%20WAL-orange?style=flat-square" />
   <img src="https://img.shields.io/badge/Install-One%20Command-brightgreen?style=flat-square" />
   <img src="https://img.shields.io/badge/Security-Raksha%20Engine-red?style=flat-square&color=DC143C" />
 </p>
@@ -19,6 +19,12 @@
 <p align="center">
   <strong>Your personal AI agents remember nothing between sessions. OpenYantra fixes that.</strong><br/>
   One open-standard file. One trusted writer. Any agent. Any framework. Zero cloud.
+</p>
+
+---
+
+<p align="center">
+  <img src="assets/brand/banner-github.svg" alt="OpenYantra Banner" width="100%"/>
 </p>
 
 ---
@@ -52,6 +58,7 @@ It is:
 - **Agent-agnostic** -- works with Claude, ChatGPT, OpenClaw, LangChain, AutoGen
 - **Auditable** -- every write signed with SHA-256, permanent audit trail
 - **Protected** -- Raksha security engine blocks prompt injection attempts
+- **Fast** -- v3.0 SQLite WAL backend: 2ms writes at any scale
 
 Named after **Chitragupta** (चित्रगुप्त) -- the Hindu God of Data, divine scribe who keeps the complete record of every soul's deeds. The architecture mirrors the mythology precisely: one trusted recorder, one immutable ledger, and a rule that the user's word (Dharma-Adesh) always overrides everything else.
 
@@ -78,7 +85,8 @@ After install:
 yantra bootstrap    # 12-question interview -- sets up your memory
 yantra ui           # opens http://localhost:7331
 yantra morning      # your daily brief
-yantra context      # copy full context to clipboard
+yantra inbox "text" # quick capture to Inbox
+yantra context      # copy context to clipboard, paste into any AI chat
 ```
 
 No API keys required. No cloud account. No configuration files.
@@ -92,15 +100,34 @@ No API keys required. No cloud account. No configuration files.
 When you start an AI session, OpenYantra injects a context block into the system prompt:
 
 ```
-[OPENYANTRA CONTEXT -- v2.13.0]
+[OPENYANTRA CONTEXT -- v3.0.0]
 User: Revanth Levaka | Filmmaker | Hyderabad, IN
-Active Projects: Feature Screenplay -- Write act 2 (High)
+Active Projects: Feature Screenplay -> Write act 2 (High)
 Open Loops: [High] 3-act vs 5-act -- undecided | [Medium] Follow up with Priya
 Goals: Complete debut feature film
 Preferences: Communication: direct | Tools: terminal, LibreOffice
 ```
 
 Your AI agent now knows who you are and what is unresolved -- without you saying a word.
+
+---
+
+## v3.0 -- What Changed
+
+v3.0 is the SQLite Foundation release. The architecture is the same -- Chitragupta still controls all writes, the single-writer rule is unchanged. What changed is the storage layer underneath.
+
+| Metric | v2.x (ODS only) | v3.0 (SQLite WAL + ODS export) |
+|---|---|---|
+| Write latency at 200 rows | 78ms | 2ms |
+| Write latency at 1000 rows | 366ms | 2ms |
+| Write latency at 5000 rows | 2012ms | 2ms |
+| Concurrent read safety | Race condition possible | portalocker prevents file corruption |
+| Write idempotency | Manual | request_id dedup built in |
+| ODS file | Live write target | Atomic export (verified against SQLite) |
+
+The ODS file remains the human-readable canonical export. You can still open `chitrapat.ods` in LibreOffice and read everything. User edits via LibreOffice are imported back via `yantra sync`.
+
+**Sort Catastrophe warning:** Sorting a single column in LibreOffice scrambles all row data because ODS rows are not database rows. The v3.0 ODS export includes a Sort Warning sheet explaining this. Use `yantra sync` after any direct ODS edits rather than sorting.
 
 ---
 
@@ -128,7 +155,7 @@ Your AI agent now knows who you are and what is unresolved -- without you saying
 | ✏️ Corrections | Sanshodhan | Agent-proposed edits pending your approval |
 | 🔒 Quarantine | Nirodh | Blocked injection attempts |
 
-**★ Open Loops (Anishtha)** -- unanimously named by all 8 models across 5 stress-test rounds as the strongest and most novel feature. Implements the Zeigarnik Effect as a persistent data structure.
+**★ Open Loops (Anishtha)** -- unanimously named by all 8 models across 4 stress-test rounds as the strongest and most novel feature. Implements the Zeigarnik Effect as a persistent data structure.
 
 ---
 
@@ -139,24 +166,25 @@ Your AI agent now knows who you are and what is unresolved -- without you saying
   <em>The morning brief in your terminal -- surfaces what matters before you open any other app.</em>
 </p>
 
+Runs automatically on your first `yantra` command each day:
+
 ```bash
 yantra morning
 ```
 
 ```
 ========================================================
-  Good morning, Revanth Levaka. OpenYantra Morning Brief
-  2026-03-21
+  Good morning, Revanth. OpenYantra v3.0.0  2026-03-21
 ========================================================
 
-  🔓  Open Loops (3 total):
+  🔓  Open Loops (12 total):
      [High    ] Decide screenplay structure  (2d left)
      [Medium  ] Follow up with Priya on budget
 
   🚀  Stale Projects:
-     Feature Screenplay -- no update in 9 days -- Write act 2
+     Feature Screenplay -- no update in 9 days -> Write act 2
 
-  📥  Inbox: 2 items unrouted
+  📥  Inbox: 3 items unrouted
 
   💡  Suggestion:
      'budget revision' in Inbox may relate to:
@@ -167,7 +195,7 @@ yantra morning
 
   🔥  Streak: 3 days
   ────────────────────────────────────────────────────
-  yantra ui → http://localhost:7331
+  yantra ui -> http://localhost:7331
 ========================================================
 ```
 
@@ -178,7 +206,7 @@ Also appears as the **Daily Insight card** at the top of the browser dashboard.
 ## Browser Dashboard
 
 ```bash
-yantra ui   # → http://localhost:7331
+yantra ui   # -> http://localhost:7331
 ```
 
 <p align="center">
@@ -226,7 +254,7 @@ Every write scanned before Chitragupta commits it. Only confirmed threats are bl
 | 3 -- Known | Claude, OpenClaw, LangChain, AutoGen | Standard scan |
 | 2 -- Unknown | Unregistered agents | Stricter scan |
 | 1 -- External | Telegram bot, iOS Shortcut, email | Suspicious treated as confirmed |
-| 0 -- Untrusted | Flagged agents | Any flag blocks |
+| 0 -- Untrusted | Flagged agents | Any flag -> block |
 
 ---
 
@@ -289,7 +317,7 @@ Formats your memory as a clean Markdown block and copies to clipboard. Paste int
 ```bash
 export TELEGRAM_BOT_TOKEN="your_token_from_BotFather"
 yantra telegram
-# Any message goes to Inbox. /loop /task /goal /digest /health
+# Any message -> Inbox. /loop /task /goal /digest /health
 ```
 
 **iOS Shortcut:**
@@ -301,7 +329,7 @@ yantra shortcut
 **Email:**
 ```bash
 yantra mail
-# Local SMTP on port 2525 -- forward any email to Inbox
+# Local SMTP on port 2525 -- forward any email -> Inbox
 ```
 
 ---
@@ -328,6 +356,9 @@ oy.inbox("Priya mentioned budget revision needed by Friday")
 # Semantic search -- importance-weighted results
 results = oy.search("screenplay structure")
 
+# Copy context for web AI tools
+md = oy.build_context_markdown()
+
 # Session end
 oy.log_session(topics=["screenplay"], decisions=["Research 5-act"])
 ```
@@ -342,8 +373,8 @@ yantra bootstrap    # 12-question interview
 yantra doctor       # system check: Python, packages, port, ODS integrity
 
 # Daily use
-yantra morning      # daily brief
-yantra ui [port]    # browser dashboard -- http://localhost:7331
+yantra morning      # daily brief -- runs automatically on first command of day
+yantra ui [port]    # browser dashboard -> http://localhost:7331
 yantra context      # copy full context to clipboard -- paste into any AI chat
 yantra inbox "text" # quick capture to Inbox
 yantra digest       # daily summary: loops + stale projects + insights
@@ -355,9 +386,11 @@ yantra route        # auto-route all unprocessed Inbox items
 yantra loops        # list all unresolved Open Loops
 yantra diff         # belief contradiction check
 yantra ttl          # check expired Open Loops
+yantra sync         # import ODS edits back into SQLite (after editing in LibreOffice)
+yantra corrections  # list and apply pending agent corrections
 
 # Mobile
-yantra telegram     # Telegram bot -- Inbox
+yantra telegram     # Telegram bot -> Inbox
 yantra shortcut     # iOS Shortcut server (port 7332)
 yantra mail         # Email-to-Inbox SMTP (port 2525)
 yantra schedule     # schedule daily digest via launchd / cron
@@ -386,7 +419,7 @@ session_end   = "openyantra.openclaw.hooks:session_end_hook"
 OPENYANTRA_FILE = "~/openyantra/chitrapat.ods"
 ```
 
-Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -> [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ---
 
@@ -409,6 +442,7 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -- [docs/D
 | Daily briefing | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Copy context for web AI | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Schema migration | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| SQLite WAL backend | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Open protocol (CC0) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ---
@@ -420,24 +454,33 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -- [docs/D
 | v1.0 | Core protocol -- Chitragupta, Agrasandhanī, Anishtha, Sanchitta, 12-sheet schema |
 | v2.0 | VidyaKosha semantic index, BM25 + TF-IDF hybrid, Pratibimba snapshots |
 | v2.1 | Inbox, Importance column, TTL loops, admission rules, belief diffing, browser dashboard, installer |
-| v2.2 | Complete repo -- openclaw/, examples/, references/, DEPLOYMENT.md |
+| v2.2 | Complete repo -- all docs, openclaw/, examples/, references/, DEPLOYMENT.md |
 | v2.3 | Self-contained installer (auto Python + LibreOffice + all deps), Telegram bot, daily digest |
 | v2.4 | Raksha security -- injection scanner, agent trust tiers 0-5, Mudra verification, quarantine |
 | v2.5 | Today tab, Timeline, Conflict Resolver, floating capture button, mobile CSS |
-| v2.6 | 12-question Bootstrap interview, first-launch onboarding tour, brand assets |
+| v2.6 | 12-question Bootstrap interview, first-launch onboarding tour, brand assets rebuilt |
 | v2.7 | Importance-weighted retrieval (relevance x importance x recency), `yantra stats` |
-| v2.8 | Incremental VidyaKosha sync, `yantra stats`, admission refinement |
-| v2.9 | Agrasandhanī integrity check, session log archival, Stats tab, 13 UI screenshots |
-| v2.9.1 | Copy Context -- `yantra context`, paste full memory into any AI chat |
-| v2.12 | Morning Briefing -- `yantra morning`, Daily Insight card, streak counter, iOS Shortcut server, email-to-inbox SMTP, `yantra migrate`, `yantra schedule` |
-| v2.13.0 | Token alignment, em dash cleanup, brand assets rebuilt, visual-guide.html, openyantra-brand-manual.html |
-| v3.0 *(planned)* | SQLite backend, `.ods` as human-readable snapshot, SyncEngine, bidirectional conflict resolution |
+| v2.8 | Incremental VidyaKosha sync, admission refinement |
+| v2.9 | Agrasandhanī integrity check, session log archival, Stats tab |
+| v2.12 | Morning Briefing, Daily Insight card, streak counter, iOS Shortcut, email-to-inbox, `yantra migrate` |
+| v2.13.0 | Token alignment, em dash cleanup, brand asset suite, visual-guide.html, brand-manual.html |
+| **v3.0.0** | **SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context`** |
+| v3.1.0 *(planned)* | Dense embeddings (sentence-transformers), date range filter |
+| v3.2.0 *(planned)* | Morning briefing filter (importance>=7), dashboard reads from SQLite |
+| v3.3.0 *(planned)* | pip install openyantra[full], pyproject.toml packaging |
 
 ---
 
 ## Global Stress-Test -- 8 AI Models, 3 Continents, 5 Rounds
 
-The architecture was independently reviewed five times -- pre-v1.0, post-v2.0, post-v2.2, post-v2.9, and post-v2.13. No model was aware of another's response.
+The architecture was independently reviewed five times. The v3.0 release is based on Round 5 findings (7 models: ChatGPT, Qwen, Kimi, Mistral, DeepSeek, Grok, GLM5).
+
+**7/7 consensus findings that drove v3.0:**
+- SQLite WAL as operational backend (ODS as export)
+- Write idempotency via request_id dedup
+- portalocker for concurrent read safety
+- Atomic ODS export: write to .tmp, verify, os.replace()
+- Sort Catastrophe warning for LibreOffice users
 
 **The only unanimous verdict across all 5 rounds and all 8 models:**
 The Chitragupta single-writer pattern must never change.
@@ -445,7 +488,7 @@ The Chitragupta single-writer pattern must never change.
 **Named unanimously in all 5 rounds:**
 Anishtha (Open Loops) is the strongest and most novel feature.
 
-See [WHITEPAPER.md](WHITEPAPER.md) for the complete synthesis.
+See [WHITEPAPER.md](WHITEPAPER.md) for the complete five-round synthesis.
 
 ---
 
@@ -456,6 +499,7 @@ See [WHITEPAPER.md](WHITEPAPER.md) for the complete synthesis.
 | Chitragupta | Sole trusted recorder | LedgerAgent -- only writer |
 | Agrasandhanī | Cosmic register | `📒` audit trail |
 | Chitrapat | Life scroll | `chitrapat.ods` |
+| Setu | Bridge | SyncEngine -- SQLite to ODS |
 | Anishtha | Unfinished intent (Zeigarnik) | Open Loops -- compaction safety |
 | Mudra | Divine seal | SHA-256 signature |
 | Dharma-Adesh | Righteous command | User edits always win |
@@ -483,38 +527,43 @@ See [PRIVACY.md](PRIVACY.md) for full regional specifications.
 
 ```
 openyantra/
-├── openyantra.py             ← Core library v2.13.0
-├── vidyakosha.py             ← Semantic search (VidyaKosha)
-├── yantra_ui.py              ← Browser dashboard (12 tabs)
-├── yantra_security.py        ← Raksha security engine
-├── yantra_digest.py          ← Daily proactive digest
-├── telegram_bot.py           ← Telegram -- Inbox
-├── ios_shortcut.py           ← iOS Shortcut -- Inbox (HTTP server)
-├── yantra_mail.py            ← Email -- Inbox (local SMTP)
-├── yantra_migrate.py         ← Schema migration tool
-├── install.sh                ← Mac/Linux self-contained installer
-├── install.ps1               ← Windows self-contained installer
-├── chitrapat_template.ods    ← Blank memory file (open in LibreOffice)
-├── visual-guide.html         ← Interactive visual guide
-├── openyantra-brand-manual.html ← Brand identity and design manual
-├── WHITEPAPER.md             ← Research document
-├── PROTOCOL.md               ← Open spec (CC0)
-├── SKILL.md                  ← AI skill definition
-├── MYTHOLOGY.md              ← Chitragupta origin + Sanskrit naming
-├── PRIVACY.md                ← Regional profiles (IN · EU · US · CN)
-├── screenshots/              ← 13 UI screenshots
-├── assets/brand/             ← SVG logo marks and brand assets
-├── docs/DEPLOYMENT.md        ← Framework integration guide
-├── openclaw/                 ← OpenClaw plugin + hooks
-├── examples/                 ← Quickstart + LangChain adapter
-└── references/               ← Controlled vocabulary
+├── openyantra.py             <- Core library v3.0.0
+├── yantra_sqlite.py          <- SyncEngine: SQLite WAL + atomic ODS export (NEW v3.0)
+├── yantra_morning.py         <- Morning Briefing (NEW v3.0)
+├── yantra_context.py         <- Copy Context: paste into any AI chat (NEW v3.0)
+├── vidyakosha.py             <- Semantic search (VidyaKosha)
+├── yantra_ui.py              <- Browser dashboard (12 tabs)
+├── yantra_security.py        <- Raksha security engine
+├── yantra_digest.py          <- Daily proactive digest
+├── telegram_bot.py           <- Telegram -> Inbox
+├── ios_shortcut.py           <- iOS Shortcut -> Inbox (HTTP server)
+├── yantra_mail.py            <- Email -> Inbox (local SMTP)
+├── yantra_migrate.py         <- Schema migration tool
+├── install.sh                <- Mac/Linux self-contained installer
+├── install.ps1               <- Windows self-contained installer
+├── chitrapat_template.ods    <- Blank memory file (open in LibreOffice)
+├── visual-guide.html         <- Interactive architecture guide
+├── openyantra-brand-manual.html <- Brand identity and design system
+├── index.html                <- Public website
+├── WHITEPAPER.md             <- Research document
+├── PROTOCOL.md               <- Open spec (CC0)
+├── SKILL.md                  <- AI skill definition
+├── MYTHOLOGY.md              <- Chitragupta origin + Sanskrit naming
+├── PRIVACY.md                <- Regional profiles (IN, EU, US, CN)
+├── CHANGELOG.md              <- Version history
+├── screenshots/              <- UI screenshots
+├── docs/DEPLOYMENT.md        <- Framework integration guide
+├── openclaw/                 <- OpenClaw plugin + hooks
+├── examples/                 <- Quickstart + LangChain adapter
+├── references/               <- Controlled vocabulary
+└── assets/brand/             <- Brand assets (SVG mark, logos, favicon)
 ```
 
 ---
 
 ## Contributing
 
-Framework adapters · Mobile capture improvements · Benchmarks (LOCOMO / DMR) · Language ports · v3.0 SQLite backend
+Framework adapters · Mobile capture improvements · Benchmarks (LOCOMO / DMR) · Language ports · v3.1 dense embeddings
 
 Open an issue before a PR for protocol-level changes.
 
@@ -541,10 +590,6 @@ Library: **MIT License**
 |---|---|---|
 | ![Today](screenshots/screenshot_today.png) | ![CLI](screenshots/screenshot_cli.png) | ![Web UI](screenshots/screenshot_webui.png) |
 
-| Open Loops | Mobile | Architecture |
+| Mobile | Architecture | Open Loops |
 |---|---|---|
-| ![Loops](screenshots/screenshot_loops.png) | ![Mobile](screenshots/screenshot_mobile.png) | ![Architecture](screenshots/screenshot_architecture.png) |
-
-| Security | Stats | Brand Manual |
-|---|---|---|
-| ![Security](screenshots/screenshot_security.png) | ![Stats](screenshots/screenshot_stats.png) | ![Brand](screenshots/screenshot_brand_manual.png) |
+| ![Mobile](screenshots/screenshot_mobile.png) | ![Architecture](screenshots/screenshot_architecture.png) | ![Loops](screenshots/screenshot_loops.png) |

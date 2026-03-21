@@ -3,536 +3,362 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OpenYantra -- The Sacred Memory Machine</title>
-<meta name="description" content="Your personal AI agents remember nothing between sessions. OpenYantra fixes that. One open-standard file. One trusted writer. Zero cloud."/>
-<meta property="og:title" content="OpenYantra -- The Sacred Memory Machine"/>
-<meta property="og:description" content="Your personal AI agents remember nothing between sessions. OpenYantra fixes that."/>
-<meta property="og:type" content="website"/>
+<title>OpenYantra -- Personal Cognition Ledger</title>
+<meta name="description" content="A local-first personal AI memory system. One human. One file. Full control. v3.0 SQLite backend."/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
 :root, [data-theme="dark"] {
-  --ink:      #0a0a0b;
-  --surface:  #111113;
-  --surface2: #161618;
-  --border:   rgba(255,255,255,0.07);
-  --border2:  rgba(255,255,255,0.12);
-  --dim:      #242228;
-  --muted:    #524f58;
-  --subtle:   #7a7682;
-  --text:     #e8e5de;
-  --text-dim: rgba(232,229,222,0.52);
-  --grid-line:rgba(255,255,255,0.017);
-  --nav-bg:   rgba(10,10,11,0.92);
-  --term-bg:  #070708;
+  --ink:        #0a0a0b;
+  --surface:    #111113;
+  --surface2:   #161618;
+  --surface3:   #1c1b1f;
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --dim:        #242228;
+  --muted:      #524f58;
+  --subtle:     #7a7682;
+  --text:       #e8e5de;
+  --text-dim:   rgba(232,229,222,0.55);
+  --grid-line:  rgba(255,255,255,0.018);
+  --nav-bg:     rgba(10,10,11,0.9);
+  --term-bg:    #080809;
+  --term-body:  #060607;
+  --card-item:  rgba(255,255,255,0.03);
+  --hover-row:  rgba(255,255,255,0.02);
+  --scrollbar:  #242228;
 }
 [data-theme="light"] {
-  --ink:      #f3f1ec;
-  --surface:  #ffffff;
-  --surface2: #ece9e2;
-  --border:   rgba(0,0,0,0.09);
-  --border2:  rgba(0,0,0,0.16);
-  --dim:      #d0ccc4;
-  --muted:    #888380;
-  --subtle:   #555250;
-  --text:     #1a1820;
-  --text-dim: rgba(26,24,32,0.56);
-  --grid-line:rgba(0,0,0,0.04);
-  --nav-bg:   rgba(243,241,236,0.95);
-  --term-bg:  #1a1820;
+  --ink:        #f3f1ec;
+  --surface:    #ffffff;
+  --surface2:   #ece9e2;
+  --surface3:   #e4e0d8;
+  --border:     rgba(0,0,0,0.09);
+  --border2:    rgba(0,0,0,0.16);
+  --dim:        #d0ccc4;
+  --muted:      #888380;
+  --subtle:     #555250;
+  --text:       #1a1820;
+  --text-dim:   rgba(26,24,32,0.56);
+  --grid-line:  rgba(0,0,0,0.04);
+  --nav-bg:     rgba(243,241,236,0.93);
+  --term-bg:    #1a1820;
+  --term-body:  #141218;
+  --card-item:  rgba(0,0,0,0.025);
+  --hover-row:  rgba(0,0,0,0.018);
+  --scrollbar:  #d0ccc4;
 }
 :root {
-  --blue:   #1c6fff;
-  --indigo: #5535e0;
-  --coral:  #e84520;
-  --amber:  #f5a000;
-  --green:  #1aa167;
-  --grad:   linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --grad-h: linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --grad-t: linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);
-  --mono:   'IBM Plex Mono', monospace;
-  --sans:   'IBM Plex Sans', sans-serif;
-  --ease:   cubic-bezier(0.16,1,0.3,1);
-  --tr:     background 0.28s, color 0.28s, border-color 0.28s;
+  --blue:    #1c6fff;
+  --indigo:  #5535e0;
+  --coral:   #e84520;
+  --amber:   #f5a000;
+  --green:   #1aa167;
+  --grad:    linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-h:  linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-t:  linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'IBM Plex Sans', sans-serif;
+  --ease:    cubic-bezier(0.16,1,0.3,1);
+  --tr:      background 0.28s,color 0.28s,border-color 0.28s,box-shadow 0.28s;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:var(--mono);font-size:13px;line-height:1.6;
+  overflow-x:hidden;transition:var(--tr);
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--mono);cursor:pointer;}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;transition:var(--tr);
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--ink);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-x: hidden;
-  transition: var(--tr);
-}
-body::before {
-  content: '';
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: var(--ink); }
-::-webkit-scrollbar-thumb { background: var(--dim); }
-a { color: inherit; text-decoration: none; }
+/* Utility */
+.grad-text{background:var(--grad-t);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.z1{position:relative;z-index:1;}
+section{position:relative;z-index:1;}
+.container{max-width:1160px;margin:0 auto;padding:0 48px;}
 
-.grad-text {
-  background: var(--grad-t);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;background:var(--nav-bg);
+  backdrop-filter:blur(16px);border-bottom:1px solid var(--border);
+  transition:var(--tr);
 }
+.nav-logo{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:500;letter-spacing:0.08em;}
+.nav-logo-mark{width:28px;height:28px;flex-shrink:0;animation:logoSpin 90s linear infinite;transform-origin:center;}
+@keyframes logoSpin{to{transform:rotate(360deg);}}
+.nav-links{display:flex;gap:32px;}
+.nav-links a{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.theme-toggle{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);padding:3px;gap:2px;transition:var(--tr);}
+.theme-btn{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:5px 9px;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:background 0.15s,color 0.15s;display:flex;align-items:center;gap:4px;}
+.theme-btn:hover{color:var(--text);}
+.theme-btn.active{background:var(--dim);color:var(--text);}
+.nav-badge{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--dim);color:var(--muted);transition:var(--tr);}
+.nav-btn{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:9px 20px;background:transparent;border:1px solid var(--border2);color:var(--text);transition:border-color 0.2s,color 0.2s;}
+.nav-btn:hover{border-color:var(--amber);color:var(--amber);}
 
-/* ================================================================
-   NAV
-================================================================ */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  height: 52px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px;
-  background: var(--nav-bg);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  transition: var(--tr);
-}
-.nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-}
-.nav-logo-mark { width: 24px; height: 24px; flex-shrink: 0; animation: markSpin 90s linear infinite; }
-@keyframes markSpin { to { transform: rotate(360deg); } }
-.nav-links { display: flex; gap: 32px; }
-.nav-links a {
-  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--muted); transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--text); }
-.nav-right { display: flex; align-items: center; gap: 10px; }
+/* Section labels */
+.sec-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px;margin-bottom:52px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
 
-.theme-toggle {
-  display: flex; background: var(--surface); border: 1px solid var(--border);
-  padding: 2px; gap: 1px; transition: var(--tr);
-}
-.theme-btn {
-  font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 4px 8px;
-  background: transparent; border: none; color: var(--muted);
-  cursor: pointer; transition: background 0.15s, color 0.15s;
-  display: flex; align-items: center; gap: 3px;
-}
-.theme-btn:hover { color: var(--text); }
-.theme-btn.active { background: var(--dim); color: var(--text); }
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:56px;overflow:hidden;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 48px 100px;max-width:1160px;margin:0 auto;width:100%;}
+.hero-mandala{position:absolute;top:50%;right:-120px;transform:translateY(-50%);width:700px;height:700px;pointer-events:none;z-index:0;opacity:0.05;animation:mandalaSpin 100s linear infinite;}
+@keyframes mandalaSpin{to{transform:translateY(-50%) rotate(360deg);}}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:28px;}
+.hero-eyebrow .tick{width:20px;height:1px;background:var(--muted);}
+.hero-h1{font-size:clamp(38px,4.5vw,62px);font-weight:300;line-height:1.08;letter-spacing:-0.025em;margin-bottom:24px;}
+.hero-h1 em{font-style:normal;font-weight:600;}
+.hero-sub{font-family:var(--sans);font-size:15px;font-weight:300;line-height:1.75;color:var(--text-dim);max-width:460px;margin-bottom:44px;}
+.hero-actions{display:flex;gap:14px;align-items:center;margin-bottom:52px;}
+.btn-primary{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:var(--grad);border:none;color:#fff;transition:opacity 0.2s,transform 0.15s;}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-ghost{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:transparent;border:1px solid var(--dim);color:var(--subtle);transition:border-color 0.2s,color 0.2s;}
+.btn-ghost:hover{border-color:var(--subtle);color:var(--text);}
+.hero-stats{display:flex;gap:36px;padding-top:36px;border-top:1px solid var(--border);}
+.stat-num{font-size:22px;font-weight:500;line-height:1;margin-bottom:5px;}
+.stat-label{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
 
-.nav-gh {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 8px 16px;
-  background: transparent; border: 1px solid var(--border2);
-  color: var(--text); cursor: pointer; transition: border-color 0.2s, color 0.2s;
-}
-.nav-gh:hover { border-color: var(--amber); color: var(--amber); }
+/* Hero panel */
+.hero-panel{background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden;transition:var(--tr);}
+.hero-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.panel-top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+.panel-file{font-size:10px;letter-spacing:0.1em;}
+.panel-file span{color:var(--muted);}
+.panel-status{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--green);}
+.led{width:6px;height:6px;border-radius:50%;background:var(--green);animation:ledBlink 2.4s ease-in-out infinite;}
+@keyframes ledBlink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);}
+.tab{padding:10px 18px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--border);cursor:pointer;transition:color 0.2s,background 0.2s;}
+.tab.active{color:var(--text);background:var(--card-item);}
+.panel-body{padding:20px;}
+.mem-row{display:grid;grid-template-columns:76px 1fr 48px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.mem-row:last-child{border-bottom:none;}
+.mem-name{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.mem-track{height:3px;background:var(--dim);}
+.mem-fill{height:100%;transition:width 1.8s var(--ease);}
+.mem-fill.ep{background:linear-gradient(90deg,#1c6fff,#5535e0);width:74%;}
+.mem-fill.se{background:linear-gradient(90deg,#5535e0,#e84520);width:51%;}
+.mem-fill.pr{background:linear-gradient(90deg,#e84520,#f5a000);width:63%;}
+.mem-fill.bl{background:linear-gradient(90deg,#1c6fff,#1aa167);width:38%;}
+.mem-count{font-size:11px;text-align:right;color:var(--amber);}
+.panel-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);}
+.pg-cell{padding:14px 16px;border-right:1px solid var(--border);}
+.pg-cell:last-child{border-right:none;}
+.pg-num{font-size:20px;font-weight:500;line-height:1;margin-bottom:4px;}
+.pg-key{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
 
-/* ================================================================
-   HERO
-================================================================ */
-#hero {
-  min-height: 100vh;
-  display: flex; align-items: center;
-  padding-top: 52px;
-  position: relative; overflow: hidden;
-}
+/* ARCH section */
+#arch{padding:120px 0;border-top:1px solid var(--border);}
+.arch-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:64px;}
+.arch-heading{font-size:clamp(28px,3vw,44px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;}
+.arch-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;padding-top:8px;}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);}
+.arch-card{background:var(--surface);padding:36px 32px;position:relative;overflow:hidden;transition:background 0.25s;}
+.arch-card:hover{background:var(--surface2);}
+.arch-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform 0.4s var(--ease);}
+.arch-card:hover::after{transform:scaleX(1);}
+.ac1::after{background:linear-gradient(90deg,#1c6fff,#5535e0);}
+.ac2::after{background:linear-gradient(90deg,#5535e0,#e84520);}
+.ac3::after{background:linear-gradient(90deg,#e84520,#f5a000);}
+.ac4::after{background:linear-gradient(90deg,#1c6fff,#1aa167);}
+.ac5::after{background:linear-gradient(90deg,#f5a000,#e84520);}
+.ac6::after{background:linear-gradient(90deg,#5535e0,#1c6fff);}
+.ac-idx{font-size:9px;letter-spacing:0.18em;color:var(--dim);margin-bottom:20px;}
+.ac-icon{margin-bottom:16px;}
+.ac-name{font-size:13px;font-weight:500;letter-spacing:0.04em;margin-bottom:10px;}
+.ac-desc{font-family:var(--sans);font-size:12px;font-weight:300;color:var(--text-dim);line-height:1.65;}
+.ac-tag{display:inline-block;margin-top:18px;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;padding:3px 9px;border:1px solid var(--dim);color:var(--muted);}
 
-.hero-mandala {
-  position: absolute; top: 50%; right: -10%;
-  transform: translateY(-50%);
-  width: 60vmin; height: 60vmin; max-width: 600px;
-  opacity: 0.04;
-  animation: mandalaSpin 120s linear infinite;
-  pointer-events: none; z-index: 0;
-}
-@keyframes mandalaSpin { to { transform: translateY(-50%) rotate(360deg); } }
+/* Flow diagram */
+.flow-wrap{margin-top:64px;}
+.flow-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.flow-diagram{display:flex;align-items:stretch;background:var(--surface);border:1px solid var(--border);overflow:hidden;transition:var(--tr);}
+.flow-node{flex:1;padding:28px 24px;border-right:1px solid var(--border);position:relative;}
+.flow-node:last-child{border-right:none;}
+.flow-node::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.fn1::before{background:var(--blue);}
+.fn2::before{background:var(--indigo);}
+.fn3::before{background:var(--coral);}
+.fn4::before{background:var(--amber);}
+.fn5::before{background:var(--green);}
+.fn-step{font-size:9px;letter-spacing:0.18em;color:var(--muted);margin-bottom:10px;}
+.fn-title{font-size:13px;font-weight:500;margin-bottom:4px;}
+.fn-sub{font-size:10px;color:var(--muted);}
 
-.hero-inner {
-  position: relative; z-index: 1;
-  max-width: 1100px; margin: 0 auto;
-  padding: 80px 48px;
-  display: grid; grid-template-columns: 1fr 480px; gap: 80px;
-  align-items: center; width: 100%;
-}
+/* CLI section */
+#cli{padding:120px 0;border-top:1px solid var(--border);}
+.cli-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.cli-heading{font-size:clamp(26px,2.8vw,40px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;margin-bottom:18px;}
+.cli-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:40px;}
+.cmd-list{display:flex;flex-direction:column;gap:4px;}
+.cmd-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1px solid transparent;transition:border-color 0.2s,background 0.2s;cursor:pointer;}
+.cmd-item:hover{border-color:var(--border2);background:var(--hover-row);}
+.cmd-item.active{border-color:var(--border2);background:rgba(28,111,255,0.06);}
+.cmd-name{font-size:12px;font-weight:500;}
+.cmd-name .kw{color:var(--amber);}
+.cmd-name .arg{color:var(--blue);}
+.cmd-desc-short{font-size:10px;color:var(--muted);}
+.cmd-arrow{font-size:10px;color:var(--dim);}
+.cmd-item:hover .cmd-arrow,.cmd-item.active .cmd-arrow{color:var(--amber);}
+.terminal{background:var(--term-bg);border:1px solid var(--border);overflow:hidden;position:sticky;top:80px;transition:var(--tr);}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);transition:var(--tr);}
+.td{width:10px;height:10px;border-radius:50%;}
+.td-r{background:#ff5f57;}.td-y{background:#febc2e;}.td-g{background:#28c840;}
+.term-title{margin-left:8px;font-size:10px;color:var(--muted);letter-spacing:0.08em;}
+.term-body{padding:28px;display:flex;flex-direction:column;gap:18px;min-height:380px;background:var(--term-body);transition:var(--tr);}
+.tl{display:flex;gap:12px;align-items:flex-start;}
+.t-prompt{color:var(--coral);flex-shrink:0;}
+.t-cmd{color:var(--amber);}.t-arg{color:var(--blue);}.t-flag{color:var(--subtle);}
+.t-out{font-size:11px;color:var(--text-dim);padding-left:22px;font-style:italic;line-height:1.7;}
+.t-out .ok{color:var(--green);font-style:normal;}
+.t-out .warn{color:var(--amber);font-style:normal;}
+.t-out .num{color:var(--text);font-style:normal;}
+.cursor-blink{display:inline-block;width:7px;height:13px;background:var(--text);vertical-align:middle;animation:cursorBlink 1.1s step-start infinite;}
+@keyframes cursorBlink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-.hero-eyebrow {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 24px;
-}
-.hero-eyebrow .tick { width: 20px; height: 1px; background: var(--muted); }
+/* AGENTS section */
+#agents{padding:120px 0;border-top:1px solid var(--border);}
+.agents-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:64px;align-items:end;}
+.agents-heading{font-size:clamp(28px,3vw,44px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;}
+.agents-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;}
+.ecosystem{position:relative;background:var(--surface);border:1px solid var(--border);padding:48px;overflow:hidden;transition:var(--tr);}
+.ecosystem::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.eco-center{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;}
+.eco-file{background:var(--surface2);border:1px solid var(--border2);padding:18px 28px;display:flex;align-items:center;gap:14px;position:relative;transition:var(--tr);}
+.eco-file::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:2px;background:var(--grad);}
+.eco-file-name{font-size:13px;font-weight:500;letter-spacing:0.04em;}
+.eco-file-sub{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.eco-file-badge{position:absolute;top:-10px;right:-10px;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;background:var(--green);color:#fff;padding:2px 7px;}
+.eco-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.agent-card{background:var(--ink);border:1px solid var(--border);padding:18px 16px;transition:border-color 0.2s,background 0.2s;position:relative;overflow:hidden;}
+.agent-card:hover{border-color:var(--border2);background:var(--surface3);}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity 0.25s;}
+.agent-card:hover::before{opacity:1;}
+.ac-writer::before{background:var(--grad);}
+.ac-reader::before{background:linear-gradient(90deg,var(--blue),var(--indigo));}
+.agent-type{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.agent-name{font-size:12px;font-weight:500;letter-spacing:0.04em;margin-bottom:5px;}
+.agent-role{font-size:10px;color:var(--muted);line-height:1.5;}
+.agent-badge{display:inline-block;margin-top:10px;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--dim);color:var(--dim);}
+.writer-badge{border-color:rgba(245,160,0,0.3);color:var(--amber);}
+.reader-badge{border-color:rgba(28,111,255,0.3);color:var(--blue);}
+.eco-connector{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 0 16px;}
+.eco-line{width:1px;height:20px;background:var(--border2);}
+.eco-arrow-down{font-size:10px;color:var(--muted);}
+.eco-legend{display:flex;gap:24px;justify-content:center;margin-top:24px;padding-top:24px;border-top:1px solid var(--border);}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+.legend-text{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.agent-principles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:24px;}
+.ap-cell{background:var(--surface);padding:28px 24px;transition:var(--tr);}
+.ap-num{font-size:28px;font-weight:300;line-height:1;margin-bottom:10px;background:var(--grad-t);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ap-title{font-size:11px;font-weight:500;letter-spacing:0.04em;margin-bottom:7px;}
+.ap-body{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--text-dim);line-height:1.65;}
 
-.hero-h1 {
-  font-size: clamp(36px,4.5vw,60px); font-weight: 300;
-  line-height: 1.08; letter-spacing: -0.025em;
-  margin-bottom: 20px;
+/* DEMO section */
+#demo{padding:120px 0;border-top:1px solid var(--border);}
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.demo-heading{font-size:clamp(26px,2.8vw,40px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;margin-bottom:18px;}
+.demo-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:32px;}
+.sim-commands{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.sim-cmd-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:var(--mono);font-size:12px;
+  cursor:pointer;transition:border-color 0.2s,background 0.2s;text-align:left;
 }
+.sim-cmd-btn:hover{border-color:var(--amber);background:var(--surface2);}
+.sim-cmd-btn .sc-name{color:var(--amber);}
+.sim-cmd-btn .sc-arg{color:var(--blue);}
+.sim-cmd-btn .sc-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.sim-custom{display:flex;gap:8px;margin-top:8px;}
+.sim-input{
+  font-family:var(--mono);font-size:12px;flex:1;
+  padding:10px 14px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);outline:none;transition:border-color 0.2s,var(--tr);
+}
+.sim-input:focus{border-color:var(--blue);}
+.sim-input::placeholder{color:var(--muted);}
+.sim-run{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  padding:10px 18px;background:var(--grad);border:none;color:#fff;cursor:pointer;
+  transition:opacity 0.2s;flex-shrink:0;
+}
+.sim-run:hover{opacity:0.85;}
+.sim-terminal{background:var(--term-bg);border:1px solid var(--border);overflow:hidden;transition:var(--tr);}
+.sim-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--surface);transition:var(--tr);}
+.sim-bar-left{display:flex;align-items:center;gap:7px;}
+.sim-clear{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;background:transparent;border:1px solid var(--dim);color:var(--muted);cursor:pointer;transition:border-color 0.2s,color 0.2s;}
+.sim-clear:hover{border-color:var(--muted);color:var(--text);}
+.sim-output{padding:24px;min-height:340px;max-height:480px;overflow-y:auto;font-size:12px;line-height:1.8;background:var(--term-body);transition:var(--tr);}
+.sim-output:empty::after{content:'Run a command to see output...';color:var(--muted);font-style:italic;}
+.sim-line{display:flex;gap:10px;margin-bottom:4px;}
+.sim-prompt-char{color:var(--coral);}
+.sim-cmd-text{color:var(--amber);}
+.sim-result{color:var(--text-dim);padding-left:20px;margin-bottom:10px;line-height:1.75;}
+.sim-result .ok{color:var(--green);}
+.sim-result .warn{color:var(--amber);}
+.sim-result .err{color:var(--coral);}
+.sim-result .num{color:var(--text);}
+.sim-result .hash{color:var(--indigo);}
+.sim-state{display:flex;flex-direction:column;gap:8px;padding:16px;background:var(--surface);border:1px solid var(--border);border-top:none;transition:var(--tr);}
+.sim-state-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;}
+.sim-state-key{color:var(--muted);letter-spacing:0.08em;}
+.sim-state-val{font-weight:500;}
 
-.hero-sub {
-  font-family: var(--sans); font-size: 15px; font-weight: 300;
-  color: var(--text-dim); line-height: 1.8;
-  max-width: 480px; margin-bottom: 40px;
+/* FOOTER */
+.footer-grad{height:2px;background:var(--grad-h);opacity:0.35;position:relative;z-index:1;}
+footer{
+  border-top:1px solid var(--border);padding:48px;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:40px;position:relative;z-index:1;
+  background:var(--ink);transition:var(--tr);
 }
+.footer-logo{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:0.06em;}
+.footer-logo svg{width:24px;height:24px;}
+.footer-links{display:flex;gap:28px;}
+.footer-links a{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);transition:color 0.2s;}
+.footer-links a:hover{color:var(--text);}
+.footer-right{text-align:right;font-size:9px;color:var(--muted);letter-spacing:0.06em;line-height:2;}
+.footer-right a{color:var(--muted);transition:color 0.2s;}
+.footer-right a:hover{color:var(--text);}
 
-.hero-install {
-  background: var(--surface); border: 1px solid var(--border);
-  margin-bottom: 32px; position: relative; overflow: hidden;
-}
-.hero-install::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad);
-}
-.install-label {
-  padding: 10px 16px;
-  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--muted); border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.install-label span { color: var(--green); }
-.install-cmd {
-  padding: 16px;
-  font-size: 12px; color: var(--amber);
-  display: flex; align-items: center; gap: 10px;
-  cursor: pointer;
-}
-.install-cmd .prompt { color: var(--coral); }
-.copy-hint {
-  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--dim); margin-left: auto; transition: color 0.2s;
-}
-.hero-install:hover .copy-hint { color: var(--green); }
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.hero-eyebrow{animation:fadeUp 0.6s var(--ease) 0.1s both;}
+.hero-h1{animation:fadeUp 0.7s var(--ease) 0.2s both;}
+.hero-sub{animation:fadeUp 0.7s var(--ease) 0.32s both;}
+.hero-actions{animation:fadeUp 0.7s var(--ease) 0.42s both;}
+.hero-stats{animation:fadeUp 0.7s var(--ease) 0.52s both;}
+.hero-panel{animation:fadeUp 0.9s var(--ease) 0.35s both;}
 
-.hero-cta { display: flex; gap: 12px; align-items: center; margin-bottom: 48px; }
-.btn-primary {
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 12px 24px;
-  background: var(--grad); border: none; color: #fff; cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-}
-.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-.btn-ghost {
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 12px 24px;
-  background: transparent; border: 1px solid var(--dim);
-  color: var(--subtle); cursor: pointer; transition: border-color 0.2s, color 0.2s;
-}
-.btn-ghost:hover { border-color: var(--subtle); color: var(--text); }
-
-.hero-stats {
-  display: flex; gap: 32px;
-  padding-top: 32px; border-top: 1px solid var(--border);
-}
-.stat-num { font-size: 22px; font-weight: 500; line-height: 1; margin-bottom: 4px; }
-.stat-lbl { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-
-/* hero panel */
-.hero-panel {
-  background: var(--surface); border: 1px solid var(--border);
-  position: relative; overflow: hidden; transition: var(--tr);
-}
-.hero-panel::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad);
-}
-.panel-top {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; border-bottom: 1px solid var(--border); font-size: 10px;
-}
-.panel-file span { color: var(--muted); }
-.panel-status { display: flex; align-items: center; gap: 5px; color: var(--green); }
-.led {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
-  animation: ledBlink 2.4s ease-in-out infinite;
-}
-@keyframes ledBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.panel-tabs { display: flex; border-bottom: 1px solid var(--border); }
-.ptab {
-  padding: 9px 16px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--muted); border-right: 1px solid var(--border); cursor: pointer;
-  transition: color 0.2s, background 0.2s;
-}
-.ptab.active { color: var(--text); background: rgba(255,255,255,0.02); }
-.panel-body { padding: 18px; }
-.mem-row {
-  display: grid; grid-template-columns: 72px 1fr 40px;
-  gap: 10px; align-items: center; padding: 7px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.mem-row:last-child { border-bottom: none; }
-.mem-lbl { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-.mem-bar { height: 2px; background: var(--dim); }
-.mem-fill { height: 100%; }
-.mem-cnt { font-size: 10px; text-align: right; color: var(--amber); }
-.panel-grid {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  border-top: 1px solid var(--border);
-}
-.pg { padding: 12px 14px; border-right: 1px solid var(--border); }
-.pg:last-child { border-right: none; }
-.pg-n { font-size: 18px; font-weight: 500; line-height: 1; margin-bottom: 3px; }
-.pg-k { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-
-/* ================================================================
-   SECTION STRUCTURE
-================================================================ */
-section { position: relative; z-index: 1; }
-.container { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
-
-.sec-label {
-  font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--muted); display: flex; align-items: center; gap: 12px;
-  margin-bottom: 40px;
-}
-.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-.section-pad { padding: 100px 0; border-top: 1px solid var(--border); }
-
-/* ================================================================
-   WHY SECTION
-================================================================ */
-.why-grid {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 1px; background: var(--border); border: 1px solid var(--border);
-}
-.why-card {
-  background: var(--surface); padding: 36px 32px;
-  position: relative; overflow: hidden;
-  transition: background 0.22s;
-}
-.why-card:hover { background: var(--surface2); }
-.why-card::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.4s var(--ease);
-}
-.why-card:hover::after { transform: scaleX(1); }
-.wc1::after { background: linear-gradient(90deg,#1c6fff,#5535e0); }
-.wc2::after { background: linear-gradient(90deg,#5535e0,#e84520); }
-.wc3::after { background: linear-gradient(90deg,#e84520,#f5a000); }
-.wc4::after { background: linear-gradient(90deg,#f5a000,#1aa167); }
-.wc5::after { background: linear-gradient(90deg,#1c6fff,#1aa167); }
-.wc6::after { background: linear-gradient(90deg,#5535e0,#1c6fff); }
-.wc-idx { font-size: 8px; letter-spacing:0.18em; color: var(--dim); margin-bottom: 16px; }
-.wc-icon { margin-bottom: 14px; }
-.wc-name { font-size: 13px; font-weight: 500; letter-spacing: 0.03em; margin-bottom: 10px; }
-.wc-desc { font-family: var(--sans); font-size: 12px; font-weight: 300; color: var(--text-dim); line-height: 1.65; }
-
-/* ================================================================
-   ARCHITECTURE FLOW
-================================================================ */
-.flow-diagram {
-  display: flex; align-items: stretch;
-  background: var(--surface); border: 1px solid var(--border); overflow: hidden;
-  transition: var(--tr);
-}
-.flow-node { flex: 1; padding: 24px 20px; border-right: 1px solid var(--border); position: relative; }
-.flow-node:last-child { border-right: none; }
-.fn-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-.fn-step { font-size: 8px; letter-spacing: 0.18em; color: var(--muted); margin-bottom: 8px; }
-.fn-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
-.fn-sub { font-size: 10px; color: var(--muted); }
-.fn-arrow {
-  position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
-  font-size: 11px; color: var(--dim); z-index: 2;
-}
-
-/* ================================================================
-   FEATURES TABLE
-================================================================ */
-.feature-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-.feature-table th {
-  background: var(--surface2); color: var(--muted);
-  padding: 10px 12px; text-align: left;
-  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-  border-bottom: 1px solid var(--border); font-weight: 500;
-}
-.feature-table td {
-  padding: 9px 12px; border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.feature-table tr:hover td { background: rgba(255,255,255,0.015); }
-.feature-table td:first-child { font-weight: 500; }
-.feature-table td:last-child { color: var(--amber); font-weight: 500; }
-.check { color: var(--green); }
-.cross { color: var(--dim); }
-.partial { color: var(--amber); }
-
-/* ================================================================
-   SHEETS GRID
-================================================================ */
-.sheets-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 10px;
-}
-.sheet-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 0; padding: 18px; transition: border-color 0.2s, background 0.2s;
-  position: relative; overflow: hidden;
-}
-.sheet-card:hover { border-color: rgba(255,153,51,0.3); background: var(--surface2); }
-.sheet-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad); opacity: 0; transition: opacity 0.2s;
-}
-.sheet-card:hover::before { opacity: 1; }
-.sheet-card .emoji { font-size: 1.3rem; margin-bottom: 8px; }
-.sheet-card .sname {
-  font-family: var(--mono); font-size: 11px; font-weight: 500;
-  color: var(--amber); margin-bottom: 2px;
-}
-.sheet-card .sanskrit { font-size: 9px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.06em; }
-.sheet-card .desc { font-family: var(--sans); font-size: 11px; font-weight: 300; color: var(--text-dim); line-height: 1.5; }
-.sheet-card.star .sname { color: var(--coral); }
-
-/* ================================================================
-   CLI TERMINAL PREVIEW
-================================================================ */
-.cli-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
-.cli-heading {
-  font-size: clamp(26px,2.8vw,40px); font-weight: 300;
-  line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px;
-}
-.cli-desc {
-  font-family: var(--sans); font-size: 14px; font-weight: 300;
-  color: var(--text-dim); line-height: 1.8; margin-bottom: 32px;
-}
-.cmd-list { display: flex; flex-direction: column; gap: 3px; }
-.cmd-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 14px; border: 1px solid transparent;
-  transition: border-color 0.2s, background 0.2s; cursor: default;
-}
-.cmd-item:hover { border-color: var(--border2); background: rgba(255,255,255,0.015); }
-.cmd-name { font-size: 12px; }
-.cmd-name .kw { color: var(--amber); }
-.cmd-name .arg { color: var(--blue); }
-.cmd-short { font-size: 9px; color: var(--muted); }
-.terminal {
-  background: var(--term-bg); border: 1px solid var(--border);
-  overflow: hidden; position: sticky; top: 72px; transition: var(--tr);
-}
-.term-bar {
-  display: flex; align-items: center; gap: 6px;
-  padding: 10px 16px; border-bottom: 1px solid var(--border);
-  background: var(--surface); transition: var(--tr);
-}
-.td { width: 9px; height: 9px; border-radius: 50%; }
-.td-r { background: #ff5f57; } .td-y { background: #febc2e; } .td-g { background: #28c840; }
-.term-title { margin-left: 6px; font-size: 9px; color: var(--muted); letter-spacing: 0.06em; }
-.term-body { padding: 22px; display: flex; flex-direction: column; gap: 12px; min-height: 340px; }
-.tl { display: flex; gap: 10px; }
-.t-p { color: var(--coral); flex-shrink: 0; }
-.t-c { color: var(--amber); }
-.t-a { color: var(--blue); }
-.t-s { color: var(--green); }
-.t-h { color: var(--indigo); }
-.t-f { color: var(--subtle); }
-.t-out { font-size: 10px; color: var(--text-dim); padding-left: 18px; line-height: 1.75; }
-.t-out .ok { color: var(--green); }
-.t-out .warn { color: var(--amber); }
-.t-out .num { color: var(--text); }
-.t-cursor {
-  display: inline-block; width: 7px; height: 12px;
-  background: var(--text); vertical-align: middle;
-  animation: cursor 1.1s step-start infinite;
-}
-@keyframes cursor { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* ================================================================
-   MYTHOLOGY TABLE
-================================================================ */
-.myth-table { width: 100%; border-collapse: collapse; }
-.myth-table th {
-  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--amber); padding: 10px 14px; text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.myth-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: top; }
-.myth-table .col-skt { color: var(--coral); font-family: var(--mono); }
-.myth-table .col-myth { color: var(--text-dim); font-style: italic; font-family: var(--sans); font-size: 12px; }
-.myth-table .col-impl { color: var(--text); }
-
-/* ================================================================
-   COMPARISON TABLE
-================================================================ */
-.compare-wrap { overflow-x: auto; }
-.compare-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 700px; }
-.compare-table th {
-  padding: 10px 12px; text-align: center;
-  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
-  border-bottom: 2px solid var(--border); color: var(--muted);
-}
-.compare-table th:first-child { text-align: left; }
-.compare-table th.highlight { color: var(--amber); }
-.compare-table td {
-  padding: 8px 12px; border-bottom: 1px solid var(--border);
-  text-align: center; vertical-align: middle;
-}
-.compare-table td:first-child { text-align: left; font-weight: 500; }
-.compare-table td.highlight { background: rgba(245,160,0,0.04); }
-.compare-table tr:hover td { background: rgba(255,255,255,0.015); }
-.compare-table tr:hover td.highlight { background: rgba(245,160,0,0.07); }
-
-/* ================================================================
-   FOOTER
-================================================================ */
-.footer-strip { height: 2px; background: var(--grad-h); opacity: 0.4; position: relative; z-index: 1; }
-footer {
-  border-top: 1px solid var(--border); padding: 48px;
-  display: grid; grid-template-columns: 1fr auto 1fr;
-  align-items: center; gap: 40px; position: relative; z-index: 1;
-  background: var(--ink); transition: var(--tr);
-}
-.footer-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-}
-.footer-logo svg { width: 22px; height: 22px; }
-.footer-links { display: flex; gap: 24px; }
-.footer-links a {
-  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--muted); transition: color 0.2s;
-}
-.footer-links a:hover { color: var(--text); }
-.footer-right {
-  text-align: right; font-size: 9px; color: var(--muted);
-  letter-spacing: 0.06em; line-height: 2;
-}
-.footer-right a { color: var(--blue); }
-
-/* ================================================================
-   ANIMATIONS
-================================================================ */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.hero-eyebrow { animation: fadeUp 0.6s var(--ease) 0.1s both; }
-.hero-h1      { animation: fadeUp 0.7s var(--ease) 0.2s both; }
-.hero-sub     { animation: fadeUp 0.7s var(--ease) 0.3s both; }
-.hero-install { animation: fadeUp 0.7s var(--ease) 0.38s both; }
-.hero-cta     { animation: fadeUp 0.7s var(--ease) 0.44s both; }
-.hero-stats   { animation: fadeUp 0.7s var(--ease) 0.52s both; }
-.hero-panel   { animation: fadeUp 0.9s var(--ease) 0.28s both; }
-
-/* MOBILE */
-@media (max-width: 768px) {
-  nav { padding: 0 20px; }
-  .nav-links { display: none; }
-  .hero-inner { grid-template-columns: 1fr; padding: 60px 20px; gap: 40px; }
-  .hero-panel { display: none; }
-  .container { padding: 0 20px; }
-  .why-grid { grid-template-columns: 1fr; }
-  .cli-layout { grid-template-columns: 1fr; }
-  .sheets-grid { grid-template-columns: 1fr 1fr; }
-  footer { grid-template-columns: 1fr; text-align: center; padding: 32px 20px; gap: 20px; }
-  .footer-right { text-align: center; }
+@media(max-width:640px){
+  .hero-inner{grid-template-columns:1fr;gap:40px;}
+  .arch-grid{grid-template-columns:1fr;}
+  .cli-layout{grid-template-columns:1fr;}
+  .agents-intro{grid-template-columns:1fr;}
+  .demo-layout{grid-template-columns:1fr;}
+  footer{grid-template-columns:1fr;text-align:center;}
+  .footer-right{text-align:center;}
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero-inner{padding:40px 20px 60px;}
+  .container{padding:0 20px;}
 }
 </style>
 </head>
@@ -542,52 +368,42 @@ footer {
 <nav>
   <div class="nav-logo">
     <svg class="nav-logo-mark" viewBox="0 0 100 100" fill="none">
-      <defs>
-        <linearGradient id="navG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#1c6fff"/>
-          <stop offset="33%" stop-color="#5535e0"/>
-          <stop offset="66%" stop-color="#e84520"/>
-          <stop offset="100%" stop-color="#f5a000"/>
-        </linearGradient>
-      </defs>
-      <circle cx="50" cy="50" r="46" stroke="url(#navG)" stroke-width="2.5" fill="none"/>
-      <circle cx="50" cy="50" r="28" stroke="url(#navG)" stroke-width="1.5" fill="none" opacity="0.4"/>
-      <circle cx="50" cy="50" r="5" fill="url(#navG)"/>
-      <circle cx="50" cy="4"  r="3.5" fill="#1c6fff"/>
-      <circle cx="96" cy="50" r="3.5" fill="#5535e0"/>
-      <circle cx="50" cy="96" r="3.5" fill="#e84520"/>
-      <circle cx="4"  cy="50" r="3.5" fill="#f5a000"/>
-      <path d="M50 4 Q66 27 50 50 Q34 27 50 4"  stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M96 50 Q73 66 50 50 Q73 34 96 50" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M50 96 Q34 73 50 50 Q66 73 50 96" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M4 50 Q27 34 50 50 Q27 66 4 50"   stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
+      <defs><linearGradient id="navG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="46" stroke="url(#navG)" stroke-width="2" fill="none"/>
+      <circle cx="50" cy="50" r="28" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.45"/>
+      <circle cx="50" cy="50" r="4" fill="url(#navG)"/>
+      <path d="M50 4 Q66 27 50 50 Q34 27 50 4" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M96 50 Q73 66 50 50 Q73 34 96 50" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M50 96 Q34 73 50 50 Q66 73 50 96" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M4 50 Q27 34 50 50 Q27 66 4 50" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/>
+      <circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/>
     </svg>
     OpenYantra
   </div>
   <div class="nav-links">
-    <a href="#why">Why</a>
-    <a href="#how">How It Works</a>
-    <a href="#sheets">Memory File</a>
+    <a href="#arch">Architecture</a>
     <a href="#cli">CLI</a>
-    <a href="#compare">Compare</a>
+    <a href="#agents">Agents</a>
+    <a href="#demo">Simulate</a>
     <a href="visual-guide.html">Visual Guide</a>
-    <a href="openyantra-brand-manual.html">Brand Manual</a>
+    <a href="openyantra-brand-manual.html">Brand</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">GitHub</a>
   </div>
   <div class="nav-right">
     <div class="theme-toggle" id="themeToggle">
-      <button class="theme-btn" data-mode="light">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-        Light
+      <button class="theme-btn" data-mode="light" title="Light">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
       </button>
-      <button class="theme-btn" data-mode="dark">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        Dark
+      <button class="theme-btn" data-mode="dark" title="Dark">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
       </button>
-      <button class="theme-btn" data-mode="auto">Auto</button>
+      <button class="theme-btn" data-mode="auto" title="Auto">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>Auto
+      </button>
     </div>
-    <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">
-      <button class="nav-gh">GitHub ↗</button>
-    </a>
+    <span class="nav-badge">v3.0.0</span>
+    <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="nav-btn">GitHub</button></a>
   </div>
 </nav>
 
@@ -595,337 +411,148 @@ footer {
 <section id="hero">
   <svg class="hero-mandala" viewBox="0 0 500 500" fill="none">
     <g stroke="currentColor" stroke-width="0.5" opacity="1">
-      <circle cx="250" cy="250" r="245"/><circle cx="250" cy="250" r="195"/>
-      <circle cx="250" cy="250" r="145"/><circle cx="250" cy="250" r="95"/>
-      <circle cx="250" cy="250" r="50"/>
-      <line x1="250" y1="5" x2="250" y2="495"/>
-      <line x1="5" y1="250" x2="495" y2="250"/>
-      <line x1="77" y1="77" x2="423" y2="423"/>
-      <line x1="423" y1="77" x2="77" y2="423"/>
+      <circle cx="250" cy="250" r="245"/><circle cx="250" cy="250" r="195"/><circle cx="250" cy="250" r="145"/><circle cx="250" cy="250" r="95"/><circle cx="250" cy="250" r="50"/>
+      <line x1="250" y1="5" x2="250" y2="495"/><line x1="5" y1="250" x2="495" y2="250"/>
+      <line x1="77" y1="77" x2="423" y2="423"/><line x1="423" y1="77" x2="77" y2="423"/>
       <path d="M250 5 Q310 128 250 250 Q190 128 250 5"/>
       <path d="M495 250 Q372 310 250 250 Q372 190 495 250"/>
       <path d="M250 495 Q190 372 250 250 Q310 372 250 495"/>
       <path d="M5 250 Q128 190 250 250 Q128 310 5 250"/>
     </g>
   </svg>
-
-  <div class="hero-inner">
+  <div class="hero-inner z1">
     <div>
-      <div class="hero-eyebrow"><span class="tick"></span>Personal AI Memory System</div>
-      <h1 class="hero-h1">Your AI agents<br>remember <em class="grad-text">nothing.</em><br>Until now.</h1>
-      <p class="hero-sub">One open-standard file. One trusted writer. Any agent, any framework, zero cloud. Your memory lives on your machine -- fully inspectable, fully yours.</p>
-
-      <div class="hero-install" id="installBox" title="Click to copy">
-        <div class="install-label">
-          <span>Mac / Linux</span>
-          <span id="copyStatus">Click to copy</span>
-        </div>
-        <div class="install-cmd">
-          <span class="prompt">$</span>
-          <span>curl -sSL https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.sh | bash</span>
-          <span class="copy-hint">&#x2398;</span>
-        </div>
+      <div class="hero-eyebrow"><span class="tick"></span>Personal AI Memory System -- v3.0.0</div>
+      <h1 class="hero-h1">Your context.<br><em class="grad-text">Your file.</em><br>Your control.</h1>
+      <p class="hero-sub">OpenYantra is a local-first memory system for personal AI agents. One human, one file, full auditability. No cloud. No database. No lock-in. v3.0 brings 2ms SQLite writes.</p>
+      <div class="hero-actions">
+        <a href="#demo"><button class="btn-primary">Try Simulation</button></a>
+        <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="btn-ghost">View on GitHub</button></a>
       </div>
-
-      <div class="hero-cta">
-        <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">
-          <button class="btn-primary">View on GitHub ↗</button>
-        </a>
-        <a href="#how">
-          <button class="btn-ghost">How it works</button>
-        </a>
-      </div>
-
       <div class="hero-stats">
-        <div><div class="stat-num grad-text">1</div><div class="stat-lbl">Memory file</div></div>
-        <div><div class="stat-num" style="color:var(--blue);">14</div><div class="stat-lbl">Domain sheets</div></div>
-        <div><div class="stat-num" style="color:var(--amber);">100%</div><div class="stat-lbl">Local-first</div></div>
-        <div><div class="stat-num" style="color:var(--green);">MIT</div><div class="stat-lbl">License</div></div>
+        <div class="stat-item"><div class="stat-num grad-text">1</div><div class="stat-label">Memory file</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--blue);">14</div><div class="stat-label">Domain sheets</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--amber);">2ms</div><div class="stat-label">Write latency</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--green);">MIT</div><div class="stat-label">License</div></div>
       </div>
     </div>
-
     <div class="hero-panel">
       <div class="panel-top">
-        <span class="panel-file"><span>~/</span>chitrapat.ods</span>
-        <span class="panel-status"><span class="led"></span>Active</span>
+        <span class="panel-file"><span>~/</span>Chitrapat.ods</span>
+        <span class="panel-status"><span class="led"></span>SQLite WAL -- v3.0.0</span>
       </div>
       <div class="panel-tabs">
-        <div class="ptab active">Memory</div>
-        <div class="ptab">Loops</div>
-        <div class="ptab">Ledger</div>
+        <div class="tab active">Memory</div><div class="tab">Ledger</div><div class="tab">Loops</div><div class="tab">Agents</div>
       </div>
       <div class="panel-body">
-        <div class="mem-row">
-          <div class="mem-lbl">Episodic</div>
-          <div class="mem-bar"><div class="mem-fill" style="width:74%;background:linear-gradient(90deg,#1c6fff,#5535e0);"></div></div>
-          <div class="mem-cnt">247</div>
-        </div>
-        <div class="mem-row">
-          <div class="mem-lbl">Semantic</div>
-          <div class="mem-bar"><div class="mem-fill" style="width:51%;background:linear-gradient(90deg,#5535e0,#e84520);"></div></div>
-          <div class="mem-cnt">133</div>
-        </div>
-        <div class="mem-row">
-          <div class="mem-lbl">Prospective</div>
-          <div class="mem-bar"><div class="mem-fill" style="width:63%;background:linear-gradient(90deg,#e84520,#f5a000);"></div></div>
-          <div class="mem-cnt">89</div>
-        </div>
-        <div class="mem-row">
-          <div class="mem-lbl">Beliefs</div>
-          <div class="mem-bar"><div class="mem-fill" style="width:38%;background:linear-gradient(90deg,#1c6fff,#1aa167);"></div></div>
-          <div class="mem-cnt">41</div>
-        </div>
+        <div class="mem-row"><span class="mem-name">Episodic</span><div class="mem-track"><div class="mem-fill ep"></div></div><span class="mem-count">247</span></div>
+        <div class="mem-row"><span class="mem-name">Semantic</span><div class="mem-track"><div class="mem-fill se"></div></div><span class="mem-count">133</span></div>
+        <div class="mem-row"><span class="mem-name">Prospective</span><div class="mem-track"><div class="mem-fill pr"></div></div><span class="mem-count">89</span></div>
+        <div class="mem-row"><span class="mem-name">Beliefs</span><div class="mem-track"><div class="mem-fill bl"></div></div><span class="mem-count">41</span></div>
       </div>
       <div class="panel-grid">
-        <div class="pg"><div class="pg-n" style="color:var(--blue);">12</div><div class="pg-k">Open Loops</div></div>
-        <div class="pg"><div class="pg-n" style="color:var(--indigo);">4</div><div class="pg-k">Agents</div></div>
-        <div class="pg"><div class="pg-n" style="color:var(--coral);">3</div><div class="pg-k">Inbox</div></div>
-        <div class="pg"><div class="pg-n" style="color:var(--green);">OK</div><div class="pg-k">Health</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--blue);">14</div><div class="pg-key">Sheets</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--indigo);">4</div><div class="pg-key">Agents</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--coral);">3</div><div class="pg-key">Inbox</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--green);">2ms</div><div class="pg-key">Write</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHY -->
-<section id="why" class="section-pad">
+<!-- ARCHITECTURE -->
+<section id="arch">
   <div class="container">
-    <div class="sec-label"><span>01 / The Problem</span></div>
-    <div class="why-grid">
-      <div class="why-card wc1">
-        <div class="wc-idx">01</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c6fff" stroke-width="1.3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div class="wc-name">Every session starts blank</div>
-        <div class="wc-desc">Your AI has no memory of your projects, decisions, preferences, or unfinished threads. You repeat the same context every single session.</div>
+    <div class="sec-label"><span>02 / Architecture</span></div>
+    <div class="arch-intro">
+      <h2 class="arch-heading">Built on <span class="grad-text">non-negotiable</span> invariants.</h2>
+      <p class="arch-desc">OpenYantra enforces six architectural invariants that can never be broken. v3.0 adds SQLite WAL as the operational layer -- ODS remains the human-readable canonical export.</p>
+    </div>
+    <div class="arch-grid">
+      <div class="arch-card ac1">
+        <div class="ac-idx">01</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1" stroke="#1c6fff" stroke-width="1.2"/><line x1="2" y1="8" x2="18" y2="8" stroke="#1c6fff" stroke-width="1" opacity="0.5"/><circle cx="5" cy="6" r="0.8" fill="#1c6fff"/><circle cx="8" cy="6" r="0.8" fill="#1c6fff" opacity="0.5"/></svg>
+        <div class="ac-name">Single Memory File</div>
+        <div class="ac-desc">All persistent memory lives in Chitrapat.ods. Human-readable, portable, directly editable. v3.0 adds SQLite as the fast operational layer -- ODS is the canonical export.</div>
+        <div class="ac-tag">Canonical Source</div>
       </div>
-      <div class="why-card wc2">
-        <div class="wc-idx">02</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5535e0" stroke-width="1.3"><path d="M3 6h18M3 12h18M3 18h18"/><line x1="18" y1="6" x2="6" y2="18" stroke="#e84520"/></svg>
-        <div class="wc-name">Work disappears in compaction</div>
-        <div class="wc-desc">Long conversations get compressed. Active decisions, mid-task context, and unresolved threads vanish without warning during long sessions.</div>
+      <div class="arch-card ac2">
+        <div class="ac-idx">02</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#5535e0" stroke-width="1.2"/><circle cx="10" cy="10" r="3" fill="#5535e0" opacity="0.6"/><line x1="10" y1="2" x2="10" y2="7" stroke="#5535e0" stroke-width="1.2"/></svg>
+        <div class="ac-name">Single Writer Rule</div>
+        <div class="ac-desc">Only Chitragupta writes to memory. All other agents are read-only. Write flow: Agent -> Sanchitta -> Chitragupta -> SQLite WAL -> async ODS export.</div>
+        <div class="ac-tag">LedgerAgent</div>
       </div>
-      <div class="why-card wc3">
-        <div class="wc-idx">03</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e84520" stroke-width="1.3"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <div class="wc-name">Memory you cannot inspect</div>
-        <div class="wc-desc">Cloud memory systems are black boxes. You cannot see what was recorded, verify it is accurate, or correct what is wrong.</div>
+      <div class="arch-card ac3">
+        <div class="ac-idx">03</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1"/><rect x="11" y="3" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.6"/><rect x="2" y="12" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.4"/><rect x="11" y="12" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.3"/></svg>
+        <div class="ac-name">14 Domain Sheets</div>
+        <div class="ac-desc">Memory structured across 14 sheets: Identity, Goals, Projects, People, Tasks, Open Loops, Session Log, Inbox, and more. Domain separation enforced.</div>
+        <div class="ac-tag">14 Domains</div>
       </div>
-      <div class="why-card wc4">
-        <div class="wc-idx">04</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f5a000" stroke-width="1.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <div class="wc-name">Agents overwriting each other</div>
-        <div class="wc-desc">In multi-agent workflows, agents write to the same memory store without coordination. Race conditions, silent overwrites, and data corruption follow.</div>
+      <div class="arch-card ac4">
+        <div class="ac-idx">04</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><polyline points="2,14 6,10 9,13 14,6 18,8" stroke="#1aa167" stroke-width="1.3" fill="none"/><circle cx="18" cy="8" r="1.5" fill="#1aa167"/></svg>
+        <div class="ac-name">Full Auditability</div>
+        <div class="ac-desc">Every write logged, timestamped, SHA-256 signed. The Agrasandhanī is append-only. Audit capability can never be removed.</div>
+        <div class="ac-tag">SHA-256</div>
       </div>
-      <div class="why-card wc5">
-        <div class="wc-idx">05</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1aa167" stroke-width="1.3"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-        <div class="wc-name">OpenYantra solves all of this</div>
-        <div class="wc-desc">One file. One writer. Every write signed and audited. Your context injected automatically at session start. Unfinished work persists across compaction.</div>
+      <div class="arch-card ac5">
+        <div class="ac-idx">05</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="6" width="14" height="10" rx="1" stroke="#f5a000" stroke-width="1.2"/><line x1="7" y1="6" x2="7" y2="3" stroke="#f5a000" stroke-width="1.2"/><line x1="13" y1="6" x2="13" y2="3" stroke="#f5a000" stroke-width="1.2"/><circle cx="10" cy="12" r="2" stroke="#f5a000" stroke-width="1"/></svg>
+        <div class="ac-name">Local-First</div>
+        <div class="ac-desc">Runs fully offline. No cloud dependencies. Your data never leaves your machine. External LLMs optional.</div>
+        <div class="ac-tag">Offline</div>
       </div>
-      <div class="why-card wc6">
-        <div class="wc-idx">06</div>
-        <svg class="wc-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c6fff" stroke-width="1.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
-        <div class="wc-name">A file you own and can edit</div>
-        <div class="wc-desc">Your Chitrapat is a `.ods` spreadsheet. Open it in LibreOffice. Read every record. Edit anything. Your changes always override agent writes.</div>
+      <div class="arch-card ac6">
+        <div class="ac-idx">06</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#5535e0" stroke-width="1.2"/><line x1="10" y1="3" x2="10" y2="17" stroke="#5535e0" stroke-width="0.8" opacity="0.4"/><line x1="3" y1="10" x2="17" y2="10" stroke="#5535e0" stroke-width="0.8" opacity="0.4"/><ellipse cx="10" cy="10" rx="3.5" ry="7" stroke="#5535e0" stroke-width="0.8" opacity="0.5"/></svg>
+        <div class="ac-name">Lightweight Retrieval</div>
+        <div class="ac-desc">VidyaKosha uses BM25 and TF-IDF tuned for 100-5000 records. Optional dense embeddings. No heavy infrastructure.</div>
+        <div class="ac-tag">VidyaKosha</div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how" class="section-pad">
-  <div class="container">
-    <div class="sec-label"><span>02 / How It Works</span></div>
-    <div style="margin-bottom:40px;">
-      <h2 style="font-size:clamp(26px,3vw,42px);font-weight:300;letter-spacing:-0.02em;margin-bottom:16px;">
-        One file. One trusted writer. <span class="grad-text">Complete control.</span>
-      </h2>
-      <p style="font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;max-width:600px;">
-        Only Chitragupta (LedgerAgent) writes to your memory file. All other agents are read-only. Every write is sealed with SHA-256 and permanently recorded in the Agrasandhanī audit trail.
-      </p>
-    </div>
-
-    <div style="margin-bottom:16px;">
-      <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Write flow -- the only path to memory</div>
+    <div class="flow-wrap">
+      <div class="flow-label">v3.0 Write Flow -- 2ms on hot path</div>
       <div class="flow-diagram">
-        <div class="flow-node">
-          <div class="fn-bar" style="background:var(--blue);"></div>
-          <div class="fn-step">01 / Source</div>
-          <div class="fn-title">Any Agent</div>
-          <div class="fn-sub">Claude, AutoGen, LangChain</div>
-          <div class="fn-arrow">›</div>
-        </div>
-        <div class="flow-node">
-          <div class="fn-bar" style="background:var(--indigo);"></div>
-          <div class="fn-step">02 / Queue</div>
-          <div class="fn-title">Sanchitta</div>
-          <div class="fn-sub">Crash-safe write queue</div>
-          <div class="fn-arrow">›</div>
-        </div>
-        <div class="flow-node">
-          <div class="fn-bar" style="background:var(--coral);"></div>
-          <div class="fn-step">03 / Writer</div>
-          <div class="fn-title">Chitragupta</div>
-          <div class="fn-sub">Sole writer. Validates, signs, audits.</div>
-          <div class="fn-arrow">›</div>
-        </div>
-        <div class="flow-node">
-          <div class="fn-bar" style="background:var(--amber);"></div>
-          <div class="fn-step">04 / Store</div>
-          <div class="fn-title">chitrapat.ods</div>
-          <div class="fn-sub">Canonical memory file</div>
-        </div>
+        <div class="flow-node fn1"><div class="fn-step">01</div><div class="fn-title">Agent</div><div class="fn-sub">Any AI agent</div></div>
+        <div class="flow-node fn2"><div class="fn-step">02</div><div class="fn-title">Sanchitta</div><div class="fn-sub">Crash-safe queue</div></div>
+        <div class="flow-node fn3"><div class="fn-step">03</div><div class="fn-title">Chitragupta</div><div class="fn-sub">Sole writer</div></div>
+        <div class="flow-node fn4"><div class="fn-step">04</div><div class="fn-title">SQLite WAL</div><div class="fn-sub">2ms operational</div></div>
+        <div class="flow-node fn5"><div class="fn-step">05 async</div><div class="fn-title">Chitrapat.ods</div><div class="fn-sub">Atomic export</div></div>
       </div>
-    </div>
-
-    <div style="background:var(--surface);border:1px solid var(--border);padding:24px;margin-top:16px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);"></div>
-      <div style="font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">System prompt injection -- what your AI sees at session start</div>
-      <pre style="font-size:11px;color:var(--text-dim);line-height:1.7;overflow-x:auto;white-space:pre-wrap;">[OPENYANTRA CONTEXT -- v2.13.0 | Chitragupta-secured]
-User: Revanth Levaka | Filmmaker | Hyderabad, IN
-Active Projects (Karma): Feature Screenplay -- Write act 2
-Open Loops (Anishtha): [High] Screenplay structure undecided | [Medium] Follow up with Priya
-Goals (Sankalpa): Complete debut feature film
-Tasks (Kartavya): Draft act 2 outline -- Deadline: this week
-Alerts: None
-[/OPENYANTRA CONTEXT]</pre>
-    </div>
-  </div>
-</section>
-
-<!-- 14-SHEET MEMORY FILE -->
-<section id="sheets" class="section-pad">
-  <div class="container">
-    <div class="sec-label"><span>03 / The Memory File</span></div>
-    <div style="margin-bottom:32px;">
-      <h2 style="font-size:clamp(26px,3vw,42px);font-weight:300;letter-spacing:-0.02em;margin-bottom:14px;">
-        14 sheets. <span class="grad-text">Everything remembered.</span>
-      </h2>
-      <p style="font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;max-width:600px;">
-        Your Chitrapat is a structured `.ods` spreadsheet. Open it in LibreOffice at any time. Every sheet is human-readable, every row is editable, and your edits always win.
-      </p>
-    </div>
-    <div class="sheets-grid">
-      <div class="sheet-card">
-        <div class="emoji">👤</div>
-        <div class="sname">Identity</div>
-        <div class="sanskrit">Svarupa -- सवरूप</div>
-        <div class="desc">Name, occupation, location, timezone, communication style.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">🎯</div>
-        <div class="sname">Goals</div>
-        <div class="sanskrit">Sankalpa -- संकल्प</div>
-        <div class="desc">Long and short-term aims with priority, deadline, and success signal.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">🚀</div>
-        <div class="sname">Projects</div>
-        <div class="sanskrit">Karma -- कर्म</div>
-        <div class="desc">Active work with domain, status, key decisions, and next concrete step.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">👥</div>
-        <div class="sname">People</div>
-        <div class="sanskrit">Sambandha -- संबंध</div>
-        <div class="desc">Relationships, context, sentiment, and open threads with each person.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">💡</div>
-        <div class="sname">Preferences</div>
-        <div class="sanskrit">Ruchi -- रुचि</div>
-        <div class="desc">Tools, communication style, anti-goals, and working hours.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">🧠</div>
-        <div class="sname">Beliefs</div>
-        <div class="sanskrit">Vishwas -- विश्वास</div>
-        <div class="desc">Values, worldview, decision principles, belief evolution history.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">✅</div>
-        <div class="sname">Tasks</div>
-        <div class="sanskrit">Kartavya -- कर्तव्य</div>
-        <div class="desc">Action items with project link, priority, deadline, and status.</div>
-      </div>
-      <div class="sheet-card star">
-        <div class="emoji">🔓</div>
-        <div class="sname">Open Loops ★</div>
-        <div class="sanskrit">Anishtha -- अनिष्ठा</div>
-        <div class="desc">Unresolved threads. Flushed before compaction, restored after. Zeigarnik Effect as a data structure.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">📅</div>
-        <div class="sname">Session Log</div>
-        <div class="sanskrit">Dinacharya -- दिनचर्या</div>
-        <div class="desc">Per-session summaries with topics, decisions, and new memory added.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">📥</div>
-        <div class="sname">Inbox</div>
-        <div class="sanskrit">Avagraha -- अवग्रह</div>
-        <div class="desc">Quick capture without forced categorisation. Route later.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">📒</div>
-        <div class="sname">Agrasandhanī</div>
-        <div class="sanskrit">अग्रसंधानी</div>
-        <div class="desc">Immutable audit trail. Every write SHA-256 signed. Append-only.</div>
-      </div>
-      <div class="sheet-card">
-        <div class="emoji">🔒</div>
-        <div class="sname">Quarantine</div>
-        <div class="sanskrit">Nirodh -- निरोध</div>
-        <div class="desc">Blocked injection attempts held for your review. Raksha security engine.</div>
-      </div>
-    </div>
-    <div style="margin-top:16px;padding:14px 18px;background:var(--surface);border:1px solid rgba(232,69,32,0.2);font-size:11px;color:var(--text-dim);font-family:var(--sans);">
-      <span style="color:var(--coral);font-family:var(--mono);font-size:10px;letter-spacing:0.06em;">★ Open Loops (Anishtha)</span> -- unanimously named by all 8 models across 5 stress-test rounds as the strongest and most novel feature.
     </div>
   </div>
 </section>
 
 <!-- CLI -->
-<section id="cli" class="section-pad">
+<section id="cli">
   <div class="container">
-    <div class="sec-label"><span>04 / CLI Interface</span></div>
+    <div class="sec-label"><span>03 / CLI Interface</span></div>
     <div class="cli-layout">
-      <div>
-        <h2 class="cli-heading">One command. <span class="grad-text">Zero friction.</span></h2>
-        <p class="cli-desc">The CLI is the primary interface. Every command is short, predictable, and scriptable. Capture ideas, check your loops, inspect memory health, and monitor your system from the terminal.</p>
+      <div class="cli-left">
+        <h2 class="cli-heading">One command.<br><span class="grad-text">Zero friction.</span></h2>
+        <p class="cli-desc">The CLI is the primary interface. Every command is short, predictable, scriptable. v3.0 adds `yantra morning`, `yantra context`, and `yantra sync`.</p>
         <div class="cmd-list">
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">bootstrap</span></span><span class="cmd-short">12-question setup interview</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">morning</span></span><span class="cmd-short">daily brief -- loops, stale projects, insights</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">ui</span></span><span class="cmd-short">browser dashboard -- localhost:7331</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">inbox</span> "idea"</span><span class="cmd-short">quick capture to Inbox</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">context</span></span><span class="cmd-short">copy memory block -- paste into any AI chat</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">loops</span></span><span class="cmd-short">list all unresolved Open Loops</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">health</span></span><span class="cmd-short">memory stats and file status</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">stats</span></span><span class="cmd-short">memory growth analytics</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">security</span></span><span class="cmd-short">full Chitrapat security audit</span></div>
-          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">open</span></span><span class="cmd-short">open Chitrapat in LibreOffice</span></div>
+          <div class="cmd-item active"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">morning</span></span><span class="cmd-desc-short">Daily brief on first command</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">inbox</span> "idea"</span><span class="cmd-desc-short">Capture to queue</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">context</span></span><span class="cmd-desc-short">Copy to clipboard, paste into any AI</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">loops</span></span><span class="cmd-desc-short">Show open loops</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">health</span></span><span class="cmd-desc-short">File + ledger check</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">sync</span></span><span class="cmd-desc-short">Import LibreOffice edits to SQLite</span><span class="cmd-arrow">›</span></div>
         </div>
       </div>
       <div>
         <div class="terminal">
-          <div class="term-bar">
-            <div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div>
-            <span class="term-title">yantra -- zsh</span>
-          </div>
+          <div class="term-bar"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- zsh</span></div>
           <div class="term-body">
-            <div class="tl"><span class="t-p">$</span><span><span class="t-c">yantra</span> <span class="t-a">morning</span></span></div>
-            <div class="t-out">
-              Good morning, Revanth.<br>
-              <span class="warn">🔓 Open Loops (3):</span><br>
-              &nbsp;&nbsp;[High] Screenplay structure (2d left)<br>
-              &nbsp;&nbsp;[Medium] Follow up with Priya<br>
-              <span class="warn">🚀 Stale:</span> Feature Film -- 9 days<br>
-              <span class="ok">💡</span> 'budget revision' may relate to Priya loop
-            </div>
-            <div class="tl"><span class="t-p">$</span><span><span class="t-c">yantra</span> <span class="t-a">inbox</span> <span class="t-s">"Priya budget note"</span></span></div>
-            <div class="t-out"><span class="ok">Queued</span> WriteID: <span style="color:var(--indigo);">#f3a12c</span> → Sanchitta<br>Chitragupta signed -- <span class="ok">SHA-256 OK</span></div>
-            <div class="tl"><span class="t-p">$</span><span><span class="t-c">yantra</span> <span class="t-a">health</span></span></div>
-            <div class="t-out">chitrapat.ods <span class="ok">OK</span> -- 1.4MB<br>Ledger: <span class="num">512</span> entries -- Sigs: <span class="ok">valid</span><br>Open loops: <span class="num">3</span> -- Inbox: <span class="num">0</span></div>
-            <div class="tl"><span class="t-p">$</span><span class="t-cursor"></span></div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">morning</span></span></div>
+            <div class="t-out">Good morning, Revanth. <span class="ok">3 day streak</span><br><span class="warn">2 loops urgent</span> -- Decide structure (2d left)<br>Stale: Feature Screenplay -- 9 days</div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">inbox</span> "Priya -- budget by Friday"</span></div>
+            <div class="t-out"><span class="ok">Queued</span> WriteID: #a3f9d2c1<br>SQLite WAL: <span class="ok">2ms</span> -- <span class="num">248</span> records</div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">context</span></span></div>
+            <div class="t-out"><span class="ok">Context copied to clipboard.</span><br>Paste into Claude.ai, ChatGPT, etc.</div>
+            <div class="tl"><span class="t-prompt">$</span><span class="cursor-blink"></span></div>
           </div>
         </div>
       </div>
@@ -933,164 +560,240 @@ Alerts: None
   </div>
 </section>
 
-<!-- COMPARE -->
-<section id="compare" class="section-pad">
+<!-- AGENTS -->
+<section id="agents">
   <div class="container">
-    <div class="sec-label"><span>05 / How It Compares</span></div>
-    <div class="compare-wrap">
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Flat Text</th>
-            <th>Vector/RAG</th>
-            <th>Mem0</th>
-            <th>Zep</th>
-            <th>OpenAI Memory</th>
-            <th class="highlight">OpenYantra</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Human-readable</td><td class="check">✓</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>User can edit</td><td class="check">✓</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>Semantic search</td><td class="cross">--</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="partial">~</td><td class="highlight check">✓</td></tr>
-          <tr><td>Compaction-safe</td><td class="cross">--</td><td class="cross">--</td><td class="partial">~</td><td class="check">✓</td><td class="check">✓</td><td class="highlight check">✓</td></tr>
-          <tr><td>Multi-agent safe</td><td class="cross">--</td><td class="partial">~</td><td class="partial">~</td><td class="check">✓</td><td class="check">✓</td><td class="highlight check">✓</td></tr>
-          <tr><td>Immutable audit trail</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="partial">~</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>Injection protection</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>Open format (ISO)</td><td class="check">✓</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>Zero infrastructure</td><td class="check">✓</td><td class="cross">--</td><td class="partial">~</td><td class="cross">--</td><td class="check">✓</td><td class="highlight check">✓</td></tr>
-          <tr><td>Browser dashboard</td><td class="cross">--</td><td class="cross">--</td><td class="partial">~</td><td class="check">✓</td><td class="check">✓</td><td class="highlight check">✓</td></tr>
-          <tr><td>Daily briefing</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-          <tr><td>Open protocol (CC0)</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="cross">--</td><td class="highlight check">✓</td></tr>
-        </tbody>
-      </table>
+    <div class="sec-label"><span>04 / Agent Ecosystem</span></div>
+    <div class="agents-intro">
+      <h2 class="agents-heading">Many agents.<br><span class="grad-text">One memory.</span></h2>
+      <p class="agents-desc">Multiple AI agents share a single memory file. Each has a defined role. The architecture prevents conflicts, enforces auditability, and keeps the human in control of every record.</p>
+    </div>
+    <div class="ecosystem">
+      <div style="margin-bottom:8px;">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:16px;">Agents -- Read Only</div>
+        <div class="eco-row">
+          <div class="agent-card ac-reader"><div class="agent-type">Retrieval</div><div class="agent-name">VidyaKosha</div><div class="agent-role">BM25/TF-IDF semantic search. Optional dense embeddings.</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card ac-reader"><div class="agent-type">Framework</div><div class="agent-name">Claude / ChatGPT</div><div class="agent-role">Read context via build_system_prompt_block()</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card ac-reader"><div class="agent-type">Framework</div><div class="agent-name">OpenClaw / LangChain</div><div class="agent-role">Session hooks: start, pre_compact, post_compact, end</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card" style="border-color:rgba(232,69,32,0.2);"><div class="agent-type">Capture</div><div class="agent-name">Telegram / iOS / Email</div><div class="agent-role">Mobile capture routes to Inbox via trust tier 1</div><div class="agent-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral);">External</div></div>
+        </div>
+      </div>
+      <div class="eco-connector"><div class="eco-line"></div><div class="eco-arrow-down">All writes routed through Chitragupta</div><div class="eco-line"></div></div>
+      <div style="max-width:320px;margin:0 auto 20px;">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:16px;">Sole Writer</div>
+        <div class="agent-card ac-writer" style="border-color:rgba(245,160,0,0.25);">
+          <div class="agent-type">LedgerAgent</div><div class="agent-name">Chitragupta</div>
+          <div class="agent-role">Only agent with write access. Signs every record SHA-256. Routes through Raksha security scan. Single-writer rule enforced across all frameworks.</div>
+          <div class="agent-badge writer-badge">Write</div>
+        </div>
+      </div>
+      <div class="eco-connector"><div class="eco-line"></div><div class="eco-arrow-down">SQLite WAL (2ms) then async ODS export</div><div class="eco-line"></div></div>
+      <div class="eco-center">
+        <div class="eco-file">
+          <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="ecoG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="50%" stop-color="#5535e0"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#ecoG)" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="5" fill="url(#ecoG)"/><circle cx="50" cy="4" r="4" fill="#1c6fff"/><circle cx="96" cy="50" r="4" fill="#5535e0"/><circle cx="50" cy="96" r="4" fill="#e84520"/><circle cx="4" cy="50" r="4" fill="#f5a000"/></svg>
+          <div><div class="eco-file-name">Chitrapat.ods</div><div class="eco-file-sub">Canonical Memory -- v3.0 SQLite + ODS</div></div>
+          <div class="eco-file-badge">Source of Truth</div>
+        </div>
+      </div>
+      <div class="eco-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div><span class="legend-text">Read Only</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber);"></div><span class="legend-text">Write (Chitragupta only)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--coral);"></div><span class="legend-text">External / Inbox</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div><span class="legend-text">SHA-256 Signed</span></div>
+      </div>
+    </div>
+    <div class="agent-principles">
+      <div class="ap-cell"><div class="ap-num">01</div><div class="ap-title">Simple</div><div class="ap-body">One file. One writer. No hidden side effects. Complexity is rejected at design time.</div></div>
+      <div class="ap-cell"><div class="ap-num">02</div><div class="ap-title">Inspectable</div><div class="ap-body">Every record human-readable. Every write auditable. You own the full stack.</div></div>
+      <div class="ap-cell"><div class="ap-num">03</div><div class="ap-title">Local</div><div class="ap-body">Runs fully offline. No telemetry. No cloud. Your cognition, on your machine.</div></div>
+      <div class="ap-cell"><div class="ap-num">04</div><div class="ap-title">Human-Controlled</div><div class="ap-body">The .ods file is always editable by you. AI assists. You decide what persists.</div></div>
     </div>
   </div>
 </section>
 
-<!-- MYTHOLOGY -->
-<section class="section-pad">
+<!-- SIMULATION -->
+<section id="demo">
   <div class="container">
-    <div class="sec-label"><span>06 / Inspired by Chitragupta</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;">
+    <div class="sec-label"><span>05 / Live Simulation</span></div>
+    <div class="demo-layout">
       <div>
-        <h2 style="font-size:clamp(24px,2.8vw,38px);font-weight:300;letter-spacing:-0.02em;margin-bottom:16px;">
-          3,000 years of mythology.<br><span class="grad-text">Arrived at the same architecture.</span>
-        </h2>
-        <p style="font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:20px;">
-          Chitragupta (चित्रगुप्त) is the Hindu God of Data -- the divine scribe who maintains a complete, incorruptible record of every human soul's deeds in the Agrasandhanī. The name means "the hidden picture" -- a complete record that persists invisibly, always accurate, always available.
-        </p>
-        <p style="font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:24px;">
-          The architecture of OpenYantra was derived independently from first principles -- and only afterward recognized as Chitragupta, implemented in code.
-        </p>
-        <blockquote style="border-left:2px solid var(--amber);padding-left:16px;font-style:italic;color:var(--text-dim);font-family:var(--sans);font-size:13px;line-height:1.7;">
-          "Your purpose is to stay in the minds of all people and record their thoughts and deeds."<br>
-          <span style="font-size:11px;color:var(--muted);">-- Brahma to Chitragupta</span>
-        </blockquote>
+        <h2 class="demo-heading">See it<br><span class="grad-text">in action.</span></h2>
+        <p class="demo-desc">Simulate the yantra CLI without installing anything. Click a command or type your own. v3.0 commands included.</p>
+        <div class="sim-commands">
+          <button class="sim-cmd-btn" data-cmd="morning">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">morning</span></span>
+            <span class="sc-label">Daily brief</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="inbox" data-arg='"build the CLI simulator"'>
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">inbox</span> "build the CLI simulator"</span>
+            <span class="sc-label">Capture idea</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="context">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">context</span></span>
+            <span class="sc-label">Copy to clipboard</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="loops">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">loops</span></span>
+            <span class="sc-label">List open loops</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="health">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">health</span></span>
+            <span class="sc-label">System check</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="ledger" data-arg="--tail 5">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">ledger</span> --tail 5</span>
+            <span class="sc-label">Audit trail</span>
+          </button>
+        </div>
+        <div class="sim-custom">
+          <input class="sim-input" id="simInput" placeholder='yantra inbox "your idea here"' type="text"/>
+          <button class="sim-run" id="simRun">Run</button>
+        </div>
       </div>
       <div>
-        <table class="myth-table">
-          <thead>
-            <tr><th>Sanskrit</th><th>Mythology</th><th>OpenYantra</th></tr>
-          </thead>
-          <tbody>
-            <tr><td class="col-skt">Chitragupta</td><td class="col-myth">Divine sole recorder</td><td class="col-impl">LedgerAgent -- only writer</td></tr>
-            <tr><td class="col-skt">Agrasandhanī</td><td class="col-myth">Cosmic register</td><td class="col-impl">📒 Immutable audit trail</td></tr>
-            <tr><td class="col-skt">Chitrapat</td><td class="col-myth">Life scroll</td><td class="col-impl">chitrapat.ods</td></tr>
-            <tr><td class="col-skt">Anishtha</td><td class="col-myth">Unfinished intent</td><td class="col-impl">Open Loops</td></tr>
-            <tr><td class="col-skt">Mudra</td><td class="col-myth">Divine seal</td><td class="col-impl">SHA-256 signature</td></tr>
-            <tr><td class="col-skt">Dharma-Adesh</td><td class="col-myth">Righteous command</td><td class="col-impl">User edits always win</td></tr>
-            <tr><td class="col-skt">Raksha</td><td class="col-myth">Divine protection</td><td class="col-impl">Security engine</td></tr>
-            <tr><td class="col-skt">VidyaKosha</td><td class="col-myth">Knowledge repository</td><td class="col-impl">Semantic search index</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- STRESS TEST CALLOUT -->
-<section class="section-pad" style="border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div style="background:var(--surface);border:1px solid var(--border);padding:48px;position:relative;overflow:hidden;text-align:center;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);"></div>
-      <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Global Validation</div>
-      <h2 style="font-size:clamp(22px,2.5vw,34px);font-weight:300;letter-spacing:-0.02em;margin-bottom:14px;">
-        8 AI models. 3 continents. 5 independent rounds.
-      </h2>
-      <p style="font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);max-width:600px;margin:0 auto 28px;line-height:1.8;">
-        No model was aware of another's response. The only unanimous verdict across all 5 rounds: the Chitragupta single-writer pattern must never change.
-      </p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/WHITEPAPER.md" target="_blank">
-          <button class="btn-primary">Read the Whitepaper ↗</button>
-        </a>
-        <a href="visual-guide.html">
-          <button class="btn-ghost">Visual Architecture Guide</button>
-        </a>
+        <div class="sim-terminal">
+          <div class="sim-bar">
+            <div class="sim-bar-left"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- simulation v3.0.0</span></div>
+            <button class="sim-clear" id="simClear">Clear</button>
+          </div>
+          <div class="sim-output" id="simOutput"></div>
+          <div class="sim-state">
+            <div class="sim-state-row"><span class="sim-state-key">Records</span><span class="sim-state-val" id="stateRecords" style="color:var(--blue);">247</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Open Loops</span><span class="sim-state-val" id="stateLoops" style="color:var(--amber);">12</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Backend</span><span class="sim-state-val" id="stateBackend" style="color:var(--green);">SQLite WAL</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Last Write</span><span class="sim-state-val" id="stateWrite" style="color:var(--muted);">just now</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
-<div class="footer-strip"></div>
+<div class="footer-grad"></div>
 <footer>
   <div class="footer-logo">
-    <svg viewBox="0 0 100 100" fill="none">
-      <defs>
-        <linearGradient id="footG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#1c6fff"/>
-          <stop offset="50%" stop-color="#5535e0"/>
-          <stop offset="100%" stop-color="#f5a000"/>
-        </linearGradient>
-      </defs>
-      <circle cx="50" cy="50" r="46" stroke="url(#footG)" stroke-width="2.5" fill="none"/>
-      <circle cx="50" cy="50" r="5" fill="url(#footG)"/>
-      <circle cx="50" cy="4"  r="3.5" fill="#1c6fff"/>
-      <circle cx="96" cy="50" r="3.5" fill="#5535e0"/>
-      <circle cx="50" cy="96" r="3.5" fill="#e84520"/>
-      <circle cx="4"  cy="50" r="3.5" fill="#f5a000"/>
-    </svg>
+    <svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="footG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="50%" stop-color="#5535e0"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#footG)" stroke-width="2.5" fill="none"/><circle cx="50" cy="50" r="28" stroke="url(#footG)" stroke-width="1.5" fill="none" opacity="0.4"/><circle cx="50" cy="50" r="5" fill="url(#footG)"/><circle cx="50" cy="4" r="3.5" fill="#1c6fff"/><circle cx="96" cy="50" r="3.5" fill="#5535e0"/><circle cx="50" cy="96" r="3.5" fill="#e84520"/><circle cx="4" cy="50" r="3.5" fill="#f5a000"/></svg>
     OpenYantra
   </div>
   <div class="footer-links">
     <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">GitHub</a>
     <a href="visual-guide.html">Visual Guide</a>
     <a href="openyantra-brand-manual.html">Brand Manual</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/WHITEPAPER.md" target="_blank">Whitepaper</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/PROTOCOL.md" target="_blank">Protocol (CC0)</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/README.md" target="_blank">Docs</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/releases" target="_blank">Changelog</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/LICENSE" target="_blank">License</a>
   </div>
   <div class="footer-right">
-    v2.13.0 -- MIT License<br>
-    Built by <a href="https://github.com/revanthlevaka" target="_blank">Revanth Levaka</a> in Hyderabad, India
+    v3.0.0 -- MIT License<br>
+    Built by <a href="https://github.com/revanthlevaka" target="_blank">Revanth Levaka</a>
   </div>
 </footer>
 
 <script>
-/* Theme */
+/* THEME */
 (function(){
-  const root = document.documentElement;
-  const mq = window.matchMedia('(prefers-color-scheme: light)');
-  function applyTheme(mode) {
-    root.setAttribute('data-theme', mode === 'auto' ? (mq.matches ? 'light' : 'dark') : mode);
-    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-    localStorage.setItem('oy-theme', mode);
+  const root=document.documentElement;
+  const mq=window.matchMedia('(prefers-color-scheme: light)');
+  function applyTheme(mode){
+    if(mode==='auto'){root.setAttribute('data-theme',mq.matches?'light':'dark');}
+    else{root.setAttribute('data-theme',mode);}
+    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+    localStorage.setItem('oy-theme',mode);
   }
-  applyTheme(localStorage.getItem('oy-theme') || 'auto');
-  mq.addEventListener('change', () => { if ((localStorage.getItem('oy-theme')||'auto') === 'auto') applyTheme('auto'); });
-  document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click', () => applyTheme(b.dataset.mode)));
+  const s=localStorage.getItem('oy-theme')||'auto';
+  applyTheme(s);
+  mq.addEventListener('change',()=>{if((localStorage.getItem('oy-theme')||'auto')==='auto')applyTheme('auto');});
+  document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.mode)));
 })();
 
-/* Copy install command */
-document.getElementById('installBox').addEventListener('click', function() {
-  const cmd = 'curl -sSL https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.sh | bash';
-  navigator.clipboard.writeText(cmd).then(() => {
-    const el = document.getElementById('copyStatus');
-    el.textContent = 'Copied!';
-    setTimeout(() => el.textContent = 'Click to copy', 2000);
+/* SIMULATION */
+const state={records:247,loops:12,lastWrite:'just now',writes:[]};
+let writeIdCounter=0xA3F9;
+function hexId(){return('#'+(writeIdCounter++).toString(16).toUpperCase().padStart(6,'0'));}
+function tsNow(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
+const responses={
+  morning:()=>{
+    return`========================================================\n  Good morning, Revanth. OpenYantra v3.0.0\n  ${new Date().toISOString().slice(0,10)}\n========================================================\n\n  🔓  Open Loops (${state.loops} total):\n     [High    ] Decide screenplay structure  (2d left)\n     [Medium  ] Follow up with Priya on budget\n  🚀  Stale Projects:\n     Feature Screenplay -- 9 days -> Write act 2\n  🔥  Streak: 3 days\n========================================================`;
+  },
+  inbox:(arg)=>{
+    const idea=arg?arg.replace(/^["']|["']$/g,''):'new idea';
+    const id=hexId();
+    state.records++;state.lastWrite='just now';
+    state.writes.unshift({id,idea,ts:tsNow()});
+    return`<span class="ok">Queued</span> WriteID: <span class="hash">${id}</span> -- Sanchitta\nChitragupta signing... <span class="ok">SHA-256 OK</span>\nSQLite WAL: <span class="ok">2ms</span> -- Records: <span class="num">${state.records}</span>`;
+  },
+  context:()=>{
+    return`<span class="ok">Context copied to clipboard.</span>\nPaste into Claude.ai, ChatGPT, or any AI chat.\n<span class="num">5</span> projects, <span class="num">${state.loops}</span> loops, <span class="num">6</span> goals included.`;
+  },
+  loops:()=>{
+    const items=['Decide screenplay structure','Follow up with Priya on budget','Add SHA-256 tests','Review AgentConfig schema'].slice(0,state.loops>4?4:state.loops);
+    return`<span class="num">${state.loops}</span> open loops found\n`+items.map((l,i)=>`  <span class="hash">${(i+1).toString().padStart(2,'0')}</span> ${l}`).join('\n');
+  },
+  health:()=>`Chitrapat.ods <span class="ok">OK</span> -- 1.2MB\nSQLite WAL: <span class="ok">2ms writes</span> -- v3.0.0\nLedger: <span class="num">489</span> entries -- Signatures: <span class="ok">valid</span>\nWriteQueue: <span class="num">0</span> pending\nLast write: <span class="num">${state.lastWrite}</span>`,
+  ledger:(arg)=>{
+    const n=arg?parseInt(arg.replace(/\D/g,''))||5:5;
+    const static_entries=[{id:'#FF1A2B',idea:'session start',ts:'09:00:01'},{id:'#FE9834',idea:'preference updated',ts:'09:12:44'},{id:'#FD4521',idea:'task closed',ts:'09:18:03'}];
+    const all=[...state.writes,...static_entries].slice(0,n);
+    return`Last <span class="num">${all.length}</span> ledger entries:\n`+all.map(e=>`  <span class="hash">${e.id}</span> Chitragupta | "${e.idea}" | ${e.ts}`).join('\n');
+  },
+  diff:()=>`<span class="ok">No contradictions detected</span> in Beliefs sheet.\n<span class="num">41</span> beliefs analysed.`,
+  sync:()=>`<span class="ok">Sync complete.</span>\nImported ODS edits to SQLite WAL.\n<span class="num">0</span> conflicts detected.`,
+};
+
+function parseCmd(raw){
+  const clean=raw.trim().replace(/^yantra\s*/i,'');
+  const parts=clean.split(/\s+/);
+  const cmd=parts[0]?.toLowerCase();
+  const rest=clean.slice(cmd?.length||0).trim();
+  return{cmd,arg:rest||null};
+}
+
+function runCmd(raw){
+  const out=document.getElementById('simOutput');
+  const{cmd,arg}=parseCmd(raw);
+  const fn=responses[cmd];
+  const result=fn?fn(arg):`<span class="err">Command not found:</span> "${cmd}"\nAvailable: morning, inbox, context, loops, health, ledger, diff, sync`;
+  const cmdLine=document.createElement('div');
+  cmdLine.className='sim-line';
+  cmdLine.innerHTML=`<span class="sim-prompt-char">$</span><span class="sim-cmd-text">yantra ${raw.replace(/^yantra\s*/i,'')}</span>`;
+  const resultDiv=document.createElement('div');
+  resultDiv.className='sim-result';
+  resultDiv.innerHTML=result;
+  const spacer=document.createElement('div');
+  spacer.style.height='4px';
+  out.appendChild(cmdLine);out.appendChild(resultDiv);out.appendChild(spacer);
+  out.scrollTop=out.scrollHeight;
+  document.getElementById('stateRecords').textContent=state.records;
+  document.getElementById('stateLoops').textContent=state.loops;
+  document.getElementById('stateWrite').textContent=state.lastWrite;
+}
+
+document.querySelectorAll('.sim-cmd-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const cmd=btn.dataset.cmd;
+    const arg=btn.dataset.arg||'';
+    runCmd(arg?`${cmd} ${arg}`:cmd);
   });
+});
+document.getElementById('simRun').addEventListener('click',()=>{
+  const val=document.getElementById('simInput').value.trim();
+  if(val){runCmd(val);document.getElementById('simInput').value='';}
+});
+document.getElementById('simInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){const val=e.target.value.trim();if(val){runCmd(val);e.target.value='';}}
+});
+document.getElementById('simClear').addEventListener('click',()=>{
+  document.getElementById('simOutput').innerHTML='';
+});
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const out=document.getElementById('simOutput');
+  const welcome=document.createElement('div');
+  welcome.className='sim-result';
+  welcome.innerHTML=`<span class="ok">OpenYantra v3.0.0 Simulation Ready</span>\nSQLite WAL backend -- <span class="num">${state.records}</span> records, <span class="num">489</span> ledger entries\nType a command or click a preset above.`;
+  out.appendChild(welcome);
 });
 </script>
 </body>

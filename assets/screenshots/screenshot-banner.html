@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;
+  --border:rgba(255,255,255,0.07);
+  --dim:#242228;--muted:#524f58;--text:#e8e5de;
+  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
+  --grad-h:linear-gradient(90deg,#1c6fff,#5535e0,#e84520,#f5a000);
+  --mono:'IBM Plex Mono',monospace;
+}
+body{
+  width:1280px;height:400px;overflow:hidden;
+  background:var(--ink);font-family:var(--mono);color:var(--text);
+  position:relative;display:flex;align-items:center;
+}
+body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.017) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.017) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.mandala{
+  position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+  width:380px;height:380px;opacity:0.055;
+}
+.top-strip{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-h);}
+.bottom-strip{position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(255,255,255,0.05);}
+.content{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:40px;padding:0 60px;width:100%;
+}
+.mark{flex-shrink:0;}
+.text-block{flex:1;}
+.eyebrow{font-size:9px;letter-spacing:0.24em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.headline{font-size:42px;font-weight:300;letter-spacing:-0.025em;line-height:1.05;margin-bottom:12px;}
+.headline strong{font-weight:600;background:linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tagline{font-size:14px;color:rgba(232,229,222,0.45);line-height:1.7;max-width:480px;margin-bottom:20px;}
+.badges{display:flex;gap:8px;flex-wrap:wrap;}
+.badge{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:4px 11px;border:1px solid;}
+.b-blue{border-color:rgba(28,111,255,0.35);color:var(--blue);}
+.b-indigo{border-color:rgba(85,53,224,0.3);color:var(--indigo);}
+.b-amber{border-color:rgba(245,160,0,0.35);color:var(--amber);}
+.b-green{border-color:rgba(26,161,103,0.35);color:var(--green);}
+.b-coral{border-color:rgba(232,69,32,0.3);color:var(--coral);}
+.divider{width:1px;height:80px;background:rgba(255,255,255,0.08);}
+.stats-block{display:flex;flex-direction:column;gap:14px;flex-shrink:0;}
+.stat-item{text-align:center;}
+.stat-n{font-size:28px;font-weight:300;line-height:1;margin-bottom:3px;}
+.stat-k{font-size:8px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+<div class="bottom-strip"></div>
+
+<svg class="mandala" viewBox="0 0 500 500" fill="none">
+  <g stroke="white" stroke-width="0.5">
+    <circle cx="250" cy="250" r="244"/><circle cx="250" cy="250" r="200"/>
+    <circle cx="250" cy="250" r="156"/><circle cx="250" cy="250" r="112"/>
+    <circle cx="250" cy="250" r="68"/><circle cx="250" cy="250" r="28"/>
+    <line x1="250" y1="6" x2="250" y2="494"/>
+    <line x1="6" y1="250" x2="494" y2="250"/>
+    <line x1="78" y1="78" x2="422" y2="422"/>
+    <line x1="422" y1="78" x2="78" y2="422"/>
+    <path d="M250 6 Q310 128 250 250 Q190 128 250 6"/>
+    <path d="M494 250 Q372 310 250 250 Q372 190 494 250"/>
+    <path d="M250 494 Q190 372 250 250 Q310 372 250 494"/>
+    <path d="M6 250 Q128 190 250 250 Q128 310 6 250"/>
+  </g>
+</svg>
+
+<div class="content">
+  <!-- Logo mark -->
+  <div class="mark">
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="bG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1c6fff"/>
+          <stop offset="33%" stop-color="#5535e0"/>
+          <stop offset="66%" stop-color="#e84520"/>
+          <stop offset="100%" stop-color="#f5a000"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="47" stroke="url(#bG)" stroke-width="1.5" fill="none"/>
+      <circle cx="50" cy="50" r="33" stroke="url(#bG)" stroke-width="1" fill="none" opacity="0.5"/>
+      <circle cx="50" cy="50" r="18" stroke="url(#bG)" stroke-width="0.8" fill="none" opacity="0.3"/>
+      <circle cx="50" cy="50" r="4" fill="url(#bG)"/>
+      <line x1="50" y1="3" x2="50" y2="97" stroke="url(#bG)" stroke-width="0.6" opacity="0.2"/>
+      <line x1="3" y1="50" x2="97" y2="50" stroke="url(#bG)" stroke-width="0.6" opacity="0.2"/>
+      <circle cx="50" cy="3" r="3" fill="#1c6fff"/>
+      <circle cx="97" cy="50" r="3" fill="#5535e0"/>
+      <circle cx="50" cy="97" r="3" fill="#e84520"/>
+      <circle cx="3" cy="50" r="3" fill="#f5a000"/>
+      <path d="M50 3 Q68 26 50 50 Q32 26 50 3" stroke="url(#bG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M97 50 Q74 68 50 50 Q74 32 97 50" stroke="url(#bG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M50 97 Q32 74 50 50 Q68 74 50 97" stroke="url(#bG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M3 50 Q26 32 50 50 Q26 68 3 50" stroke="url(#bG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+    </svg>
+  </div>
+
+  <!-- Main text -->
+  <div class="text-block">
+    <div class="eyebrow">Personal AI Memory System</div>
+    <div class="headline"><strong>Open</strong>Yantra v3.0</div>
+    <div class="tagline">Local-first personal memory for AI agents. One file. One trusted writer. Any agent, any framework, zero cloud.</div>
+    <div class="badges">
+      <div class="badge b-blue">Local-First</div>
+      <div class="badge b-indigo">Single Writer</div>
+      <div class="badge b-amber">SHA-256 Audit</div>
+      <div class="badge b-green">Open Source</div>
+      <div class="badge b-coral">Raksha Security</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Stats -->
+  <div class="stats-block">
+    <div class="stat-item">
+      <div class="stat-n" style="color:var(--blue);">14</div>
+      <div class="stat-k">Sheets</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n" style="color:var(--amber);">2ms</div>
+      <div class="stat-k">Write</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n" style="color:var(--green);">MIT</div>
+      <div class="stat-k">License</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
