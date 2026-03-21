@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"><defs>
+  <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#1c6fff"/>
+    <stop offset="32%" stop-color="#5535e0"/>
+    <stop offset="66%" stop-color="#e84520"/>
+    <stop offset="100%" stop-color="#f5a000"/>
+  </linearGradient>
+  <linearGradient id="mG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#1c6fff"/>
+    <stop offset="33%" stop-color="#5535e0"/>
+    <stop offset="66%" stop-color="#e84520"/>
+    <stop offset="100%" stop-color="#f5a000"/>
+  </linearGradient>
+  <pattern id="gp" width="32" height="32" patternUnits="userSpaceOnUse">
+    <path d="M32 0L0 0 0 32" fill="none" stroke="rgba(255,255,255,0.017)" stroke-width="1"/>
+  </pattern>
+  <!-- CANONICAL MARK — exact from brand-manual.html -->
+  <g id="mark">
+    <circle cx="50" cy="50" r="47" stroke="url(#mG)" stroke-width="1.5" fill="none"/>
+    <circle cx="50" cy="50" r="33" stroke="url(#mG)" stroke-width="1" fill="none" opacity="0.5"/>
+    <circle cx="50" cy="50" r="18" stroke="url(#mG)" stroke-width="0.8" fill="none" opacity="0.3"/>
+    <circle cx="50" cy="50" r="4" fill="url(#mG)"/>
+    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#mG)" stroke-width="0.7" opacity="0.2"/>
+    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#mG)" stroke-width="0.7" opacity="0.2"/>
+    <line x1="17" y1="17" x2="83" y2="83" stroke="url(#mG)" stroke-width="0.5" opacity="0.12"/>
+    <line x1="83" y1="17" x2="17" y2="83" stroke="url(#mG)" stroke-width="0.5" opacity="0.12"/>
+    <circle cx="50" cy="3"  r="3" fill="#1c6fff"/>
+    <circle cx="97" cy="50" r="3" fill="#5535e0"/>
+    <circle cx="50" cy="97" r="3" fill="#e84520"/>
+    <circle cx="3"  cy="50" r="3" fill="#f5a000"/>
+    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+  </g>
+</defs><rect width="1280" height="720" fill="#0a0a0b"/><rect width="1280" height="720" fill="url(#gp)"/><rect width="1280" height="38" fill="#111113"/><circle cx="16" cy="19" r="5.5" fill="#ff5f57"/><circle cx="32" cy="19" r="5.5" fill="#febc2e"/><circle cx="48" cy="19" r="5.5" fill="#28c840"/><text x="640" y="24" text-anchor="middle" font-size="11" font-family="monospace" fill="#524f58" letter-spacing="1">localhost:7331 -- OpenYantra v3.0.0</text><defs><linearGradient id="gb5218" x1="0" y1="38" x2="1280" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="0" y="38" width="1280" height="2" fill="url(#gb5218)"/><defs><linearGradient id="gb5218" x1="0" y1="38" x2="1280" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="0" y="38" width="1280" height="2" fill="url(#gb5218)"/><rect x="55" y="40" width="220" height="640" rx="24" fill="#0c0c0d" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+<rect x="95" y="52" width="140" height="10" rx="5" fill="rgba(255,255,255,0.14)"/>
+<text x="75" y="86" font-size="9" font-family="monospace" fill="#524f58">9:41</text>
+<text x="255" y="86" text-anchor="end" font-size="9" font-family="monospace" fill="#524f58">●●●</text>
+<rect x="55" y="90" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<g transform="translate(249.0,95.0) scale(0.18)"><use href="#mark"/></g>
+<text x="75" y="110" font-size="12" font-weight="500" font-family="monospace" fill="#e8e5de">OpenYantra</text>
+<text x="75" y="124" font-size="8" font-family="monospace" fill="#1aa167">v3.0.0 -- Active</text>
+<rect x="55" y="130" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="58" y="138" width="106" height="46" fill="#111113"/>
+<text x="74" y="160" font-size="18" font-weight="300" font-family="monospace" fill="#1c6fff">247</text>
+<text x="74" y="176" font-size="7" font-family="monospace" fill="#524f58" letter-spacing="0.5">RECORDS</text>
+<rect x="167" y="138" width="106" height="46" fill="#111113"/>
+<text x="183" y="160" font-size="18" font-weight="300" font-family="monospace" fill="#f5a000">12</text>
+<text x="183" y="176" font-size="7" font-family="monospace" fill="#524f58" letter-spacing="0.5">LOOPS</text>
+<rect x="58" y="188" width="106" height="46" fill="#111113"/>
+<text x="74" y="210" font-size="18" font-weight="300" font-family="monospace" fill="#1aa167">OK</text>
+<text x="74" y="226" font-size="7" font-family="monospace" fill="#524f58" letter-spacing="0.5">HEALTH</text>
+<rect x="167" y="188" width="106" height="46" fill="#111113"/>
+<text x="183" y="210" font-size="18" font-weight="300" font-family="monospace" fill="#5535e0">2ms</text>
+<text x="183" y="226" font-size="7" font-family="monospace" fill="#524f58" letter-spacing="0.5">WRITE</text>
+<rect x="58" y="244" width="214" height="34" fill="rgba(28,111,255,0.08)" stroke="rgba(28,111,255,0.2)" stroke-width="1"/>
+<text x="71" y="257" font-size="7" font-family="monospace" fill="#1c6fff" letter-spacing="1">QUICK CAPTURE</text>
+<text x="71" y="272" font-size="8" font-family="monospace" fill="#524f58">Capture anything...</text>
+<rect x="58" y="286" width="214" height="30" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="71" y="300" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Budget by Friday</text>
+<text x="71" y="312" font-size="7" font-family="monospace" fill="#1aa167">4m ago</text>
+<rect x="58" y="320" width="214" height="30" fill="#111113" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+<text x="71" y="334" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Screenplay structure</text>
+<text x="71" y="346" font-size="7" font-family="monospace" fill="#524f58">2h ago</text>
+<rect x="55" y="610" width="220" height="38" fill="#111113"/>
+<rect x="55" y="610" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="55" y="648" width="220" height="16" fill="#090909"/>
+<rect x="135" y="653" width="60" height="4" rx="2" fill="rgba(255,255,255,0.2)"/><rect x="335" y="40" width="220" height="640" rx="24" fill="#0c0c0d" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+<rect x="375" y="52" width="140" height="10" rx="5" fill="rgba(255,255,255,0.14)"/>
+<text x="355" y="86" font-size="9" font-family="monospace" fill="#524f58">9:41</text>
+<text x="535" y="86" text-anchor="end" font-size="9" font-family="monospace" fill="#524f58">●●●</text>
+<rect x="335" y="90" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<g transform="translate(529.0,95.0) scale(0.18)"><use href="#mark"/></g>
+<text x="355" y="110" font-size="12" font-weight="500" font-family="monospace" fill="#e8e5de">Open Loops</text>
+<text x="355" y="124" font-size="8" font-family="monospace" fill="#f5a000">12 unresolved</text>
+<rect x="335" y="130" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="335" y="138" width="3" height="50" fill="#e84520"/>
+<rect x="338" y="138" width="217" height="50" fill="#111113"/>
+<text x="351" y="154" font-size="8" font-family="monospace" fill="#e84520">High -- 2d left</text>
+<text x="351" y="170" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Decide screenplay</text>
+<rect x="335" y="190" width="3" height="50" fill="#f5a000"/>
+<rect x="338" y="190" width="217" height="50" fill="#111113"/>
+<text x="351" y="206" font-size="8" font-family="monospace" fill="#f5a000">Medium -- budget</text>
+<text x="351" y="222" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Follow up Priya</text>
+<rect x="335" y="242" width="3" height="50" fill="#5535e0"/>
+<rect x="338" y="242" width="217" height="50" fill="#111113"/>
+<text x="351" y="258" font-size="8" font-family="monospace" fill="#5535e0">Medium -- 60d left</text>
+<text x="351" y="274" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">SHA-256 tests</text>
+<rect x="335" y="294" width="3" height="50" fill="#1c6fff"/>
+<rect x="338" y="294" width="217" height="50" fill="#111113"/>
+<text x="351" y="310" font-size="8" font-family="monospace" fill="#1c6fff">Low -- v3.1</text>
+<text x="351" y="326" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Review AgentConfig</text>
+<rect x="335" y="346" width="3" height="50" fill="#242228"/>
+<rect x="338" y="346" width="217" height="50" fill="#111113"/>
+<text x="351" y="362" font-size="8" font-family="monospace" fill="#242228">Low -- v3.1</text>
+<text x="351" y="378" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Explore embeddings</text>
+<rect x="335" y="610" width="220" height="38" fill="#111113"/>
+<rect x="335" y="610" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="335" y="648" width="220" height="16" fill="#090909"/>
+<rect x="415" y="653" width="60" height="4" rx="2" fill="rgba(255,255,255,0.2)"/><rect x="615" y="40" width="220" height="640" rx="24" fill="#0c0c0d" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+<rect x="655" y="52" width="140" height="10" rx="5" fill="rgba(255,255,255,0.14)"/>
+<text x="635" y="86" font-size="9" font-family="monospace" fill="#524f58">9:41</text>
+<text x="815" y="86" text-anchor="end" font-size="9" font-family="monospace" fill="#524f58">●●●</text>
+<rect x="615" y="90" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<g transform="translate(809.0,95.0) scale(0.18)"><use href="#mark"/></g>
+<text x="635" y="110" font-size="12" font-weight="500" font-family="monospace" fill="#e8e5de">Memory</text>
+<text x="635" y="124" font-size="8" font-family="monospace" fill="#524f58">Chitrapat.ods -- 1.2MB</text>
+<rect x="615" y="130" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="618" y="138" width="214" height="100" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<defs><linearGradient id="gb4590" x1="618" y1="138" x2="832" y2="138" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="618" y="138" width="214" height="2" fill="url(#gb4590)"/>
+<text x="629" y="158" font-size="7" font-family="monospace" fill="#524f58">EPISODIC</text>
+<rect x="690" y="149" width="120" height="3" fill="#242228"/>
+<defs><linearGradient id="mb6150" x1="690" y1="0" x2="810" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#5535e0"/></linearGradient></defs>
+<rect x="690" y="149" width="88" height="3" fill="url(#mb6150)"/>
+<text x="815" y="158" text-anchor="end" font-size="8" font-family="monospace" fill="#f5a000">370</text>
+<text x="629" y="180" font-size="7" font-family="monospace" fill="#524f58">SEMANTIC</text>
+<rect x="690" y="171" width="120" height="3" fill="#242228"/>
+<defs><linearGradient id="mb6151" x1="690" y1="0" x2="810" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5535e0"/><stop offset="100%" stop-color="#e84520"/></linearGradient></defs>
+<rect x="690" y="171" width="61" height="3" fill="url(#mb6151)"/>
+<text x="815" y="180" text-anchor="end" font-size="8" font-family="monospace" fill="#f5a000">255</text>
+<text x="629" y="202" font-size="7" font-family="monospace" fill="#524f58">PROSPECT.</text>
+<rect x="690" y="193" width="120" height="3" fill="#242228"/>
+<defs><linearGradient id="mb6152" x1="690" y1="0" x2="810" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
+<rect x="690" y="193" width="75" height="3" fill="url(#mb6152)"/>
+<text x="815" y="202" text-anchor="end" font-size="8" font-family="monospace" fill="#f5a000">315</text>
+<text x="629" y="224" font-size="7" font-family="monospace" fill="#524f58">BELIEFS</text>
+<rect x="690" y="215" width="120" height="3" fill="#242228"/>
+<defs><linearGradient id="mb6153" x1="690" y1="0" x2="810" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#1aa167"/></linearGradient></defs>
+<rect x="690" y="215" width="45" height="3" fill="url(#mb6153)"/>
+<text x="815" y="224" text-anchor="end" font-size="8" font-family="monospace" fill="#f5a000">190</text>
+<rect x="618" y="248" width="214" height="36" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="629" y="262" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">async write batching</text>
+<text x="629" y="276" font-size="7" font-family="monospace" fill="#5535e0">#a3f9d2c1</text>
+<rect x="618" y="288" width="214" height="36" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="629" y="302" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">preference updated</text>
+<text x="629" y="316" font-size="7" font-family="monospace" fill="#5535e0">#b9e124a0</text>
+<rect x="615" y="610" width="220" height="38" fill="#111113"/>
+<rect x="615" y="610" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="615" y="648" width="220" height="16" fill="#090909"/>
+<rect x="695" y="653" width="60" height="4" rx="2" fill="rgba(255,255,255,0.2)"/><rect x="895" y="40" width="220" height="640" rx="24" fill="#0c0c0d" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+<rect x="935" y="52" width="140" height="10" rx="5" fill="rgba(255,255,255,0.14)"/>
+<text x="915" y="86" font-size="9" font-family="monospace" fill="#524f58">9:41</text>
+<text x="1095" y="86" text-anchor="end" font-size="9" font-family="monospace" fill="#524f58">●●●</text>
+<rect x="895" y="90" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<g transform="translate(1089.0,95.0) scale(0.18)"><use href="#mark"/></g>
+<text x="915" y="110" font-size="12" font-weight="500" font-family="monospace" fill="#e8e5de">System Health</text>
+<text x="915" y="124" font-size="8" font-family="monospace" fill="#1aa167">All systems nominal</text>
+<rect x="895" y="130" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="898" y="138" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="152" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Chitrapat.ods</text>
+<text x="909" y="164" font-size="7" font-family="monospace" fill="#524f58">1.2MB -- Readable</text>
+<rect x="1073" y="146" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="157" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="898" y="174" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="188" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">SQLite WAL</text>
+<text x="909" y="200" font-size="7" font-family="monospace" fill="#524f58">2ms writes -- v3.0</text>
+<rect x="1073" y="182" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="193" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="898" y="210" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="224" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Ledger</text>
+<text x="909" y="236" font-size="7" font-family="monospace" fill="#524f58">489 entries -- Valid</text>
+<rect x="1073" y="218" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="229" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="898" y="246" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="260" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Signatures</text>
+<text x="909" y="272" font-size="7" font-family="monospace" fill="#524f58">SHA-256 -- valid</text>
+<rect x="1073" y="254" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="265" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="898" y="282" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="296" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">WriteQueue</text>
+<text x="909" y="308" font-size="7" font-family="monospace" fill="#524f58">0 pending</text>
+<rect x="1073" y="290" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="301" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="898" y="318" width="214" height="34" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+<text x="909" y="332" font-size="9" font-weight="500" font-family="monospace" fill="#e8e5de">Chitragupta</text>
+<text x="909" y="344" font-size="7" font-family="monospace" fill="#524f58">Last write: 4m ago</text>
+<rect x="1073" y="326" width="30" height="14" rx="3" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)" stroke-width="1"/>
+<text x="1088" y="337" text-anchor="middle" font-size="7" font-family="monospace" fill="#1aa167">OK</text>
+<rect x="895" y="610" width="220" height="38" fill="#111113"/>
+<rect x="895" y="610" width="220" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="895" y="648" width="220" height="16" fill="#090909"/>
+<rect x="975" y="653" width="60" height="4" rx="2" fill="rgba(255,255,255,0.2)"/><text x="165" y="706" font-size="9" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="middle" letter-spacing="0">Home</text><text x="445" y="706" font-size="9" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="middle" letter-spacing="0">Open Loops</text><text x="725" y="706" font-size="9" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="middle" letter-spacing="0">Memory</text><text x="1005" y="706" font-size="9" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="middle" letter-spacing="0">Health</text></svg>

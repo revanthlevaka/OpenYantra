@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800"><defs>
+  <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#1c6fff"/>
+    <stop offset="32%" stop-color="#5535e0"/>
+    <stop offset="66%" stop-color="#e84520"/>
+    <stop offset="100%" stop-color="#f5a000"/>
+  </linearGradient>
+  <linearGradient id="mG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#1c6fff"/>
+    <stop offset="33%" stop-color="#5535e0"/>
+    <stop offset="66%" stop-color="#e84520"/>
+    <stop offset="100%" stop-color="#f5a000"/>
+  </linearGradient>
+  <pattern id="gp" width="32" height="32" patternUnits="userSpaceOnUse">
+    <path d="M32 0L0 0 0 32" fill="none" stroke="rgba(255,255,255,0.017)" stroke-width="1"/>
+  </pattern>
+  <!-- CANONICAL MARK — exact from brand-manual.html -->
+  <g id="mark">
+    <circle cx="50" cy="50" r="47" stroke="url(#mG)" stroke-width="1.5" fill="none"/>
+    <circle cx="50" cy="50" r="33" stroke="url(#mG)" stroke-width="1" fill="none" opacity="0.5"/>
+    <circle cx="50" cy="50" r="18" stroke="url(#mG)" stroke-width="0.8" fill="none" opacity="0.3"/>
+    <circle cx="50" cy="50" r="4" fill="url(#mG)"/>
+    <line x1="50" y1="3"  x2="50" y2="97" stroke="url(#mG)" stroke-width="0.7" opacity="0.2"/>
+    <line x1="3"  y1="50" x2="97" y2="50" stroke="url(#mG)" stroke-width="0.7" opacity="0.2"/>
+    <line x1="17" y1="17" x2="83" y2="83" stroke="url(#mG)" stroke-width="0.5" opacity="0.12"/>
+    <line x1="83" y1="17" x2="17" y2="83" stroke="url(#mG)" stroke-width="0.5" opacity="0.12"/>
+    <circle cx="50" cy="3"  r="3" fill="#1c6fff"/>
+    <circle cx="97" cy="50" r="3" fill="#5535e0"/>
+    <circle cx="50" cy="97" r="3" fill="#e84520"/>
+    <circle cx="3"  cy="50" r="3" fill="#f5a000"/>
+    <path d="M50 3 Q68 26 50 50 Q32 26 50 3"   stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M97 50 Q74 68 50 50 Q74 32 97 50"  stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M50 97 Q32 74 50 50 Q68 74 50 97"  stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M3 50 Q26 32 50 50 Q26 68 3 50"    stroke="url(#mG)" stroke-width="0.9" fill="none" opacity="0.45"/>
+    <path d="M17 17 Q38 38 50 50 Q29 29 17 17"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M83 17 Q62 38 50 50 Q71 29 83 17"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M83 83 Q62 62 50 50 Q71 71 83 83"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+    <path d="M17 83 Q38 62 50 50 Q29 71 17 83"  stroke="url(#mG)" stroke-width="0.6" fill="none" opacity="0.22"/>
+  </g>
+</defs><rect width="1280" height="800" fill="#0a0a0b"/><rect width="1280" height="800" fill="url(#gp)"/><rect width="1280" height="38" fill="#111113"/><circle cx="16" cy="19" r="5.5" fill="#ff5f57"/><circle cx="32" cy="19" r="5.5" fill="#febc2e"/><circle cx="48" cy="19" r="5.5" fill="#28c840"/><text x="640" y="24" text-anchor="middle" font-size="11" font-family="monospace" fill="#524f58" letter-spacing="1">localhost:7331 -- OpenYantra v3.0.0</text><defs><linearGradient id="gb5218" x1="0" y1="38" x2="1280" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="0" y="38" width="1280" height="2" fill="url(#gb5218)"/><rect x="0" y="40" width="190" height="760" fill="rgba(9,9,10,0.98)"/>
+<rect x="190" y="40" width="1" height="760" fill="rgba(255,255,255,0.07)"/>
+<g transform="translate(13.0,55.0) scale(0.22)"><use href="#mark"/></g>
+<text x="42" y="63" font-size="11" font-weight="500" font-family="monospace" fill="#e8e5de">OpenYantra</text>
+<text x="42" y="75" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1.5">V3.0.0</text>
+<rect x="0" y="86" width="190" height="1" fill="rgba(255,255,255,0.07)"/>
+<rect x="0" y="88" width="3" height="22" fill="#f5a000"/>
+<rect x="0" y="88" width="190" height="22" fill="rgba(255,255,255,0.02)"/>
+<text x="14" y="102" font-size="11" font-family="monospace" fill="#e8e5de">🌅 Today</text>
+<text x="14" y="124" font-size="11" font-family="monospace" fill="#524f58">📥 Inbox</text>
+<text x="14" y="146" font-size="11" font-family="monospace" fill="#524f58">🚀 Projects</text>
+<text x="14" y="168" font-size="11" font-family="monospace" fill="#524f58">🔓 Open Loops</text>
+<text x="14" y="190" font-size="11" font-family="monospace" fill="#524f58">✅ Tasks</text>
+<text x="14" y="212" font-size="11" font-family="monospace" fill="#524f58">🎯 Goals</text>
+<text x="14" y="234" font-size="11" font-family="monospace" fill="#524f58">📅 Timeline</text>
+<text x="14" y="256" font-size="11" font-family="monospace" fill="#524f58">⚡ Conflicts</text>
+<text x="14" y="278" font-size="11" font-family="monospace" fill="#524f58">🔒 Security</text>
+<text x="14" y="300" font-size="11" font-family="monospace" fill="#524f58">📒 Ledger</text>
+<text x="14" y="322" font-size="11" font-family="monospace" fill="#524f58">💚 Health</text>
+<text x="14" y="344" font-size="11" font-family="monospace" fill="#524f58">📊 Stats</text>
+<rect x="0" y="760" width="190" height="40" fill="rgba(9,9,10,0.98)"/>
+<rect x="0" y="760" width="190" height="1" fill="rgba(255,255,255,0.07)"/>
+<circle cx="18" cy="776" r="3.5" fill="#1aa167"/>
+<text x="28" y="779" font-size="9" font-family="monospace" fill="#1aa167">Chitrapat active</text>
+<text x="14" y="793" font-size="8" font-family="monospace" fill="#242228">SQLite WAL backend</text><rect x="190" y="40" width="1090" height="44" fill="#111113"/><rect x="190" y="84" width="1090" height="1" fill="rgba(255,255,255,0.07)"/><text x="210" y="67" font-size="13" font-weight="500" font-family="monospace" fill="#e8e5de">🌅 Today</text><rect x="190" y="85" width="218" height="52" fill="#111113"/>
+<text x="210" y="108" font-size="22" font-weight="300" font-family="monospace" fill="#1c6fff">247</text>
+<text x="210" y="126" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">RECORDS</text>
+<rect x="408" y="85" width="218" height="52" fill="#111113"/>
+<text x="428" y="108" font-size="22" font-weight="300" font-family="monospace" fill="#f5a000">12</text>
+<text x="428" y="126" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">OPEN LOOPS</text>
+<rect x="408" y="85" width="1" height="52" fill="rgba(255,255,255,0.07)"/>
+<rect x="626" y="85" width="218" height="52" fill="#111113"/>
+<text x="646" y="108" font-size="22" font-weight="300" font-family="monospace" fill="#e84520">3</text>
+<text x="646" y="126" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">INBOX</text>
+<rect x="626" y="85" width="1" height="52" fill="rgba(255,255,255,0.07)"/>
+<rect x="844" y="85" width="218" height="52" fill="#111113"/>
+<text x="864" y="108" font-size="22" font-weight="300" font-family="monospace" fill="#1aa167">OK</text>
+<text x="864" y="126" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">HEALTH</text>
+<rect x="844" y="85" width="1" height="52" fill="rgba(255,255,255,0.07)"/>
+<rect x="1062" y="85" width="218" height="52" fill="#111113"/>
+<text x="1082" y="108" font-size="22" font-weight="300" font-family="monospace" fill="#5535e0">2ms</text>
+<text x="1082" y="126" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">WRITE</text>
+<rect x="1062" y="85" width="1" height="52" fill="rgba(255,255,255,0.07)"/>
+<rect x="190" y="137" width="1090" height="1" fill="rgba(255,255,255,0.07)"/><defs><linearGradient id="gb2683" x1="210" y1="153" x2="1260" y2="153" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="210" y="153" width="1050" height="2" fill="url(#gb2683)"/><rect x="210" y="153" width="1050" height="74" fill="rgba(28,111,255,0.05)" stroke="rgba(28,111,255,0.18)" stroke-width="1"/><text x="228" y="173" font-size="8" font-weight="normal" font-family="monospace" fill="#1c6fff" text-anchor="start" letter-spacing="2">🔥 DAILY INSIGHT -- 3 DAY STREAK</text><text x="228" y="195" font-size="12" font-weight="500" font-family="monospace" fill="#e8e5de" text-anchor="start" letter-spacing="0">3 loops need attention today</text><rect x="228" y="203" width="44" height="16" rx="3" fill="none" stroke="#e84520" stroke-width="1" opacity="0.5"/><text x="250" y="214" text-anchor="middle" font-size="8" font-family="monospace" fill="#e84520">High</text><text x="282" y="215" font-size="9" font-weight="normal" font-family="monospace" fill="#e8e5de" text-anchor="start" letter-spacing="0">Decide screenplay structure</text><text x="620" y="215" font-size="9" font-weight="normal" font-family="monospace" fill="#e84520" text-anchor="start" letter-spacing="0">2d left</text><rect x="210" y="243" width="510" height="250" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/><defs><linearGradient id="gb5077" x1="210" y1="243" x2="720" y2="243" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="210" y="243" width="510" height="2" fill="url(#gb5077)"/><text x="228" y="265" font-size="9" font-family="monospace" fill="#524f58" letter-spacing="1.5">MEMORY DISTRIBUTION</text><text x="228" y="302" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">EPISODIC</text><rect x="310" y="293" width="340" height="3" fill="#242228"/><defs><linearGradient id="bar0" x1="310" y1="0" x2="650" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#5535e0"/></linearGradient></defs><rect x="310" y="293" width="251" height="3" fill="url(#bar0)"/><text x="228" y="328" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">SEMANTIC</text><rect x="310" y="319" width="340" height="3" fill="#242228"/><defs><linearGradient id="bar1" x1="310" y1="0" x2="650" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5535e0"/><stop offset="100%" stop-color="#e84520"/></linearGradient></defs><rect x="310" y="319" width="173" height="3" fill="url(#bar1)"/><text x="228" y="354" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">PROSPECTIVE</text><rect x="310" y="345" width="340" height="3" fill="#242228"/><defs><linearGradient id="bar2" x1="310" y1="0" x2="650" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="310" y="345" width="214" height="3" fill="url(#bar2)"/><text x="228" y="380" font-size="8" font-family="monospace" fill="#524f58" letter-spacing="1">BELIEFS</text><rect x="310" y="371" width="340" height="3" fill="#242228"/><defs><linearGradient id="bar3" x1="310" y1="0" x2="650" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#1aa167"/></linearGradient></defs><rect x="310" y="371" width="129" height="3" fill="url(#bar3)"/><rect x="740" y="243" width="520" height="250" fill="#111113" stroke="rgba(255,255,255,0.07)" stroke-width="1"/><defs><linearGradient id="gb1722" x1="740" y1="243" x2="1260" y2="243" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="32%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><rect x="740" y="243" width="520" height="2" fill="url(#gb1722)"/><text x="758" y="265" font-size="9" font-family="monospace" fill="#524f58" letter-spacing="1.5">OPEN LOOPS (ANISHTHA)</text><text x="1218" y="265" font-size="9" font-weight="normal" font-family="monospace" fill="#f5a000" text-anchor="end" letter-spacing="0">12 unresolved</text><rect x="758" y="296" width="44" height="16" rx="3" fill="none" stroke="#e84520" stroke-width="1" opacity="0.5"/><text x="780" y="307" text-anchor="middle" font-size="8" font-family="monospace" fill="#e84520">High</text><text x="812" y="308" font-size="10" font-weight="500" font-family="monospace" fill="#e8e5de" text-anchor="start" letter-spacing="0">Decide screenplay structure</text><text x="758" y="326" font-size="8" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="start" letter-spacing="0">3-act vs 5-act -- 14 days open</text><text x="758" y="340" font-size="8" font-weight="normal" font-family="monospace" fill="#e84520" text-anchor="start" letter-spacing="0">TTL: 2d left</text><rect x="1060" y="296" width="70" height="20" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)"/><text x="1095" y="310" font-size="8" font-weight="normal" font-family="monospace" fill="#1aa167" text-anchor="middle" letter-spacing="0">Resolve</text><rect x="740" y="350" width="520" height="1" fill="rgba(255,255,255,0.04)"/><rect x="758" y="354" width="54" height="16" rx="3" fill="none" stroke="#f5a000" stroke-width="1" opacity="0.5"/><text x="785" y="365" text-anchor="middle" font-size="8" font-family="monospace" fill="#f5a000">Medium</text><text x="822" y="366" font-size="10" font-weight="500" font-family="monospace" fill="#e8e5de" text-anchor="start" letter-spacing="0">Follow up with Priya on budget</text><text x="758" y="384" font-size="8" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="start" letter-spacing="0">Budget revision -- 5 days ago</text><text x="758" y="398" font-size="8" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="start" letter-spacing="0">TTL: 25d left</text><rect x="1060" y="354" width="70" height="20" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)"/><text x="1095" y="368" font-size="8" font-weight="normal" font-family="monospace" fill="#1aa167" text-anchor="middle" letter-spacing="0">Resolve</text><rect x="740" y="408" width="520" height="1" fill="rgba(255,255,255,0.04)"/><rect x="758" y="412" width="54" height="16" rx="3" fill="none" stroke="#1c6fff" stroke-width="1" opacity="0.5"/><text x="785" y="423" text-anchor="middle" font-size="8" font-family="monospace" fill="#1c6fff">Low</text><text x="822" y="424" font-size="10" font-weight="500" font-family="monospace" fill="#e8e5de" text-anchor="start" letter-spacing="0">Add SHA-256 signature tests</text><text x="758" y="442" font-size="8" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="start" letter-spacing="0">VidyaKosha untested</text><text x="758" y="456" font-size="8" font-weight="normal" font-family="monospace" fill="#524f58" text-anchor="start" letter-spacing="0">TTL: 60d left</text><rect x="1060" y="412" width="70" height="20" fill="rgba(26,161,103,0.1)" stroke="rgba(26,161,103,0.3)"/><text x="1095" y="426" font-size="8" font-weight="normal" font-family="monospace" fill="#1aa167" text-anchor="middle" letter-spacing="0">Resolve</text></svg>
