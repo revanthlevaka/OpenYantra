@@ -8,44 +8,109 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
-:root,[data-theme="dark"]{
-  --ink:#0b0b0c;--surface:#111113;--surface2:#161618;--surface3:#1c1b1f;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --dim:#252328;--muted:#524f58;--subtle:#7a7682;--text:#e8e5de;
-  --text-dim:rgba(232,229,222,0.55);--grid-line:rgba(255,255,255,0.018);
-  --nav-bg:rgba(11,11,12,0.9);--term-bg:#080809;--term-body:#060607;
-  --scrollbar:#252328;
+/* ================================================================
+   THEME TOKENS -- dark default
+================================================================ */
+:root, [data-theme="dark"] {
+  --ink:        #0a0a0b;
+  --surface:    #111113;
+  --surface2:   #161618;
+  --surface3:   #1c1b1f;
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --dim:        #242228;
+  --muted:      #524f58;
+  --subtle:     #7a7682;
+  --text:       #e8e5de;
+  --text-dim:   rgba(232,229,222,0.55);
+  --grid-line:  rgba(255,255,255,0.018);
+  --nav-bg:     rgba(10,10,11,0.9);
+  --term-bg:    #080809;
+  --term-body:  #060607;
+  --card-item:  rgba(255,255,255,0.03);
+  --hover-row:  rgba(255,255,255,0.02);
+  --scrollbar:  #252328;
 }
-[data-theme="light"]{
-  --ink:#f3f1ec;--surface:#fff;--surface2:#ece9e2;--surface3:#e4e0d8;
-  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);--dim:#d0ccc4;
-  --muted:#888380;--subtle:#555250;--text:#1a1820;
-  --text-dim:rgba(26,24,32,0.56);--grid-line:rgba(0,0,0,0.04);
-  --nav-bg:rgba(243,241,236,0.93);--term-bg:#1a1820;--term-body:#141218;
-  --scrollbar:#d0ccc4;
+[data-theme="light"] {
+  --ink:        #f3f1ec;
+  --surface:    #ffffff;
+  --surface2:   #ece9e2;
+  --surface3:   #e4e0d8;
+  --border:     rgba(0,0,0,0.09);
+  --border2:    rgba(0,0,0,0.16);
+  --dim:        #d0ccc4;
+  --muted:      #888380;
+  --subtle:     #555250;
+  --text:       #1a1820;
+  --text-dim:   rgba(26,24,32,0.56);
+  --grid-line:  rgba(0,0,0,0.04);
+  --nav-bg:     rgba(243,241,236,0.93);
+  --term-bg:    #1a1820;
+  --term-body:  #141218;
+  --card-item:  rgba(0,0,0,0.025);
+  --hover-row:  rgba(0,0,0,0.018);
+  --scrollbar:  #d0ccc4;
 }
-:root{
-  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
-  --grad:linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --grad-h:linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --grad-t:linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);
-  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
-  --ease:cubic-bezier(0.16,1,0.3,1);--tr:background 0.28s,color 0.28s,border-color 0.28s;
+
+/* accent tokens -- same in both modes */
+:root {
+  --blue:    #1c6fff;
+  --indigo:  #5535e0;
+  --coral:   #e84520;
+  --amber:   #f5a000;
+  --green:   #1aa167;
+  --grad:    linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-h:  linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-t:  linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'IBM Plex Sans', sans-serif;
+  --ease:    cubic-bezier(0.16,1,0.3,1);
+  --tr:      background 0.28s,color 0.28s,border-color 0.28s,box-shadow 0.28s;
 }
+
+/* ================================================================
+   RESET & BASE
+================================================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{background:var(--ink);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;overflow-x:hidden;transition:var(--tr);}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:var(--mono);font-size:13px;line-height:1.6;
+  overflow-x:hidden;transition:var(--tr);
+}
 a{color:inherit;text-decoration:none;}
 button{font-family:var(--mono);cursor:pointer;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;transition:var(--tr);}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+
+/* grid texture */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:40px 40px;transition:var(--tr);
+}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+
+/* ================================================================
+   UTILITY
+================================================================ */
 .grad-text{background:var(--grad-t);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .z1{position:relative;z-index:1;}
 section{position:relative;z-index:1;}
 .container{max-width:1160px;margin:0 auto;padding:0 48px;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);transition:var(--tr);}
+/* ================================================================
+   NAV
+================================================================ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;background:var(--nav-bg);
+  backdrop-filter:blur(16px);border-bottom:1px solid var(--border);
+  transition:var(--tr);
+}
 .nav-logo{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:500;letter-spacing:0.08em;}
 .nav-logo-mark{width:28px;height:28px;flex-shrink:0;animation:logoSpin 90s linear infinite;transform-origin:center;}
 @keyframes logoSpin{to{transform:rotate(360deg);}}
@@ -53,33 +118,46 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;ali
 .nav-links a{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);transition:color 0.2s;}
 .nav-links a:hover{color:var(--text);}
 .nav-right{display:flex;align-items:center;gap:12px;}
+
+/* theme toggle */
 .theme-toggle{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);padding:3px;gap:2px;transition:var(--tr);}
 .theme-btn{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:5px 9px;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:background 0.15s,color 0.15s;display:flex;align-items:center;gap:4px;}
 .theme-btn:hover{color:var(--text);}
 .theme-btn.active{background:var(--dim);color:var(--text);}
-.nav-badge{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--dim);color:var(--muted);}
+
+.nav-badge{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--dim);color:var(--muted);transition:var(--tr);}
 .nav-btn{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:9px 20px;background:transparent;border:1px solid var(--border2);color:var(--text);transition:border-color 0.2s,color 0.2s;}
 .nav-btn:hover{border-color:var(--amber);color:var(--amber);}
 
-/* SECTION LABELS */
+/* ================================================================
+   SECTION LABELS
+================================================================ */
 .sec-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px;margin-bottom:52px;}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.sec-label span{white-space:nowrap;}
 
-/* HERO */
+/* ================================================================
+   HERO
+================================================================ */
 #hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:56px;overflow:hidden;}
 .hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 48px 100px;max-width:1160px;margin:0 auto;width:100%;}
+.hero-mandala{position:absolute;top:50%;right:-120px;transform:translateY(-50%);width:700px;height:700px;pointer-events:none;z-index:0;opacity:0.05;animation:mandalaSpin 100s linear infinite;}
+@keyframes mandalaSpin{to{transform:translateY(-50%) rotate(360deg);}}
 .hero-eyebrow{display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:28px;}
 .hero-eyebrow .tick{width:20px;height:1px;background:var(--muted);}
 .hero-h1{font-size:clamp(38px,4.5vw,62px);font-weight:300;line-height:1.08;letter-spacing:-0.025em;margin-bottom:24px;}
+.hero-h1 em{font-style:normal;font-weight:600;}
 .hero-sub{font-family:var(--sans);font-size:15px;font-weight:300;line-height:1.75;color:var(--text-dim);max-width:460px;margin-bottom:44px;}
 .hero-actions{display:flex;gap:14px;align-items:center;margin-bottom:52px;}
-.btn-primary{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:var(--grad);border:none;color:#fff;transition:opacity 0.2s,transform 0.15s;cursor:pointer;}
+.btn-primary{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:var(--grad);border:none;color:#fff;transition:opacity 0.2s,transform 0.15s;}
 .btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
-.btn-ghost{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:transparent;border:1px solid var(--dim);color:var(--subtle);transition:border-color 0.2s,color 0.2s;cursor:pointer;}
+.btn-ghost{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;background:transparent;border:1px solid var(--dim);color:var(--subtle);transition:border-color 0.2s,color 0.2s;}
 .btn-ghost:hover{border-color:var(--subtle);color:var(--text);}
 .hero-stats{display:flex;gap:36px;padding-top:36px;border-top:1px solid var(--border);}
 .stat-num{font-size:22px;font-weight:500;line-height:1;margin-bottom:5px;}
 .stat-label{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+
+/* hero panel */
 .hero-panel{background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden;transition:var(--tr);}
 .hero-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
 .panel-top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
@@ -90,13 +168,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;ali
 @keyframes ledBlink{0%,100%{opacity:1;}50%{opacity:0.25;}}
 .panel-tabs{display:flex;border-bottom:1px solid var(--border);}
 .tab{padding:10px 18px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--border);cursor:pointer;transition:color 0.2s,background 0.2s;}
-.tab.active{color:var(--text);background:rgba(255,255,255,0.02);}
+.tab.active{color:var(--text);background:var(--card-item);}
 .panel-body{padding:20px;}
 .mem-row{display:grid;grid-template-columns:76px 1fr 48px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
 .mem-row:last-child{border-bottom:none;}
 .mem-name{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
 .mem-track{height:3px;background:var(--dim);}
 .mem-fill{height:100%;transition:width 1.8s var(--ease);}
+.mem-fill.ep{background:linear-gradient(90deg,#1c6fff,#5535e0);width:74%;}
+.mem-fill.se{background:linear-gradient(90deg,#5535e0,#e84520);width:51%;}
+.mem-fill.pr{background:linear-gradient(90deg,#e84520,#f5a000);width:63%;}
+.mem-fill.bl{background:linear-gradient(90deg,#1c6fff,#1aa167);width:38%;}
 .mem-count{font-size:11px;text-align:right;color:var(--amber);}
 .panel-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);}
 .pg-cell{padding:14px 16px;border-right:1px solid var(--border);}
@@ -104,7 +186,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;ali
 .pg-num{font-size:20px;font-weight:500;line-height:1;margin-bottom:4px;}
 .pg-key{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
 
-/* ARCHITECTURE */
+/* ================================================================
+   ARCHITECTURE
+================================================================ */
 #arch{padding:120px 0;border-top:1px solid var(--border);}
 .arch-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:64px;}
 .arch-heading{font-size:clamp(28px,3vw,44px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;}
@@ -121,6 +205,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;ali
 .ac5::after{background:linear-gradient(90deg,#f5a000,#e84520);}
 .ac6::after{background:linear-gradient(90deg,#5535e0,#1c6fff);}
 .ac-idx{font-size:9px;letter-spacing:0.18em;color:var(--dim);margin-bottom:20px;}
+.ac-icon{margin-bottom:16px;}
 .ac-name{font-size:13px;font-weight:500;letter-spacing:0.04em;margin-bottom:10px;}
 .ac-desc{font-family:var(--sans);font-size:12px;font-weight:300;color:var(--text-dim);line-height:1.65;}
 .ac-tag{display:inline-block;margin-top:18px;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;padding:3px 9px;border:1px solid var(--dim);color:var(--muted);}
@@ -137,125 +222,151 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;ali
 .fn-sub{font-size:10px;color:var(--muted);}
 .fn-arr{position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--dim);z-index:2;}
 
-/* STORAGE CALLOUT */
-.storage-callout{margin-top:40px;background:var(--surface);border:1px solid rgba(28,111,255,0.2);padding:28px 32px;display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;}
-.sc-item{text-align:center;}
-.sc-file{font-size:16px;font-weight:500;margin-bottom:6px;}
-.sc-desc{font-family:var(--sans);font-size:12px;color:var(--text-dim);line-height:1.6;}
-.sc-badge{display:inline-block;margin-top:8px;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:3px 10px;border:1px solid;border-radius:2px;}
-.sc-divider{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:11px;}
-.sc-arrows{font-size:20px;color:var(--blue);}
-
-/* SIMULATION */
-#sim{padding:120px 0;border-top:1px solid var(--border);}
-.sim-header{text-align:center;margin-bottom:60px;}
-.sim-title{font-size:clamp(28px,3vw,44px);font-weight:300;letter-spacing:-0.02em;margin-bottom:14px;}
-.sim-sub{font-family:var(--sans);font-size:14px;color:var(--text-dim);max-width:520px;margin:0 auto;}
-.sim-tabs{display:flex;justify-content:center;gap:0;margin-bottom:40px;border:1px solid var(--border);}
-.sim-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:12px 28px;background:transparent;border:none;color:var(--muted);cursor:pointer;border-right:1px solid var(--border);transition:background 0.15s,color 0.15s;}
-.sim-tab:last-child{border-right:none;}
-.sim-tab.active{background:var(--surface);color:var(--text);}
-.sim-pane{display:none;}
-.sim-pane.active{display:block;}
-
-/* CLI Simulator */
-.cli-sim-layout{display:grid;grid-template-columns:280px 1fr;gap:1px;background:var(--border);border:1px solid var(--border);}
-.cli-cmds{background:var(--surface);padding:20px;}
-.cli-cmd-group-label{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px;}
-.cli-cmd-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;background:transparent;border:1px solid transparent;color:var(--text);text-align:left;font-size:11px;transition:border-color 0.15s,background 0.15s;margin-bottom:3px;}
-.cli-cmd-btn:hover{border-color:var(--border);background:var(--surface2);}
-.cli-cmd-btn.active{border-color:rgba(28,111,255,0.3);background:rgba(28,111,255,0.05);color:var(--blue);}
-.cli-cmd-kw{color:var(--amber);}
-.cli-cmd-arg{color:var(--blue);}
-.cli-cmd-badge{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--dim);color:var(--dim);}
-.cli-term{background:var(--term-bg);display:flex;flex-direction:column;}
-.cli-term-bar{display:flex;align-items:center;gap:7px;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--surface);}
+/* ================================================================
+   CLI
+================================================================ */
+#cli{padding:120px 0;border-top:1px solid var(--border);}
+.cli-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.cli-heading{font-size:clamp(26px,2.8vw,40px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;margin-bottom:18px;}
+.cli-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:40px;}
+.cmd-list{display:flex;flex-direction:column;gap:4px;}
+.cmd-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1px solid transparent;transition:border-color 0.2s,background 0.2s;cursor:pointer;}
+.cmd-item:hover{border-color:var(--border2);background:var(--hover-row);}
+.cmd-item.active{border-color:var(--border2);background:rgba(28,111,255,0.06);}
+.cmd-name{font-size:12px;font-weight:500;}
+.cmd-name .kw{color:var(--amber);}
+.cmd-name .arg{color:var(--blue);}
+.cmd-desc-short{font-size:10px;color:var(--muted);}
+.cmd-arrow{font-size:10px;color:var(--dim);}
+.cmd-item:hover .cmd-arrow,.cmd-item.active .cmd-arrow{color:var(--amber);}
+.terminal{background:var(--term-bg);border:1px solid var(--border);overflow:hidden;position:sticky;top:80px;transition:var(--tr);}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);transition:var(--tr);}
 .td{width:10px;height:10px;border-radius:50%;}
 .td-r{background:#ff5f57;}.td-y{background:#febc2e;}.td-g{background:#28c840;}
-.cli-term-title{margin-left:6px;font-size:10px;color:var(--muted);}
-.cli-term-out{padding:24px;flex:1;min-height:360px;max-height:480px;overflow-y:auto;background:var(--term-body);font-size:12px;line-height:1.85;}
-.cli-line{display:flex;gap:10px;margin-bottom:4px;}
-.c-p{color:#e84520;}.c-c{color:#f5a000;}.c-a{color:#1c6fff;}.c-s{color:#1aa167;}.c-h{color:#5535e0;}.c-f{color:#7a7682;}.c-t{color:rgba(232,229,222,0.42);}
-.cli-result{padding-left:20px;color:rgba(232,229,222,0.42);margin-bottom:10px;font-size:11px;line-height:1.75;}
-.cli-state{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);background:var(--surface);}
-.cli-state-cell{padding:10px 14px;border-right:1px solid var(--border);}
-.cli-state-cell:last-child{border-right:none;}
-.cli-state-k{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
-.cli-state-v{font-size:14px;font-weight:500;}
+.term-title{margin-left:8px;font-size:10px;color:var(--muted);letter-spacing:0.08em;}
+.term-body{padding:28px;display:flex;flex-direction:column;gap:18px;min-height:380px;background:var(--term-body);transition:var(--tr);}
+.tl{display:flex;gap:12px;align-items:flex-start;}
+.t-prompt{color:var(--coral);flex-shrink:0;}
+.t-cmd{color:var(--amber);}.t-arg{color:var(--blue);}.t-flag{color:var(--subtle);}
+.t-out{font-size:11px;color:var(--text-dim);padding-left:22px;font-style:italic;line-height:1.7;}
+.t-out .ok{color:var(--green);font-style:normal;}
+.t-out .warn{color:var(--amber);font-style:normal;}
+.t-out .num{color:var(--text);font-style:normal;}
+.cursor-blink{display:inline-block;width:7px;height:13px;background:var(--text);vertical-align:middle;animation:cursorBlink 1.1s step-start infinite;}
+@keyframes cursorBlink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-/* Web UI Simulator */
-.webui-sim{background:var(--surface);border:1px solid var(--border);overflow:hidden;}
-.webui-browser-bar{background:var(--surface2);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-.webui-dots{display:flex;gap:6px;}
-.webui-dot{width:11px;height:11px;border-radius:50%;}
-.webui-url{margin:0 auto;background:rgba(255,255,255,0.05);padding:4px 16px;border-radius:4px;font-size:10px;color:var(--muted);letter-spacing:0.04em;}
-.webui-body{display:grid;grid-template-columns:200px 1fr;height:460px;}
-.webui-sidebar{background:rgba(0,0,0,0.2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;}
-.webui-nav-item{padding:8px 16px;font-size:11px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;}
-.webui-nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02);}
-.webui-nav-item.active{color:var(--text);border-left-color:var(--saffron);background:rgba(255,255,255,0.03);}
-.webui-main{overflow-y:auto;padding:16px;}
-.webui-section{display:none;}
-.webui-section.active{display:block;}
-.webui-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
-.webui-stat{background:var(--surface2);padding:12px;border:1px solid var(--border);}
-.webui-stat-n{font-size:22px;font-weight:300;line-height:1;margin-bottom:4px;}
-.webui-stat-k{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
-.webui-card{background:var(--surface2);border:1px solid var(--border);margin-bottom:10px;position:relative;overflow:hidden;}
-.webui-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
-.webui-card-head{padding:10px 14px;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;}
-.webui-card-body{padding:12px 14px;}
-.webui-table{width:100%;font-size:10px;}
-.webui-table th{color:var(--muted);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 8px;border-bottom:1px solid var(--border);font-weight:400;}
-.webui-table td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.03);}
-.webui-table tr:hover td{background:rgba(255,255,255,0.01);}
-.webui-badge{display:inline-block;font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid;}
-.oracle-item{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
-.oracle-item:last-child{border-bottom:none;}
-.oracle-type{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px;}
-.oracle-detail{font-size:10px;color:var(--text-dim);}
+/* ================================================================
+   AGENTS
+================================================================ */
+#agents{padding:120px 0;border-top:1px solid var(--border);}
+.agents-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:64px;align-items:end;}
+.agents-heading{font-size:clamp(28px,3vw,44px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;}
+.agents-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;}
+.ecosystem{position:relative;background:var(--surface);border:1px solid var(--border);padding:60px 48px;overflow:hidden;transition:var(--tr);}
+.ecosystem::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
+.eco-center{display:flex;flex-direction:column;align-items:center;margin-bottom:52px;}
+.eco-file{background:var(--surface2);border:1px solid var(--border2);padding:20px 32px;display:flex;align-items:center;gap:14px;position:relative;transition:var(--tr);}
+.eco-file::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:2px;background:var(--grad);}
+.eco-file-name{font-size:13px;font-weight:500;letter-spacing:0.04em;}
+.eco-file-sub{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.eco-file-badge{position:absolute;top:-10px;right:-10px;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;background:var(--green);color:#fff;padding:2px 7px;}
+.eco-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;}
+.agent-card{background:var(--ink);border:1px solid var(--border);padding:20px 18px;transition:border-color 0.2s,background 0.2s;position:relative;overflow:hidden;}
+.agent-card:hover{border-color:var(--border2);background:var(--surface3);}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity 0.25s;}
+.agent-card:hover::before{opacity:1;}
+.ac-writer::before{background:var(--grad);}
+.ac-reader::before{background:linear-gradient(90deg,var(--blue),var(--indigo));}
+.ac-inbox::before{background:linear-gradient(90deg,var(--amber),var(--coral));}
+.agent-type{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.agent-name{font-size:12px;font-weight:500;letter-spacing:0.04em;margin-bottom:5px;}
+.agent-role{font-size:10px;color:var(--muted);line-height:1.5;}
+.agent-badge{display:inline-block;margin-top:10px;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--dim);color:var(--dim);}
+.writer-badge{border-color:rgba(245,160,0,0.3);color:var(--amber);}
+.reader-badge{border-color:rgba(28,111,255,0.3);color:var(--blue);}
+.eco-connector{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 0 20px;}
+.eco-line{width:1px;height:24px;background:var(--border2);}
+.eco-arrow-down{font-size:10px;color:var(--muted);}
+.eco-legend{display:flex;gap:24px;justify-content:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+.legend-text{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.agent-principles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:24px;}
+.ap-cell{background:var(--surface);padding:28px 24px;transition:var(--tr);}
+.ap-num{font-size:28px;font-weight:300;line-height:1;margin-bottom:10px;background:var(--grad-t);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ap-title{font-size:11px;font-weight:500;letter-spacing:0.04em;margin-bottom:7px;}
+.ap-body{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--text-dim);line-height:1.65;}
 
-/* Mobile Simulator */
-.mobile-sim-wrap{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;padding:20px;}
-.mobile-phone{width:260px;background:#0a0a0b;border-radius:28px;border:2px solid rgba(255,255,255,0.14);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.7);flex-shrink:0;}
-.mp-notch{height:28px;background:#060607;display:flex;align-items:center;justify-content:center;}
-.mp-pill{width:80px;height:10px;background:rgba(255,255,255,0.14);border-radius:5px;}
-.mp-screen{background:#0a0a0b;}
-.mp-status{display:flex;justify-content:space-between;padding:6px 16px;font-size:9px;color:#524f58;}
-.mp-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.mp-title{font-size:13px;font-weight:500;}
-.mp-sub{font-size:9px;color:#524f58;}
-.mp-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);margin:10px;}
-.mp-stat{background:#0f0f10;padding:10px;}
-.mp-stat-n{font-size:18px;font-weight:300;line-height:1;margin-bottom:3px;}
-.mp-stat-k{font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:#524f58;}
-.mp-list{padding:0 10px;display:flex;flex-direction:column;gap:4px;}
-.mp-item{background:#0f0f10;border:1px solid rgba(255,255,255,0.05);padding:8px 10px;border-left:2px solid;}
-.mp-item-t{font-size:10px;font-weight:500;margin-bottom:2px;}
-.mp-item-s{font-size:8px;color:#524f58;}
-.mp-tabs{background:#0d0d0e;border-top:1px solid rgba(255,255,255,0.07);display:grid;grid-template-columns:repeat(4,1fr);padding:7px 0 4px;}
-.mp-tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.mp-tab-dot{width:10px;height:2px;border-radius:1px;}
-.mp-tab-lbl{font-size:6px;letter-spacing:0.1em;text-transform:uppercase;color:#524f58;}
-.mp-hb{height:22px;background:#0a0a0b;display:flex;align-items:center;justify-content:center;}
-.mp-hbar{width:80px;height:3px;background:rgba(255,255,255,0.18);border-radius:2px;}
+/* ================================================================
+   SIMULATION / DEMO
+================================================================ */
+#demo{padding:120px 0;border-top:1px solid var(--border);}
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.demo-heading{font-size:clamp(26px,2.8vw,40px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;margin-bottom:18px;}
+.demo-desc{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.8;margin-bottom:32px;}
+.sim-commands{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.sim-cmd-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:var(--mono);font-size:12px;
+  cursor:pointer;transition:border-color 0.2s,background 0.2s;text-align:left;
+}
+.sim-cmd-btn:hover{border-color:var(--amber);background:var(--surface2);}
+.sim-cmd-btn .sc-name{color:var(--amber);}
+.sim-cmd-btn .sc-arg{color:var(--blue);}
+.sim-cmd-btn .sc-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.sim-custom{display:flex;gap:8px;margin-top:8px;}
+.sim-input{
+  font-family:var(--mono);font-size:12px;flex:1;
+  padding:10px 14px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);outline:none;transition:border-color 0.2s,var(--tr);
+}
+.sim-input:focus{border-color:var(--blue);}
+.sim-input::placeholder{color:var(--muted);}
+.sim-run{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  padding:10px 18px;background:var(--grad);border:none;color:#fff;cursor:pointer;
+  transition:opacity 0.2s;flex-shrink:0;
+}
+.sim-run:hover{opacity:0.85;}
 
-/* DOCS SECTION */
-#docs{padding:120px 0;border-top:1px solid var(--border);}
-.docs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);}
-.doc-card{background:var(--surface);padding:36px 32px;position:relative;overflow:hidden;transition:background 0.22s;text-decoration:none;display:block;}
-.doc-card:hover{background:var(--surface2);}
-.doc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform 0.4s var(--ease);}
-.doc-card:hover::after{transform:scaleX(1);}
-.doc-card-icon{font-size:1.6rem;margin-bottom:16px;}
-.doc-card-title{font-size:14px;font-weight:500;margin-bottom:8px;letter-spacing:0.02em;}
-.doc-card-desc{font-family:var(--sans);font-size:12px;color:var(--text-dim);line-height:1.65;}
-.doc-card-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);border:1px solid rgba(28,111,255,0.25);padding:4px 10px;}
+/* sim terminal */
+.sim-terminal{background:var(--term-bg);border:1px solid var(--border);overflow:hidden;transition:var(--tr);}
+.sim-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--surface);transition:var(--tr);}
+.sim-bar-left{display:flex;align-items:center;gap:7px;}
+.sim-clear{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;background:transparent;border:1px solid var(--dim);color:var(--muted);cursor:pointer;transition:border-color 0.2s,color 0.2s;}
+.sim-clear:hover{border-color:var(--muted);color:var(--text);}
+.sim-output{padding:24px;min-height:340px;max-height:480px;overflow-y:auto;font-size:12px;line-height:1.8;background:var(--term-body);transition:var(--tr);}
+.sim-output:empty::after{content:'Run a command to see output...';color:var(--muted);font-style:italic;}
+.sim-line{display:flex;gap:10px;margin-bottom:4px;}
+.sim-prompt-char{color:var(--coral);}
+.sim-cmd-text{color:var(--amber);}
+.sim-result{color:var(--text-dim);padding-left:20px;margin-bottom:10px;line-height:1.75;}
+.sim-result .ok{color:var(--green);}
+.sim-result .warn{color:var(--amber);}
+.sim-result .err{color:var(--coral);}
+.sim-result .num{color:var(--text);}
+.sim-result .hash{color:var(--indigo);}
+.sim-cursor-line{display:flex;gap:10px;}
+.sim-cursor{display:inline-block;width:7px;height:13px;background:var(--text);vertical-align:middle;animation:cursorBlink 1.1s step-start infinite;}
 
-/* FOOTER */
+.sim-state{display:flex;flex-direction:column;gap:8px;padding:16px;background:var(--surface);border:1px solid var(--border);border-top:none;transition:var(--tr);}
+.sim-state-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;}
+.sim-state-key{color:var(--muted);letter-spacing:0.08em;}
+.sim-state-val{font-weight:500;}
+
+/* ================================================================
+   FOOTER
+================================================================ */
 .footer-grad{height:2px;background:var(--grad-h);opacity:0.35;position:relative;z-index:1;}
-footer{border-top:1px solid var(--border);padding:48px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;position:relative;z-index:1;background:var(--ink);transition:var(--tr);}
+footer{
+  border-top:1px solid var(--border);padding:48px;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:40px;position:relative;z-index:1;
+  background:var(--ink);transition:var(--tr);
+}
 .footer-logo{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:0.06em;}
+.footer-logo svg{width:24px;height:24px;}
 .footer-links{display:flex;gap:28px;}
 .footer-links a{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);transition:color 0.2s;}
 .footer-links a:hover{color:var(--text);}
@@ -263,6 +374,9 @@ footer{border-top:1px solid var(--border);padding:48px;display:grid;grid-templat
 .footer-right a{color:var(--muted);transition:color 0.2s;}
 .footer-right a:hover{color:var(--text);}
 
+/* ================================================================
+   ANIMATIONS
+================================================================ */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 .hero-eyebrow{animation:fadeUp 0.6s var(--ease) 0.1s both;}
 .hero-h1{animation:fadeUp 0.7s var(--ease) 0.2s both;}
@@ -270,9 +384,15 @@ footer{border-top:1px solid var(--border);padding:48px;display:grid;grid-templat
 .hero-actions{animation:fadeUp 0.7s var(--ease) 0.42s both;}
 .hero-stats{animation:fadeUp 0.7s var(--ease) 0.52s both;}
 .hero-panel{animation:fadeUp 0.9s var(--ease) 0.35s both;}
-@keyframes cb{0%,100%{opacity:1;}50%{opacity:0;}}
-[data-theme="light"] .mobile-phone{background:#f0ede6;border-color:rgba(0,0,0,0.15);}
-[data-theme="light"] .mp-screen,.mp-stats,.mp-item,.mp-tabs,.mp-hb{background:var(--surface2)!important;}
+
+/* ================================================================
+   LIGHT MODE OVERRIDES for hard-coded things
+================================================================ */
+[data-theme="light"] .agent-card{background:var(--surface2);}
+[data-theme="light"] .agent-card:hover{background:var(--surface3);}
+[data-theme="light"] .tab.active{background:rgba(0,0,0,0.03);}
+[data-theme="light"] .cmd-item.active{background:rgba(28,111,255,0.05);}
+[data-theme="light"] .eco-file-badge{background:var(--green);}
 </style>
 </head>
 <body>
@@ -283,71 +403,89 @@ footer{border-top:1px solid var(--border);padding:48px;display:grid;grid-templat
     <svg class="nav-logo-mark" viewBox="0 0 100 100" fill="none">
       <defs><linearGradient id="navG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
       <circle cx="50" cy="50" r="46" stroke="url(#navG)" stroke-width="2" fill="none"/>
-      <circle cx="50" cy="50" r="28" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.4"/>
+      <circle cx="50" cy="50" r="30" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.45"/>
       <circle cx="50" cy="50" r="4" fill="url(#navG)"/>
+      <path d="M50 4 Q66 27 50 50 Q34 27 50 4" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M96 50 Q73 66 50 50 Q73 34 96 50" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M50 96 Q34 73 50 50 Q66 73 50 96" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M4 50 Q27 34 50 50 Q27 66 4 50" stroke="url(#navG)" stroke-width="1.2" fill="none" opacity="0.5"/>
       <circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/>
       <circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/>
-      <path d="M50 4 Q66 27 50 50 Q34 27 50 4" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M96 50 Q73 66 50 50 Q73 34 96 50" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M50 96 Q34 73 50 50 Q66 73 50 96" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
-      <path d="M4 50 Q27 34 50 50 Q27 66 4 50" stroke="url(#navG)" stroke-width="1" fill="none" opacity="0.4"/>
     </svg>
     OpenYantra
   </div>
   <div class="nav-links">
     <a href="#arch">Architecture</a>
-    <a href="#sim">Simulate</a>
-    <a href="#docs">Docs</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">GitHub</a>
+    <a href="#cli">CLI</a>
+    <a href="#agents">Agents</a>
+    <a href="#demo">Simulate</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">Docs</a>
   </div>
   <div class="nav-right">
     <div class="theme-toggle" id="themeToggle">
-      <button class="theme-btn" data-mode="light"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light</button>
-      <button class="theme-btn" data-mode="dark"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark</button>
-      <button class="theme-btn" data-mode="auto"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>Auto</button>
+      <button class="theme-btn" data-mode="light" title="Light">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
+      </button>
+      <button class="theme-btn" data-mode="dark" title="Dark">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
+      </button>
+      <button class="theme-btn" data-mode="auto" title="Auto">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>Auto
+      </button>
     </div>
-    <span class="nav-badge">v2.12</span>
+    <span class="nav-badge">v2.13.0</span>
     <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="nav-btn">GitHub ↗</button></a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
+  <svg class="hero-mandala" viewBox="0 0 500 500" fill="none">
+    <g stroke="currentColor" stroke-width="0.5" opacity="1">
+      <circle cx="250" cy="250" r="245"/><circle cx="250" cy="250" r="195"/><circle cx="250" cy="250" r="145"/><circle cx="250" cy="250" r="95"/><circle cx="250" cy="250" r="50"/>
+      <line x1="250" y1="5" x2="250" y2="495"/><line x1="5" y1="250" x2="495" y2="250"/>
+      <line x1="77" y1="77" x2="423" y2="423"/><line x1="423" y1="77" x2="77" y2="423"/>
+      <path d="M250 5 Q310 128 250 250 Q190 128 250 5"/>
+      <path d="M495 250 Q372 310 250 250 Q372 190 495 250"/>
+      <path d="M250 495 Q190 372 250 250 Q310 372 250 495"/>
+      <path d="M5 250 Q128 190 250 250 Q128 310 5 250"/>
+    </g>
+  </svg>
   <div class="hero-inner z1">
     <div>
       <div class="hero-eyebrow"><span class="tick"></span>Personal AI Memory System</div>
       <h1 class="hero-h1">Your context.<br><em class="grad-text">Your file.</em><br>Your control.</h1>
-      <p class="hero-sub">OpenYantra is a local-first memory system for personal AI agents. One human, one file, full auditability. No cloud. No database lock-in. Open standard.</p>
+      <p class="hero-sub">OpenYantra is a local-first memory system for personal AI agents. One human, one file, full auditability. No cloud. No database. No lock-in.</p>
       <div class="hero-actions">
-        <a href="#sim"><button class="btn-primary">Try Simulation</button></a>
+        <a href="#demo"><button class="btn-primary">Try Simulation</button></a>
         <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="btn-ghost">View on GitHub ↗</button></a>
       </div>
       <div class="hero-stats">
-        <div><div class="stat-num grad-text">1</div><div class="stat-label">Memory file</div></div>
-        <div><div class="stat-num" style="color:var(--blue)">14</div><div class="stat-label">Domain sheets</div></div>
-        <div><div class="stat-num" style="color:var(--amber)">100%</div><div class="stat-label">Local-first</div></div>
-        <div><div class="stat-num" style="color:var(--green)">MIT</div><div class="stat-label">License</div></div>
+        <div class="stat-item"><div class="stat-num grad-text">1</div><div class="stat-label">Memory file</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--blue);">14</div><div class="stat-label">Domain sheets</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--amber);">100%</div><div class="stat-label">Local-first</div></div>
+        <div class="stat-item"><div class="stat-num" style="color:var(--green);">MIT</div><div class="stat-label">License</div></div>
       </div>
     </div>
     <div class="hero-panel">
       <div class="panel-top">
-        <span class="panel-file"><span>~/</span>chitrapat.ods</span>
-        <span class="panel-status"><span class="led"></span>Chitragupta active</span>
+        <span class="panel-file"><span>~/</span>Chitrapat.ods</span>
+        <span class="panel-status"><span class="led"></span>Active</span>
       </div>
       <div class="panel-tabs">
-        <div class="tab active">Memory</div><div class="tab">Ledger</div><div class="tab">Loops</div><div class="tab">Oracle</div>
+        <div class="tab active">Memory</div><div class="tab">Ledger</div><div class="tab">Loops</div><div class="tab">Agents</div>
       </div>
       <div class="panel-body">
-        <div class="mem-row"><span class="mem-name">Episodic</span><div class="mem-track"><div class="mem-fill" style="width:74%;background:linear-gradient(90deg,#1c6fff,#5535e0)"></div></div><span class="mem-count">247</span></div>
-        <div class="mem-row"><span class="mem-name">Semantic</span><div class="mem-track"><div class="mem-fill" style="width:51%;background:linear-gradient(90deg,#5535e0,#e84520)"></div></div><span class="mem-count">133</span></div>
-        <div class="mem-row"><span class="mem-name">Prospective</span><div class="mem-track"><div class="mem-fill" style="width:63%;background:linear-gradient(90deg,#e84520,#f5a000)"></div></div><span class="mem-count">89</span></div>
-        <div class="mem-row"><span class="mem-name">Beliefs</span><div class="mem-track"><div class="mem-fill" style="width:38%;background:linear-gradient(90deg,#1c6fff,#1aa167)"></div></div><span class="mem-count">41</span></div>
+        <div class="mem-row"><span class="mem-name">Episodic</span><div class="mem-track"><div class="mem-fill ep"></div></div><span class="mem-count">247</span></div>
+        <div class="mem-row"><span class="mem-name">Semantic</span><div class="mem-track"><div class="mem-fill se"></div></div><span class="mem-count">133</span></div>
+        <div class="mem-row"><span class="mem-name">Prospective</span><div class="mem-track"><div class="mem-fill pr"></div></div><span class="mem-count">89</span></div>
+        <div class="mem-row"><span class="mem-name">Beliefs</span><div class="mem-track"><div class="mem-fill bl"></div></div><span class="mem-count">41</span></div>
       </div>
       <div class="panel-grid">
-        <div class="pg-cell"><div class="pg-num" style="color:var(--blue)">12</div><div class="pg-key">Open Loops</div></div>
-        <div class="pg-cell"><div class="pg-num" style="color:var(--indigo)">4</div><div class="pg-key">Agents</div></div>
-        <div class="pg-cell"><div class="pg-num" style="color:var(--coral)">3</div><div class="pg-key">Inbox</div></div>
-        <div class="pg-cell"><div class="pg-num" style="color:var(--green)">OK</div><div class="pg-key">Health</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--blue);">12</div><div class="pg-key">Open Loops</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--indigo);">4</div><div class="pg-key">Agents</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--coral);">3</div><div class="pg-key">Inbox</div></div>
+        <div class="pg-cell"><div class="pg-num" style="color:var(--green);">OK</div><div class="pg-key">Health</div></div>
       </div>
     </div>
   </div>
@@ -359,544 +497,363 @@ footer{border-top:1px solid var(--border);padding:48px;display:grid;grid-templat
     <div class="sec-label"><span>02 / Architecture</span></div>
     <div class="arch-intro">
       <h2 class="arch-heading">Built on <span class="grad-text">non-negotiable</span> invariants.</h2>
-      <p class="arch-desc">Six architectural rules that can never be broken. Every feature is evaluated against all six. Complexity that violates any invariant is rejected at the design stage -- not deferred.</p>
+      <p class="arch-desc">OpenYantra enforces six architectural invariants that can never be broken. Every feature must pass all six. Complexity that violates any invariant is rejected at the design stage.</p>
     </div>
     <div class="arch-grid">
-      <div class="arch-card ac1"><div class="ac-idx">01</div><div class="ac-name">Single Memory File</div><div class="ac-desc">All persistent memory lives in chitrapat.ods -- ISO/IEC 26300 open standard. Human-readable, editable, portable. Never replaced by a database.</div><div class="ac-tag">Canonical</div></div>
-      <div class="arch-card ac2"><div class="ac-idx">02</div><div class="ac-name">Single Writer Rule</div><div class="ac-desc">Only Chitragupta (LedgerAgent) writes to memory. All agents are read-only. Every write flows through Sanchitta queue -- no exceptions.</div><div class="ac-tag">LedgerAgent</div></div>
-      <div class="arch-card ac3"><div class="ac-idx">03</div><div class="ac-name">14-Sheet Schema</div><div class="ac-desc">Memory structured across Identity, Goals, Projects, People, Beliefs, Tasks, Open Loops, Inbox, and more. Domain separation is strict.</div><div class="ac-tag">14 Domains</div></div>
-      <div class="arch-card ac4"><div class="ac-idx">04</div><div class="ac-name">Full Auditability</div><div class="ac-desc">Every write logged, timestamped, SHA-256 signed. Agrasandhanī is append-only. Audit capability can never be removed.</div><div class="ac-tag">SHA-256</div></div>
-      <div class="arch-card ac5"><div class="ac-idx">05</div><div class="ac-name">Local-First</div><div class="ac-desc">Runs fully offline. No cloud dependencies, no external APIs required. Your data never leaves your machine.</div><div class="ac-tag">Offline</div></div>
-      <div class="arch-card ac6"><div class="ac-idx">06</div><div class="ac-name">Bidirectional Sync</div><div class="ac-desc">.ods is the canonical human file. SQLite is the v3.0 operational sidecar. Both always exist. User edits .ods in LibreOffice; yantra sync re-imports to SQLite.</div><div class="ac-tag">v3.0</div></div>
+      <div class="arch-card ac1">
+        <div class="ac-idx">01</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1" stroke="#1c6fff" stroke-width="1.2"/><line x1="2" y1="8" x2="18" y2="8" stroke="#1c6fff" stroke-width="1" opacity="0.5"/><circle cx="5" cy="6" r="0.8" fill="#1c6fff"/><circle cx="8" cy="6" r="0.8" fill="#1c6fff" opacity="0.5"/></svg>
+        <div class="ac-name">Single Memory File</div>
+        <div class="ac-desc">All persistent memory lives in Chitrapat.ods. Human-readable, portable, directly editable. Never replaced by databases or binary formats.</div>
+        <div class="ac-tag">Canonical Source</div>
+      </div>
+      <div class="arch-card ac2">
+        <div class="ac-idx">02</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#5535e0" stroke-width="1.2"/><circle cx="10" cy="10" r="3" fill="#5535e0" opacity="0.6"/><line x1="10" y1="2" x2="10" y2="7" stroke="#5535e0" stroke-width="1.2"/></svg>
+        <div class="ac-name">Single Writer Rule</div>
+        <div class="ac-desc">Only Chitragupta writes to memory. All other agents are read-only. Every write flows through the Sanchitta queue -- no exceptions.</div>
+        <div class="ac-tag">LedgerAgent</div>
+      </div>
+      <div class="arch-card ac3">
+        <div class="ac-idx">03</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1"/><rect x="11" y="3" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.6"/><rect x="2" y="12" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.4"/><rect x="11" y="12" width="7" height="5" rx="0.5" stroke="#e84520" stroke-width="1.1" opacity="0.3"/></svg>
+        <div class="ac-name">Domain Sheet Model</div>
+        <div class="ac-desc">Memory is structured across 14 domain sheets: Identity, Goals, Projects, People, Tasks, Open Loops, Session Log, Inbox, Corrections, Quarantine, Ledger, Agent Config, Beliefs, and Preferences.</div>
+        <div class="ac-tag">14 Domains</div>
+      </div>
+      <div class="arch-card ac4">
+        <div class="ac-idx">04</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><polyline points="2,14 6,10 9,13 14,6 18,8" stroke="#1aa167" stroke-width="1.3" fill="none"/><circle cx="18" cy="8" r="1.5" fill="#1aa167"/></svg>
+        <div class="ac-name">Full Auditability</div>
+        <div class="ac-desc">Every write is logged, timestamped, and SHA-256 signed. The Ledger is append-only. Audit capability can never be removed or bypassed.</div>
+        <div class="ac-tag">SHA-256</div>
+      </div>
+      <div class="arch-card ac5">
+        <div class="ac-idx">05</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="6" width="14" height="10" rx="1" stroke="#f5a000" stroke-width="1.2"/><line x1="7" y1="6" x2="7" y2="3" stroke="#f5a000" stroke-width="1.2"/><line x1="13" y1="6" x2="13" y2="3" stroke="#f5a000" stroke-width="1.2"/><circle cx="10" cy="12" r="2" stroke="#f5a000" stroke-width="1"/></svg>
+        <div class="ac-name">Local-First</div>
+        <div class="ac-desc">Runs fully offline. No cloud dependencies, no external APIs required. External LLMs are optional, never required. Your data never leaves your machine.</div>
+        <div class="ac-tag">Offline</div>
+      </div>
+      <div class="arch-card ac6">
+        <div class="ac-idx">06</div>
+        <svg class="ac-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#5535e0" stroke-width="1.2"/><line x1="10" y1="3" x2="10" y2="17" stroke="#5535e0" stroke-width="0.8" opacity="0.4"/><line x1="3" y1="10" x2="17" y2="10" stroke="#5535e0" stroke-width="0.8" opacity="0.4"/><ellipse cx="10" cy="10" rx="3.5" ry="7" stroke="#5535e0" stroke-width="0.8" opacity="0.5"/></svg>
+        <div class="ac-name">Lightweight Retrieval</div>
+        <div class="ac-desc">VidyaKosha uses BM25 and TF-IDF tuned for 100–5000 records. No vector databases, no heavy infrastructure, no magic.</div>
+        <div class="ac-tag">VidyaKosha</div>
+      </div>
     </div>
-
-    <!-- Storage diagram -->
-    <div class="storage-callout">
-      <div class="sc-item">
-        <div class="sc-file" style="color:var(--amber)">chitrapat.ods</div>
-        <div class="sc-desc">ISO/IEC 26300 open standard.<br>Human-readable. Edit in LibreOffice.<br>Canonical source of truth.</div>
-        <span class="sc-badge" style="border-color:rgba(245,160,0,0.3);color:var(--amber)">Non-negotiable</span>
-      </div>
-      <div class="sc-divider">
-        <span class="sc-arrows">⇅</span>
-        <span>bidirectional sync</span>
-        <span style="font-size:9px;color:var(--dim)">yantra sync --watch</span>
-      </div>
-      <div class="sc-item">
-        <div class="sc-file" style="color:var(--blue)">chitrapat.db</div>
-        <div class="sc-desc">SQLite sidecar (v3.0).<br>Sub-ms writes, SQL query power.<br>Rebuilt from .ods on user edits.</div>
-        <span class="sc-badge" style="border-color:rgba(28,111,255,0.3);color:var(--blue)">v3.0 -- planned</span>
-      </div>
-    </div>
-
     <div class="flow-wrap">
       <div class="flow-label">Write flow -- the only path to memory</div>
       <div class="flow-diagram">
         <div class="flow-node fn1"><div class="fn-step">01 / Source</div><div class="fn-title">Agent</div><div class="fn-sub">Any AI agent</div><div class="fn-arr">›</div></div>
-        <div class="flow-node fn2"><div class="fn-step">02 / Queue</div><div class="fn-title">Sanchitta</div><div class="fn-sub">Crash-safe queue</div><div class="fn-arr">›</div></div>
-        <div class="flow-node fn3"><div class="fn-step">03 / Security</div><div class="fn-title">Raksha</div><div class="fn-sub">Injection scan</div><div class="fn-arr">›</div></div>
-        <div class="flow-node fn4"><div class="fn-step">04 / Writer</div><div class="fn-title">Chitragupta</div><div class="fn-sub">Sole writer + SHA-256</div><div class="fn-arr">›</div></div>
-        <div class="flow-node" style="border-right:none;"><div class="fn-step" style="color:var(--amber)">05 / Store</div><div class="fn-title" style="color:var(--amber)">Chitrapat.ods</div><div class="fn-sub">+ SQLite sync (v3.0)</div></div>
+        <div class="flow-node fn2"><div class="fn-step">02 / Queue</div><div class="fn-title">Sanchitta</div><div class="fn-sub">WriteQueue</div><div class="fn-arr">›</div></div>
+        <div class="flow-node fn3"><div class="fn-step">03 / Writer</div><div class="fn-title">Chitragupta</div><div class="fn-sub">LedgerAgent</div><div class="fn-arr">›</div></div>
+        <div class="flow-node fn4"><div class="fn-step">04 / Store</div><div class="fn-title">Chitrapat.ods</div><div class="fn-sub">Canonical memory</div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLI -->
+<section id="cli">
+  <div class="container">
+    <div class="sec-label"><span>03 / CLI Interface</span></div>
+    <div class="cli-layout">
+      <div class="cli-left">
+        <h2 class="cli-heading">One command.<br><span class="grad-text">Zero friction.</span></h2>
+        <p class="cli-desc">The CLI is the primary interface. Every command is short, predictable, and scriptable. Capture ideas, inspect memory, route queries, and monitor health from your terminal.</p>
+        <div class="cmd-list">
+          <div class="cmd-item active"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">inbox</span> "idea"</span><span class="cmd-desc-short">Capture to queue</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">loops</span></span><span class="cmd-desc-short">Show open loops</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">health</span></span><span class="cmd-desc-short">File + ledger check</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">diff</span> --since yesterday</span><span class="cmd-desc-short">Memory delta</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">route</span> "query"</span><span class="cmd-desc-short">Route to best agent</span><span class="cmd-arrow">›</span></div>
+          <div class="cmd-item"><span class="cmd-name"><span class="kw">yantra</span> <span class="arg">recall</span> "topic"</span><span class="cmd-desc-short">BM25 retrieval</span><span class="cmd-arrow">›</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="terminal">
+          <div class="term-bar"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- zsh</span></div>
+          <div class="term-body">
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">inbox</span> "async write batching idea"</span></div>
+            <div class="t-out"><span class="ok">Queued</span> WriteID: #a3f9d2c1 → Sanchitta</div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">loops</span></span></div>
+            <div class="t-out"><span class="num">12</span> open loops found<br><span class="warn">Oldest:</span> "refactor VidyaKosha BM25" -- 14 days</div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">health</span></span></div>
+            <div class="t-out">Chitrapat.ods <span class="ok">OK</span> -- 1.2MB<br>Ledger: <span class="num">489</span> entries -- Sigs: <span class="ok">valid</span><br>Last write: <span class="num">4m ago</span> by Chitragupta</div>
+            <div class="tl"><span class="t-prompt">$</span><span><span class="t-cmd">yantra</span> <span class="t-arg">diff</span> <span class="t-flag">--since</span> yesterday</span></div>
+            <div class="t-out"><span class="ok">+7</span> records written<br><span class="num">2</span> tasks closed, <span class="num">1</span> belief updated</div>
+            <div class="tl"><span class="t-prompt">$</span><span class="cursor-blink"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="container">
+    <div class="sec-label"><span>04 / Agent Ecosystem</span></div>
+    <div class="agents-intro">
+      <h2 class="agents-heading">Many agents.<br><span class="grad-text">One memory.</span></h2>
+      <p class="agents-desc">Multiple AI agents share a single memory file. Each has a defined role: read, write, or route. The architecture prevents conflicts, enforces auditability, and keeps the human in control of every record.</p>
+    </div>
+    <div class="ecosystem">
+      <div style="margin-bottom:8px;">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:16px;">Agents -- Read Only</div>
+        <div class="eco-row">
+          <div class="agent-card ac-reader"><div class="agent-type">Retrieval</div><div class="agent-name">VidyaKosha</div><div class="agent-role">BM25/TF-IDF memory search and context retrieval</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card ac-reader"><div class="agent-type">Routing</div><div class="agent-name">Sutra</div><div class="agent-role">Routes queries to the best available agent</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card ac-reader"><div class="agent-type">Planning</div><div class="agent-name">Karma</div><div class="agent-role">Task and open-loop management agent</div><div class="agent-badge reader-badge">Read</div></div>
+          <div class="agent-card ac-inbox"><div class="agent-type">Capture</div><div class="agent-name">Inbox Agent</div><div class="agent-role">Receives and queues raw inputs from the user</div><div class="agent-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral);">Queue</div></div>
+        </div>
+      </div>
+      <div class="eco-connector"><div class="eco-line"></div><div class="eco-arrow-down">↓ All writes routed through</div><div class="eco-line"></div></div>
+      <div style="max-width:300px;margin:0 auto 24px;">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:16px;">Sole Writer</div>
+        <div class="agent-card ac-writer" style="border-color:rgba(245,160,0,0.25);">
+          <div class="agent-type">LedgerAgent</div><div class="agent-name">Chitragupta</div>
+          <div class="agent-role">The only agent with write access. Signs every record with SHA-256. Enforces the single-writer rule across the entire system.</div>
+          <div class="agent-badge writer-badge">Write</div>
+        </div>
+      </div>
+      <div class="eco-connector"><div class="eco-line"></div><div class="eco-arrow-down">↓</div><div class="eco-line"></div></div>
+      <div class="eco-center">
+        <div class="eco-file">
+          <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="ecoG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="50%" stop-color="#5535e0"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#ecoG)" stroke-width="2" fill="none"/><circle cx="50" cy="50" r="28" stroke="url(#ecoG)" stroke-width="1.2" fill="none" opacity="0.5"/><circle cx="50" cy="50" r="5" fill="url(#ecoG)"/><circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/><circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/><path d="M50 4 Q66 27 50 50 Q34 27 50 4" stroke="url(#ecoG)" stroke-width="1" fill="none" opacity="0.45"/><path d="M96 50 Q73 66 50 50 Q73 34 96 50" stroke="url(#ecoG)" stroke-width="1" fill="none" opacity="0.45"/><path d="M50 96 Q34 73 50 50 Q66 73 50 96" stroke="url(#ecoG)" stroke-width="1" fill="none" opacity="0.45"/><path d="M4 50 Q27 34 50 50 Q27 66 4 50" stroke="url(#ecoG)" stroke-width="1" fill="none" opacity="0.45"/></svg>
+          <div><div class="eco-file-name">Chitrapat.ods</div><div class="eco-file-sub">Canonical Memory -- Local File</div></div>
+          <div class="eco-file-badge">Source of Truth</div>
+        </div>
+      </div>
+      <div class="eco-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div><span class="legend-text">Read Only</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber);"></div><span class="legend-text">Write (Chitragupta only)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--coral);"></div><span class="legend-text">Queue / Inbox</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div><span class="legend-text">Verified / Signed</span></div>
+      </div>
+    </div>
+    <div class="agent-principles">
+      <div class="ap-cell"><div class="ap-num">01</div><div class="ap-title">Simple</div><div class="ap-body">One file. One writer. No hidden side effects. Complexity is rejected, not deferred.</div></div>
+      <div class="ap-cell"><div class="ap-num">02</div><div class="ap-title">Inspectable</div><div class="ap-body">Every record is human-readable. Every write is auditable. You own the full stack.</div></div>
+      <div class="ap-cell"><div class="ap-num">03</div><div class="ap-title">Local</div><div class="ap-body">Runs fully offline. No telemetry. No cloud. Your cognition, on your machine.</div></div>
+      <div class="ap-cell"><div class="ap-num">04</div><div class="ap-title">Human-Controlled</div><div class="ap-body">The .ods file is always editable by you. AI assists. You decide what persists.</div></div>
     </div>
   </div>
 </section>
 
 <!-- SIMULATION -->
-<section id="sim">
+<section id="demo">
   <div class="container">
-    <div class="sec-label"><span>03 / Live Simulation</span></div>
-    <div class="sim-header">
-      <h2 class="sim-title">See it <span class="grad-text">running.</span></h2>
-      <p class="sim-sub">Three live simulations: CLI terminal, Web UI Briefing Room, and Mobile app. All running a shared state engine. Click any command -- the state updates across all panels.</p>
-    </div>
-
-    <div class="sim-tabs">
-      <button class="sim-tab active" onclick="switchSim('cli',this)">⌨ CLI Terminal</button>
-      <button class="sim-tab" onclick="switchSim('webui',this)">🖥 Web UI</button>
-      <button class="sim-tab" onclick="switchSim('mobile',this)">📱 Mobile</button>
-    </div>
-
-    <!-- CLI SIM -->
-    <div class="sim-pane active" id="sim-cli">
-      <div class="cli-sim-layout">
-        <div class="cli-cmds">
-          <div class="cli-cmd-group-label">Daily</div>
-          <button class="cli-cmd-btn active" onclick="runCmd('morning',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">morning</span></span><span class="cli-cmd-badge">brief</span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('inbox',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">inbox</span> "idea"</span><span class="cli-cmd-badge">capture</span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('oracle',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">oracle</span></span><span class="cli-cmd-badge">v2.12</span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('export',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">export</span></span><span class="cli-cmd-badge">v2.12</span></button>
-          <div class="cli-cmd-group-label">Memory</div>
-          <button class="cli-cmd-btn" onclick="runCmd('loops',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">loops</span></span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('health',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">health</span></span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('diff',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">diff</span></span></button>
-          <div class="cli-cmd-group-label">Maintenance</div>
-          <button class="cli-cmd-btn" onclick="runCmd('integrity',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">integrity</span></span></button>
-          <button class="cli-cmd-btn" onclick="runCmd('stats',this)"><span><span class="cli-cmd-kw">yantra</span> <span class="cli-cmd-arg">stats</span></span></button>
-        </div>
-        <div class="cli-term">
-          <div class="cli-term-bar"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="cli-term-title">yantra v2.12 -- zsh</span></div>
-          <div class="cli-term-out" id="cli-out"></div>
-          <div class="cli-state">
-            <div class="cli-state-cell"><div class="cli-state-k">Records</div><div class="cli-state-v" id="s-records" style="color:var(--blue)">247</div></div>
-            <div class="cli-state-cell"><div class="cli-state-k">Open Loops</div><div class="cli-state-v" id="s-loops" style="color:var(--amber)">12</div></div>
-            <div class="cli-state-cell"><div class="cli-state-k">Ledger</div><div class="cli-state-v" id="s-ledger" style="color:var(--indigo)">489</div></div>
-            <div class="cli-state-cell"><div class="cli-state-k">Health</div><div class="cli-state-v" id="s-health" style="color:var(--green)">OK</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- WEB UI SIM -->
-    <div class="sim-pane" id="sim-webui">
-      <div class="webui-sim">
-        <div class="webui-browser-bar">
-          <div class="webui-dots"><div class="webui-dot" style="background:#ff5f57"></div><div class="webui-dot" style="background:#febc2e"></div><div class="webui-dot" style="background:#28c840"></div></div>
-          <div class="webui-url">http://localhost:7331 -- OpenYantra Briefing Room v2.12</div>
-        </div>
-        <div class="webui-body">
-          <div class="webui-sidebar">
-            <div style="padding:12px 16px 16px;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;">
-              <svg width="18" height="18" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="wsG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#wsG)" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="5" fill="url(#wsG)"/></svg>
-              OpenYantra
-            </div>
-            <div class="webui-nav-item active" onclick="switchWebUI('today',this)">🌅 Today</div>
-            <div class="webui-nav-item" onclick="switchWebUI('inbox',this)">📥 Inbox <span style="background:rgba(255,153,51,0.15);color:#f5a000;font-size:8px;padding:1px 5px;border-radius:2px;margin-left:4px">3</span></div>
-            <div class="webui-nav-item" onclick="switchWebUI('loops',this)">🔓 Open Loops</div>
-            <div class="webui-nav-item" onclick="switchWebUI('projects',this)">🚀 Projects</div>
-            <div class="webui-nav-item" onclick="switchWebUI('oracle',this)">🔮 Oracle</div>
-            <div class="webui-nav-item" onclick="switchWebUI('ledger',this)">📒 Ledger</div>
-            <div class="webui-nav-item" onclick="switchWebUI('security',this)">🔒 Security</div>
-          </div>
-          <div class="webui-main">
-            <!-- Today -->
-            <div class="webui-section active" id="wu-today">
-              <div class="webui-stat-row">
-                <div class="webui-stat"><div class="webui-stat-n" style="color:var(--blue)">247</div><div class="webui-stat-k">Records</div></div>
-                <div class="webui-stat"><div class="webui-stat-n" style="color:var(--amber)">12</div><div class="webui-stat-k">Open Loops</div></div>
-                <div class="webui-stat"><div class="webui-stat-n" style="color:var(--coral)">3</div><div class="webui-stat-k">Inbox</div></div>
-                <div class="webui-stat"><div class="webui-stat-n" style="color:var(--green)">OK</div><div class="webui-stat-k">Health</div></div>
-              </div>
-              <div class="webui-card">
-                <div class="webui-card-head">🌅 Morning Brief <span style="color:var(--green)">🔥 7-day streak</span></div>
-                <div class="webui-card-body" style="font-family:var(--sans);font-size:12px;color:var(--text-dim);line-height:1.7">
-                  <strong style="color:var(--text)">Good morning, Revanth.</strong><br>
-                  12 open loops · 3 stale projects · 3 inbox items pending.<br>
-                  Oldest loop: "3-act vs 5-act structure" -- 14 days.
-                </div>
-              </div>
-              <div class="webui-card">
-                <div class="webui-card-head">🔮 Oracle -- 2 insights</div>
-                <div class="webui-card-body">
-                  <div class="oracle-item"><div class="oracle-type" style="color:var(--amber)">inbox_loop_match</div><div class="oracle-detail">Inbox: "Priya budget" may relate to loop "Budget approval pending"</div></div>
-                  <div class="oracle-item"><div class="oracle-type" style="color:var(--coral)">stale_project</div><div class="oracle-detail">"OpenYantra Website" -- active but no session mention in 14 days</div></div>
-                </div>
-              </div>
-            </div>
-            <!-- Inbox -->
-            <div class="webui-section" id="wu-inbox">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:11px;color:var(--muted)">3 unrouted items</div><button style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;background:var(--grad);border:none;color:#fff;cursor:pointer">Route All</button></div>
-              <table class="webui-table" style="width:100%"><thead><tr><th>Content</th><th>Captured</th><th>Importance</th></tr></thead><tbody>
-                <tr><td>Priya mentioned budget revision needed Friday</td><td style="color:var(--muted)">4m ago</td><td><div class="webui-badge" style="border-color:rgba(245,160,0,0.3);color:var(--amber)">6</div></td></tr>
-                <tr><td>Research 5-act structure for screenplay</td><td style="color:var(--muted)">2h ago</td><td><div class="webui-badge" style="border-color:rgba(26,161,103,0.3);color:var(--green)">8</div></td></tr>
-                <tr><td>Check with Arun about location permits</td><td style="color:var(--muted)">1d ago</td><td><div class="webui-badge" style="border-color:rgba(28,111,255,0.3);color:var(--blue)">7</div></td></tr>
-              </tbody></table>
-            </div>
-            <!-- Loops -->
-            <div class="webui-section" id="wu-loops">
-              <table class="webui-table" style="width:100%"><thead><tr><th>Topic</th><th>Priority</th><th>Days</th><th>TTL</th></tr></thead><tbody>
-                <tr><td>3-act vs 5-act structure</td><td><div class="webui-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral)">High</div></td><td style="color:var(--muted)">14</td><td style="color:var(--muted)">30d</td></tr>
-                <tr><td>Budget approval from Priya</td><td><div class="webui-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral)">High</div></td><td style="color:var(--muted)">7</td><td style="color:var(--muted)">30d</td></tr>
-                <tr><td>VidyaKosha BM25 tuning</td><td><div class="webui-badge" style="border-color:rgba(245,160,0,0.3);color:var(--amber)">Med</div></td><td style="color:var(--muted)">21</td><td style="color:var(--muted)">90d</td></tr>
-              </tbody></table>
-            </div>
-            <!-- Projects -->
-            <div class="webui-section" id="wu-projects">
-              <table class="webui-table" style="width:100%"><thead><tr><th>Project</th><th>Domain</th><th>Priority</th><th>Next Step</th></tr></thead><tbody>
-                <tr><td>My Film</td><td style="color:var(--muted)">Creative</td><td><div class="webui-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral)">High</div></td><td style="color:var(--muted)">Write act 2</td></tr>
-                <tr><td>OpenYantra</td><td style="color:var(--muted)">Tech</td><td><div class="webui-badge" style="border-color:rgba(232,69,32,0.3);color:var(--coral)">High</div></td><td style="color:var(--muted)">Ship v2.12</td></tr>
-                <tr><td>Documentary Cut</td><td style="color:var(--muted)">Creative</td><td><div class="webui-badge" style="border-color:rgba(245,160,0,0.3);color:var(--amber)">Med</div></td><td style="color:var(--muted)">Review rough cut</td></tr>
-              </tbody></table>
-            </div>
-            <!-- Oracle -->
-            <div class="webui-section" id="wu-oracle">
-              <div style="font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-bottom:14px">Cross-reference engine -- reads all sheets, never writes, surfaces non-obvious connections.</div>
-              <div class="oracle-item" style="padding:10px 0"><div class="oracle-type" style="color:var(--amber)">inbox_loop_match</div><div class="oracle-detail" style="font-size:11px;margin-top:3px">"Priya budget" in Inbox shares keywords with loop "Budget approval from Priya"</div><div style="font-size:10px;color:var(--blue);margin-top:4px">→ Route Inbox item and link to loop</div></div>
-              <div class="oracle-item" style="padding:10px 0"><div class="oracle-type" style="color:var(--coral)">stale_project</div><div class="oracle-detail" style="font-size:11px;margin-top:3px">"OpenYantra Website" is Active but not mentioned in last 10 sessions (14d quiet)</div><div style="font-size:10px;color:var(--blue);margin-top:4px">→ Next step: Push v2.12 or mark paused</div></div>
-              <div class="oracle-item" style="padding:10px 0;border-bottom:none"><div class="oracle-type" style="color:var(--green)">loop_aging</div><div class="oracle-detail" style="font-size:11px;margin-top:3px">"3-act vs 5-act structure" is 14d old (47% of 30d TTL), not in recent sessions</div><div style="font-size:10px;color:var(--blue);margin-top:4px">→ Resolve, delegate, or extend TTL</div></div>
-            </div>
-            <!-- Ledger -->
-            <div class="webui-section" id="wu-ledger">
-              <table class="webui-table" style="width:100%"><thead><tr><th>Timestamp</th><th>Agent</th><th>Sheet</th><th>Operation</th><th>Status</th></tr></thead><tbody>
-                <tr><td style="color:var(--muted)">2026-03-21 09:14</td><td>Claude</td><td style="color:var(--muted)">📥 Inbox</td><td>add</td><td><div class="webui-badge" style="border-color:rgba(26,161,103,0.3);color:var(--green)">written</div></td></tr>
-                <tr><td style="color:var(--muted)">2026-03-21 09:10</td><td>Claude</td><td style="color:var(--muted)">🚀 Projects</td><td>update</td><td><div class="webui-badge" style="border-color:rgba(26,161,103,0.3);color:var(--green)">written</div></td></tr>
-                <tr><td style="color:var(--muted)">2026-03-21 08:55</td><td>TelegramBot</td><td style="color:var(--muted)">📥 Inbox</td><td>add</td><td><div class="webui-badge" style="border-color:rgba(26,161,103,0.3);color:var(--green)">written</div></td></tr>
-              </tbody></table>
-            </div>
-            <!-- Security -->
-            <div class="webui-section" id="wu-security">
-              <div style="background:rgba(26,161,103,0.08);border:1px solid rgba(26,161,103,0.3);padding:12px 16px;margin-bottom:14px;font-size:11px;color:var(--green)">✓ No threats detected -- Chitrapat is clean. 489 entries verified.</div>
-              <table class="webui-table" style="width:100%"><thead><tr><th>Agent</th><th>Tier</th><th>Status</th></tr></thead><tbody>
-                <tr><td>Claude</td><td style="color:var(--green)">Known (3)</td><td><div class="webui-badge" style="border-color:rgba(26,161,103,0.3);color:var(--green)">trusted</div></td></tr>
-                <tr><td>TelegramBot</td><td style="color:var(--amber)">External (1)</td><td><div class="webui-badge" style="border-color:rgba(245,160,0,0.3);color:var(--amber)">strict scan</div></td></tr>
-              </tbody></table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOBILE SIM -->
-    <div class="sim-pane" id="sim-mobile">
-      <div class="mobile-sim-wrap">
-        <!-- Home screen -->
-        <div>
-          <div style="text-align:center;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Home</div>
-          <div class="mobile-phone">
-            <div class="mp-notch"><div class="mp-pill"></div></div>
-            <div class="mp-screen">
-              <div class="mp-status"><span>9:41</span><span style="color:#1aa167">●</span></div>
-              <div class="mp-hdr"><div><div class="mp-title">OpenYantra</div><div class="mp-sub">chitrapat.ods · Active</div></div><svg width="16" height="16" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="mhG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#mhG)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="5" fill="url(#mhG)"/></svg></div>
-              <div class="mp-stats">
-                <div class="mp-stat"><div class="mp-stat-n" style="color:var(--blue)">247</div><div class="mp-stat-k">Records</div></div>
-                <div class="mp-stat"><div class="mp-stat-n" style="color:var(--amber)">12</div><div class="mp-stat-k">Loops</div></div>
-                <div class="mp-stat"><div class="mp-stat-n" style="color:var(--green)">OK</div><div class="mp-stat-k">Health</div></div>
-                <div class="mp-stat"><div class="mp-stat-n" style="color:var(--indigo)">489</div><div class="mp-stat-k">Ledger</div></div>
-              </div>
-              <div class="mp-list">
-                <div class="mp-item" style="border-left-color:var(--coral)"><div class="mp-item-t">3-act vs 5-act structure</div><div class="mp-item-s" style="color:var(--coral)">High · 14d open</div></div>
-                <div class="mp-item" style="border-left-color:var(--amber)"><div class="mp-item-t">Budget approval from Priya</div><div class="mp-item-s" style="color:var(--amber)">High · 7d open</div></div>
-                <div class="mp-item" style="border-left-color:var(--dim)"><div class="mp-item-t">📥 3 unrouted inbox items</div><div class="mp-item-s">Tap to route</div></div>
-              </div>
-            </div>
-            <div class="mp-tabs">
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--blue)"></div><div class="mp-tab-lbl" style="color:var(--blue)">Home</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Loops</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Capture</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Health</div></div>
-            </div>
-            <div class="mp-hb"><div class="mp-hbar"></div></div>
-          </div>
-        </div>
-
-        <!-- Capture screen -->
-        <div>
-          <div style="text-align:center;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Quick Capture</div>
-          <div class="mobile-phone">
-            <div class="mp-notch"><div class="mp-pill"></div></div>
-            <div class="mp-screen">
-              <div class="mp-status"><span>9:41</span><span style="color:#1aa167">●</span></div>
-              <div class="mp-hdr"><div><div class="mp-title">Capture</div><div class="mp-sub">Send to Inbox</div></div></div>
-              <div style="padding:12px 10px">
-                <div style="background:#0f0f10;border:1px solid rgba(255,255,255,0.08);padding:12px;margin-bottom:10px;font-size:10px;color:var(--text-dim);min-height:80px">Priya mentioned budget revision needed by Friday...</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-                  <div style="background:rgba(232,69,32,0.1);border:1px solid rgba(232,69,32,0.2);padding:8px;text-align:center;font-size:9px;letter-spacing:0.1em;color:var(--coral)">LOOP</div>
-                  <div style="background:rgba(245,160,0,0.1);border:1px solid rgba(245,160,0,0.2);padding:8px;text-align:center;font-size:9px;letter-spacing:0.1em;color:var(--amber)">TASK</div>
-                  <div style="background:rgba(28,111,255,0.1);border:1px solid rgba(28,111,255,0.2);padding:8px;text-align:center;font-size:9px;letter-spacing:0.1em;color:var(--blue)">GOAL</div>
-                  <div style="background:rgba(26,161,103,0.15);border:1px solid rgba(26,161,103,0.3);padding:8px;text-align:center;font-size:9px;letter-spacing:0.1em;color:var(--green)">✓ INBOX</div>
-                </div>
-                <div style="background:var(--grad);padding:10px;text-align:center;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#fff">Send to Inbox</div>
-              </div>
-            </div>
-            <div class="mp-tabs">
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Home</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Loops</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--coral)"></div><div class="mp-tab-lbl" style="color:var(--coral)">Capture</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Health</div></div>
-            </div>
-            <div class="mp-hb"><div class="mp-hbar"></div></div>
-          </div>
-        </div>
-
-        <!-- Health screen -->
-        <div>
-          <div style="text-align:center;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Health</div>
-          <div class="mobile-phone">
-            <div class="mp-notch"><div class="mp-pill"></div></div>
-            <div class="mp-screen">
-              <div class="mp-status"><span>9:41</span><span style="color:#1aa167">●</span></div>
-              <div class="mp-hdr"><div><div class="mp-title">Health</div><div class="mp-sub" style="color:var(--green)">All systems nominal</div></div></div>
-              <div class="mp-list">
-                <div class="mp-item" style="border-left-color:var(--green)"><div class="mp-item-t">chitrapat.ods</div><div class="mp-item-s" style="color:var(--green)">1.2MB · OK</div></div>
-                <div class="mp-item" style="border-left-color:var(--green)"><div class="mp-item-t">Agrasandhanī</div><div class="mp-item-s" style="color:var(--green)">489 entries · Sigs valid</div></div>
-                <div class="mp-item" style="border-left-color:var(--green)"><div class="mp-item-t">Chitragupta</div><div class="mp-item-s" style="color:var(--green)">Last write: 4m ago</div></div>
-                <div class="mp-item" style="border-left-color:var(--blue)"><div class="mp-item-t">VidyaKosha</div><div class="mp-item-s" style="color:var(--blue)">247 rows indexed · TF-IDF</div></div>
-                <div class="mp-item" style="border-left-color:var(--amber)"><div class="mp-item-t">Raksha</div><div class="mp-item-s" style="color:var(--amber)">0 quarantined · All clean</div></div>
-              </div>
-            </div>
-            <div class="mp-tabs">
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Home</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Loops</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--dim)"></div><div class="mp-tab-lbl">Capture</div></div>
-              <div class="mp-tab-item"><div class="mp-tab-dot" style="background:var(--green)"></div><div class="mp-tab-lbl" style="color:var(--green)">Health</div></div>
-            </div>
-            <div class="mp-hb"><div class="mp-hbar"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DOCS -->
-<section id="docs">
-  <div class="container">
-    <div class="sec-label"><span>04 / Documentation</span></div>
-    <h2 style="font-size:clamp(28px,3vw,44px);font-weight:300;letter-spacing:-0.02em;margin-bottom:16px;">Everything you need <span class="grad-text">to build with it.</span></h2>
-    <p style="font-family:var(--sans);font-size:14px;color:var(--text-dim);max-width:540px;line-height:1.8;margin-bottom:48px;">Complete documentation, design system, and integration guides -- all in the repository.</p>
-    <div class="docs-grid">
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/DEPLOYMENT.md" target="_blank" style="--card-grad:linear-gradient(90deg,var(--blue),var(--indigo))">
-        <div class="doc-card::after" style="background:var(--card-grad)"></div>
-        <div class="doc-card-icon">📦</div>
-        <div class="doc-card-title">Deployment Guide</div>
-        <div class="doc-card-desc">Framework integration for OpenClaw, LangChain, AutoGen, and the raw Anthropic API. Session lifecycle, morning brief, oracle, and export.</div>
-        <div class="doc-card-link">Read Guide ↗</div>
-        <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--indigo));transform:scaleX(0);transform-origin:left;transition:transform 0.4s;"></div>
-      </a>
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/visual-guide.html" target="_blank">
-        <div class="doc-card-icon">📐</div>
-        <div class="doc-card-title">Visual Guide</div>
-        <div class="doc-card-desc">Architecture diagrams, the 14-sheet schema, write flow, Chitragupta pattern, trust tier pyramid, and version timeline -- all visual.</div>
-        <div class="doc-card-link">View Guide ↗</div>
-      </a>
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/brand-manual.html" target="_blank">
-        <div class="doc-card-icon">🎨</div>
-        <div class="doc-card-title">Brand Manual</div>
-        <div class="doc-card-desc">Complete design system: logo variants, color tokens, IBM Plex Mono type scale, mandala geometry rules, component library, and do/don't.</div>
-        <div class="doc-card-link">View Manual ↗</div>
-      </a>
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/SKILL.md" target="_blank">
-        <div class="doc-card-icon">🤖</div>
-        <div class="doc-card-title">Agent Skill File</div>
-        <div class="doc-card-desc">Drop this into any AI coding environment. Complete session lifecycle, all 15 Sanskrit terms, CLI reference, Python API, Raksha security model.</div>
-        <div class="doc-card-link">Get SKILL.md ↗</div>
-      </a>
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/PROTOCOL.md" target="_blank">
-        <div class="doc-card-icon">📜</div>
-        <div class="doc-card-title">Protocol Spec</div>
-        <div class="doc-card-desc">The CC0 open specification. Full schema, write rules, controlled vocabulary, Vivada conflict resolution, and regional compliance profiles.</div>
-        <div class="doc-card-link">Read Protocol ↗</div>
-      </a>
-      <a class="doc-card" href="https://github.com/revanthlevaka/OpenYantra/blob/main/MYTHOLOGY.md" target="_blank">
-        <div class="doc-card-icon">🪔</div>
-        <div class="doc-card-title">Mythology</div>
-        <div class="doc-card-desc">How Chitragupta, the 3000-year-old Hindu God of Data, maps component-by-component onto the architecture. Named in Hyderabad, built for everyone.</div>
-        <div class="doc-card-link">Read Origin ↗</div>
-      </a>
-    </div>
-    <div style="margin-top:48px;background:var(--surface);border:1px solid var(--border);padding:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+    <div class="sec-label"><span>05 / Live Simulation</span></div>
+    <div class="demo-layout">
       <div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">One command to install everything.</div>
-        <code style="font-size:12px;color:var(--amber)">curl -sSL https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.sh | bash</code>
+        <h2 class="demo-heading">See it<br><span class="grad-text">in action.</span></h2>
+        <p class="demo-desc">Simulate the yantra CLI without installing anything. Click a command or type your own to see how OpenYantra responds. The memory state updates with every write.</p>
+        <div class="sim-commands">
+          <button class="sim-cmd-btn" data-cmd="inbox" data-arg='"build the CLI simulator"'>
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">inbox</span> "build the CLI simulator"</span>
+            <span class="sc-label">Capture idea</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="loops">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">loops</span></span>
+            <span class="sc-label">List open loops</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="health">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">health</span></span>
+            <span class="sc-label">System check</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="diff" data-arg="--since yesterday">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">diff</span> --since yesterday</span>
+            <span class="sc-label">Memory delta</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="recall" data-arg='"BM25 indexing"'>
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">recall</span> "BM25 indexing"</span>
+            <span class="sc-label">Retrieve memory</span>
+          </button>
+          <button class="sim-cmd-btn" data-cmd="ledger" data-arg="--tail 5">
+            <span><span class="sc-name">yantra</span> <span class="sc-arg">ledger</span> --tail 5</span>
+            <span class="sc-label">Audit trail</span>
+          </button>
+        </div>
+        <div class="sim-custom">
+          <input class="sim-input" id="simInput" placeholder='yantra inbox "your idea here"' type="text"/>
+          <button class="sim-run" id="simRun">Run ↵</button>
+        </div>
       </div>
-      <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="btn-primary">View on GitHub ↗</button></a>
+      <div>
+        <div class="sim-terminal">
+          <div class="sim-bar">
+            <div class="sim-bar-left"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- simulation</span></div>
+            <button class="sim-clear" id="simClear">Clear</button>
+          </div>
+          <div class="sim-output" id="simOutput"></div>
+          <div class="sim-state">
+            <div class="sim-state-row"><span class="sim-state-key">Records</span><span class="sim-state-val" id="stateRecords" style="color:var(--blue);">247</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Open Loops</span><span class="sim-state-val" id="stateLoops" style="color:var(--amber);">12</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Ledger Entries</span><span class="sim-state-val" id="stateLedger" style="color:var(--indigo);">489</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Health</span><span class="sim-state-val" id="stateHealth" style="color:var(--green);">OK</span></div>
+            <div class="sim-state-row"><span class="sim-state-key">Last Write</span><span class="sim-state-val" id="stateWrite" style="color:var(--muted);">4m ago</span></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <div class="footer-grad"></div>
 <footer>
   <div class="footer-logo">
-    <svg width="22" height="22" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="fG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#fG)" stroke-width="2.5" fill="none"/><circle cx="50" cy="50" r="5" fill="url(#fG)"/><circle cx="50" cy="4" r="3.5" fill="#1c6fff"/><circle cx="96" cy="50" r="3.5" fill="#5535e0"/><circle cx="50" cy="96" r="3.5" fill="#e84520"/><circle cx="4" cy="50" r="3.5" fill="#f5a000"/></svg>
+    <svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="footG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="50%" stop-color="#5535e0"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs><circle cx="50" cy="50" r="46" stroke="url(#footG)" stroke-width="2.5" fill="none"/><circle cx="50" cy="50" r="28" stroke="url(#footG)" stroke-width="1.5" fill="none" opacity="0.4"/><circle cx="50" cy="50" r="5" fill="url(#footG)"/><circle cx="50" cy="4" r="3.5" fill="#1c6fff"/><circle cx="96" cy="50" r="3.5" fill="#5535e0"/><circle cx="50" cy="96" r="3.5" fill="#e84520"/><circle cx="4" cy="50" r="3.5" fill="#f5a000"/></svg>
     OpenYantra
   </div>
   <div class="footer-links">
     <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank">GitHub ↗</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/DEPLOYMENT.md" target="_blank">Deployment</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/visual-guide.html" target="_blank">Visual Guide</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/docs/brand-manual.html" target="_blank">Brand Manual</a>
-    <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra#readme" target="_blank">Docs</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra#cli" target="_blank">CLI Ref</a>
+    <a href="https://github.com/revanthlevaka/OpenYantra/releases" target="_blank">Changelog</a>
     <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/LICENSE" target="_blank">License</a>
   </div>
   <div class="footer-right">
-    v2.12 · MIT License<br>
-    Built by <a href="https://github.com/revanthlevaka" target="_blank">Revanth Levaka</a>, Hyderabad
+    © 2025 OpenYantra -- MIT License<br>
+    Built by <a href="https://github.com/revanthlevaka" target="_blank">Revanth Levaka</a>
   </div>
 </footer>
 
 <script>
-/* Theme */
+/* ---- THEME ---- */
 (function(){
-  const root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme:light)');
-  function apply(m){
-    root.setAttribute('data-theme',m==='auto'?(mq.matches?'light':'dark'):m);
-    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
-    localStorage.setItem('oy-t',m);
+  const root=document.documentElement;
+  const mq=window.matchMedia('(prefers-color-scheme: light)');
+  function applyTheme(mode){
+    if(mode==='auto'){root.setAttribute('data-theme',mq.matches?'light':'dark');}
+    else{root.setAttribute('data-theme',mode);}
+    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+    localStorage.setItem('oy-theme',mode);
   }
-  apply(localStorage.getItem('oy-t')||'auto');
-  mq.addEventListener('change',()=>{if((localStorage.getItem('oy-t')||'auto')==='auto')apply('auto');});
-  document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.mode)));
+  const s=localStorage.getItem('oy-theme')||'auto';
+  applyTheme(s);
+  mq.addEventListener('change',()=>{if((localStorage.getItem('oy-theme')||'auto')==='auto')applyTheme('auto');});
+  document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.mode)));
 })();
 
-/* Sim tab switcher */
-function switchSim(name, btn) {
-  document.querySelectorAll('.sim-pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sim-'+name).classList.add('active');
-  btn.classList.add('active');
-}
+/* ---- SIMULATION ENGINE ---- */
+const state={records:247,loops:12,ledger:489,health:'OK',lastWrite:'just now',writes:[]};
+let writeIdCounter=0xA3F9;
 
-/* Web UI switcher */
-function switchWebUI(name, btn) {
-  document.querySelectorAll('.webui-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.webui-nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('wu-'+name).classList.add('active');
-  btn.classList.add('active');
-}
+function hexId(){return('#'+(writeIdCounter++).toString(16).toUpperCase().padStart(6,'0'));}
+function tsNow(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
-/* CLI simulation engine */
-const S = {records:247, loops:12, ledger:489, writes:[], inbox:3};
-let wid = 0xA3F9;
-const hx = ()=>'#'+(wid++).toString(16).toUpperCase().padStart(4,'0');
-const ts = ()=>new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-const CMDS = {
-  morning: () => {
-    return [
-      `<span style="color:#f5a000">Good morning, Revanth.</span>`,
-      `  ${S.loops} open loops · ${S.inbox} inbox items · last write 4m ago`,
-      `  Oldest loop: "3-act vs 5-act structure" -- 14 days`,
-      `  🔥 7-day streak`,
-      ``,
-      `  <span style="color:#5535e0">Oracle:</span> 2 insights`,
-      `    1. [inbox_loop_match] Inbox "Priya budget" matches loop "Budget approval"`,
-      `    2. [stale_project] "OpenYantra Website" -- 14d quiet`,
-      ``,
-      `  yantra ui → http://localhost:7331`
-    ];
+const responses={
+  inbox:(arg)=>{
+    const idea=arg?arg.replace(/^["']|["']$/g,''):'new idea';
+    const id=hexId();
+    state.records++;state.ledger++;state.lastWrite='just now';
+    state.writes.unshift({id,idea,ts:tsNow()});
+    return`<span class="ok">Queued</span> WriteID: <span class="hash">${id}</span> → Sanchitta\nChitragupta signing... <span class="ok">SHA-256 OK</span>\n<span class="ok">Written</span> to Chitrapat.ods -- Records: <span class="num">${state.records}</span>`;
   },
-  inbox: () => {
-    S.records++; S.ledger++; S.inbox++;
-    const id = hx();
-    return [
-      `<span style="color:#1aa167">Queued</span> WriteID: <span style="color:#5535e0">${id}</span> → Sanchitta`,
-      `Raksha scan: <span style="color:#1aa167">CLEAN</span>`,
-      `Chitragupta signing... <span style="color:#1aa167">SHA-256 OK</span>`,
-      `<span style="color:#1aa167">Written</span> to chitrapat.ods -- Records: <span style="color:#e8e5de">${S.records}</span>`,
-      `Inbox: ${S.inbox} unrouted items`
-    ];
+  loops:()=>{
+    const items=['refactor VidyaKosha BM25','write async batch docs','add SHA-256 tests','review AgentConfig schema','explore embedding support'].slice(0,state.loops>5?5:state.loops);
+    return`<span class="num">${state.loops}</span> open loops found\n`+items.map((l,i)=>`  <span class="hash">${(i+1).toString().padStart(2,'0')}</span> ${l}`).join('\n')+`\n<span class="warn">Oldest:</span> "refactor VidyaKosha BM25" -- 14 days`;
   },
-  oracle: () => {
-    return [
-      `<span style="color:#1c6fff">Oracle v2.12 -- ${3} insights</span>`,
-      ``,
-      `  1. <span style="color:#f5a000">[inbox_loop_match]</span> Inbox may relate to open loop`,
-      `     "Priya mentioned budget revision"`,
-      `     Loop: "Budget approval from Priya"`,
-      `     Action: Route Inbox item and link to loop`,
-      ``,
-      `  2. <span style="color:#e84520">[stale_project]</span> Active project has gone quiet`,
-      `     "OpenYantra Website" -- last updated 2026-03-07, 14d quiet`,
-      `     Action: Next step: Push v2.12 or mark paused`,
-      ``,
-      `  3. <span style="color:#e84520">[loop_aging]</span> Open loop aging`,
-      `     "3-act vs 5-act" -- 14d old (47% of 30d TTL)`,
-      `     Action: Resolve, delegate, or extend TTL`
-    ];
+  health:()=>`Chitrapat.ods <span class="ok">OK</span> -- ${(1.2+state.writes.length*0.001).toFixed(1)}MB\nLedger: <span class="num">${state.ledger}</span> entries -- Signatures: <span class="ok">valid</span>\nWriteQueue: <span class="num">0</span> pending\nAgents: <span class="num">4</span> active -- <span class="ok">All responding</span>\nLast write: <span class="num">${state.lastWrite}</span> by Chitragupta`,
+  diff:(arg)=>{
+    const delta=state.writes.length;
+    if(delta===0)return`<span class="warn">No changes</span> since ${arg||'yesterday'}\nAll records up to date.`;
+    return`<span class="ok">+${delta}</span> record${delta!==1?'s':''} written since ${arg||'yesterday'}\n`+state.writes.slice(0,3).map(w=>`  <span class="hash">${w.id}</span> "${w.idea}" at ${w.ts}`).join('\n')+(delta>3?`\n  ...and <span class="num">${delta-3}</span> more`:'')+`\nLedger entries: <span class="num">${state.ledger}</span> total`;
   },
-  export: () => {
-    return [
-      `<span style="color:#f5a000">Exporting</span> all sheets to markdown...`,
-      `  Identity    → 10 rows`,
-      `  Goals       → 3 rows`,
-      `  Projects    → 3 rows`,
-      `  Open Loops  → 12 rows`,
-      `  Tasks       → 7 rows`,
-      `  Inbox       → ${S.inbox} rows`,
-      ``,
-      `<span style="color:#1aa167">✓ Exported</span> to ~/openyantra/export.md (${(S.records*0.4).toFixed(0)} lines)`,
-      `Paste into any AI chat for full context`
-    ];
+  recall:(arg)=>{
+    const q=arg?arg.replace(/^["']|["']$/g,''):'query';
+    return`BM25 search: <span class="num">"${q}"</span>\n<span class="ok">3</span> records found\n  <span class="hash">#A1F2</span> VidyaKosha indexing notes -- relevance: <span class="ok">0.94</span>\n  <span class="hash">#B8C3</span> BM25 scoring implementation -- relevance: <span class="ok">0.87</span>\n  <span class="hash">#D02A</span> TF-IDF baseline comparison -- relevance: 0.71`;
   },
-  loops: () => {
-    return [
-      `<span style="color:#e8e5de">${S.loops}</span> open loops found`,
-      `  <span style="color:#e84520">[High    ]</span> 3-act vs 5-act structure -- 14 days`,
-      `  <span style="color:#e84520">[High    ]</span> Budget approval from Priya -- 7 days`,
-      `  <span style="color:#f5a000">[Medium  ]</span> VidyaKosha BM25 tuning -- 21 days`,
-      `  <span style="color:#1c6fff">[Low     ]</span> Location permits for shoot -- 3 days`,
-      `  <span style="color:#7a7682">[Medium  ]</span> ...and ${S.loops-4} more`
-    ];
+  ledger:(arg)=>{
+    const n=arg?parseInt(arg.replace(/\D/g,''))||5:5;
+    const recent=state.writes.slice(0,Math.min(n,state.writes.length));
+    const staticEntries=[{id:'#FF1A2B',idea:'session start',ts:'09:00:01'},{id:'#FE9834',idea:'preference updated',ts:'09:12:44'},{id:'#FD4521',idea:'task closed: init repo',ts:'09:18:03'}];
+    const all=[...recent,...staticEntries].slice(0,n);
+    return`Last <span class="num">${all.length}</span> ledger entries:\n`+all.map(e=>`  <span class="hash">${e.id}</span> Chitragupta | "${e.idea}" | ${e.ts}`).join('\n');
   },
-  health: () => {
-    return [
-      `chitrapat.ods <span style="color:#1aa167">OK</span> -- 1.2MB`,
-      `Agrasandhanī: <span style="color:#e8e5de">${S.ledger}</span> entries -- Sigs: <span style="color:#1aa167">all valid</span>`,
-      `WriteQueue: <span style="color:#e8e5de">0</span> pending`,
-      `Chitragupta: alive -- last write 4m ago`,
-      `VidyaKosha: <span style="color:#1aa167">indexed ${S.records} rows</span> (TF-IDF)`,
-      `Raksha: <span style="color:#1aa167">0 quarantined</span> -- clean`
-    ];
+  close:(arg)=>{
+    if(state.loops>0)state.loops--;
+    return`Loop <span class="hash">${arg||'#01'}</span> marked as <span class="ok">resolved</span>\nOpen loops remaining: <span class="num">${state.loops}</span>`;
   },
-  diff: () => {
-    return [
-      `Scanning Beliefs sheet for contradictions...`,
-      `<span style="color:#f5a000">1 potential contradiction</span>`,
-      ``,
-      `  Topic: "creative freedom vs commercial work"`,
-      `  Position A: "Creative freedom above short-term money" (2025-11-10)`,
-      `  Position B: "Commercial projects fund creative work" (2026-02-14)`,
-      ``,
-      `  → Review and consolidate in Beliefs sheet`
-    ];
+  route:(arg)=>{
+    const q=arg?arg.replace(/^["']|["']$/g,''):'query';
+    return`Routing: <span class="num">"${q}"</span>\nAnalysing memory domains... <span class="ok">done</span>\nBest agent: <span class="ok">VidyaKosha</span> -- confidence: 0.89\nAlternatives: Karma (0.43), Sutra (0.31)`;
   },
-  integrity: () => {
-    return [
-      `Verifying Agrasandhanī signatures...`,
-      `  Checking ${S.ledger} entries...`,
-      `<span style="color:#1aa167">✓ All ${S.ledger} Mudra signatures valid</span>`,
-      `  No tampering detected`,
-      `  Last entry: ${ts()}`
-    ];
-  },
-  stats: () => {
-    return [
-      `Memory Growth Analytics`,
-      `  Total rows:      <span style="color:#e8e5de">${S.records}</span>`,
-      `  Writes (7d):     <span style="color:#1c6fff">23</span>`,
-      `  Writes (30d):    <span style="color:#1c6fff">89</span>`,
-      `  Loop resolution: <span style="color:#1aa167">68%</span>`,
-      `  Top agent:       <span style="color:#f5a000">Claude (67%)</span>`,
-      `  Top sheet:       <span style="color:#f5a000">📥 Inbox (34%)</span>`,
-      `  File size:       1.2 KB`
-    ];
-  }
 };
 
-function runCmd(name, btn) {
-  document.querySelectorAll('.cli-cmd-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const out = document.getElementById('cli-out');
-  const lines = CMDS[name]();
-  const cmd = btn.querySelector('.cli-cmd-kw').parentElement.textContent.trim();
-
-  const cmdDiv = document.createElement('div');
-  cmdDiv.className = 'cli-line';
-  cmdDiv.innerHTML = `<span class="c-p">$</span><span class="c-c" style="color:#f5a000">${cmd}</span>`;
-  out.appendChild(cmdDiv);
-
-  const resultDiv = document.createElement('div');
-  resultDiv.className = 'cli-result';
-  resultDiv.innerHTML = lines.join('<br>');
-  out.appendChild(resultDiv);
-
-  const spacer = document.createElement('div');
-  spacer.style.height = '6px';
-  out.appendChild(spacer);
-
-  out.scrollTop = out.scrollHeight;
-
-  // Update state display
-  document.getElementById('s-records').textContent = S.records;
-  document.getElementById('s-loops').textContent = S.loops;
-  document.getElementById('s-ledger').textContent = S.ledger;
+function parseCmd(raw){
+  const clean=raw.trim().replace(/^yantra\s*/i,'');
+  const parts=clean.split(/\s+/);
+  const cmd=parts[0]?.toLowerCase();
+  const rest=clean.slice(cmd?.length||0).trim();
+  return{cmd,arg:rest||null};
 }
 
-// Boot CLI with morning
-window.addEventListener('DOMContentLoaded', ()=>{
-  const btn = document.querySelector('.cli-cmd-btn.active');
-  if (btn) runCmd('morning', btn);
+function runCmd(raw){
+  const out=document.getElementById('simOutput');
+  const {cmd,arg}=parseCmd(raw);
+  const fn=responses[cmd];
+  const result=fn?fn(arg):`<span class="err">Command not found:</span> "${cmd}"\nAvailable: inbox, loops, health, diff, recall, ledger, close, route, doctor`;
+
+  const cmdLine=document.createElement('div');
+  cmdLine.className='sim-line';
+  cmdLine.innerHTML=`<span class="sim-prompt-char">$</span><span class="sim-cmd-text">yantra ${raw.replace(/^yantra\s*/i,'')}</span>`;
+
+  const resultDiv=document.createElement('div');
+  resultDiv.className='sim-result';
+  resultDiv.innerHTML=result;
+
+  const spacer=document.createElement('div');
+  spacer.style.height='4px';
+
+  out.appendChild(cmdLine);
+  out.appendChild(resultDiv);
+  out.appendChild(spacer);
+  out.scrollTop=out.scrollHeight;
+
+  // update state display
+  document.getElementById('stateRecords').textContent=state.records;
+  document.getElementById('stateLoops').textContent=state.loops;
+  document.getElementById('stateLedger').textContent=state.ledger;
+  document.getElementById('stateHealth').textContent=state.health;
+  document.getElementById('stateWrite').textContent=state.lastWrite;
+}
+
+document.querySelectorAll('.sim-cmd-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const cmd=btn.dataset.cmd;
+    const arg=btn.dataset.arg||'';
+    runCmd(arg?`${cmd} ${arg}`:cmd);
+  });
+});
+
+document.getElementById('simRun').addEventListener('click',()=>{
+  const val=document.getElementById('simInput').value.trim();
+  if(val){runCmd(val);document.getElementById('simInput').value='';}
+});
+
+document.getElementById('simInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const val=e.target.value.trim();
+    if(val){runCmd(val);e.target.value='';}
+  }
+});
+
+document.getElementById('simClear').addEventListener('click',()=>{
+  document.getElementById('simOutput').innerHTML='';
+});
+
+/* ---- INITIAL SIM MESSAGE ---- */
+window.addEventListener('DOMContentLoaded',()=>{
+  const out=document.getElementById('simOutput');
+  const welcome=document.createElement('div');
+  welcome.className='sim-result';
+  welcome.innerHTML=`<span class="ok">OpenYantra Simulation Ready</span> -- v2.13.0\nChitrapat.ods loaded -- <span class="num">${state.records}</span> records, <span class="num">${state.ledger}</span> ledger entries\nType a command or click a preset above.`;
+  out.appendChild(welcome);
 });
 </script>
 </body>
