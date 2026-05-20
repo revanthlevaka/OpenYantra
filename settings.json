@@ -1,0 +1,11 @@
+{
+  "fontSize": "16px",
+  "aiProvider": "local",
+  "aiModelName": "llama3",
+  "localEndpoint": "http://localhost:11434/v1",
+  "openaiKey": "",
+  "anthropicKey": "",
+  "geminiKey": "",
+  "oauthClientId": "",
+  "oauthClientSecret": ""
+}

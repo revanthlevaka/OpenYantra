@@ -402,7 +402,7 @@ footer{
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>Auto
       </button>
     </div>
-    <span class="nav-badge">v3.0.0</span>
+    <span class="nav-badge">v3.0.1</span>
     <a href="https://github.com/revanthlevaka/OpenYantra" target="_blank"><button class="nav-btn">GitHub</button></a>
   </div>
 </nav>
@@ -422,7 +422,7 @@ footer{
   </svg>
   <div class="hero-inner z1">
     <div>
-      <div class="hero-eyebrow"><span class="tick"></span>Personal AI Memory System -- v3.0.0</div>
+      <div class="hero-eyebrow"><span class="tick"></span>Personal AI Memory System -- v3.0.1</div>
       <h1 class="hero-h1">Your context.<br><em class="grad-text">Your file.</em><br>Your control.</h1>
       <p class="hero-sub">OpenYantra is a local-first memory system for personal AI agents. One human, one file, full auditability. No cloud. No database. No lock-in. v3.0 brings 2ms SQLite writes.</p>
       <div class="hero-actions">
@@ -439,7 +439,7 @@ footer{
     <div class="hero-panel">
       <div class="panel-top">
         <span class="panel-file"><span>~/</span>Chitrapat.ods</span>
-        <span class="panel-status"><span class="led"></span>SQLite WAL -- v3.0.0</span>
+        <span class="panel-status"><span class="led"></span>SQLite WAL -- v3.0.1</span>
       </div>
       <div class="panel-tabs">
         <div class="tab active">Memory</div><div class="tab">Ledger</div><div class="tab">Loops</div><div class="tab">Agents</div>
@@ -653,7 +653,7 @@ footer{
       <div>
         <div class="sim-terminal">
           <div class="sim-bar">
-            <div class="sim-bar-left"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- simulation v3.0.0</span></div>
+            <div class="sim-bar-left"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-title">yantra -- simulation v3.0.1</span></div>
             <button class="sim-clear" id="simClear">Clear</button>
           </div>
           <div class="sim-output" id="simOutput"></div>
@@ -685,7 +685,7 @@ footer{
     <a href="https://github.com/revanthlevaka/OpenYantra/blob/main/LICENSE" target="_blank">License</a>
   </div>
   <div class="footer-right">
-    v3.0.0 -- MIT License<br>
+    v3.0.1 -- MIT License<br>
     Built by <a href="https://github.com/revanthlevaka" target="_blank">Revanth Levaka</a>
   </div>
 </footer>
@@ -715,7 +715,7 @@ function tsNow(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',mi
 
 const responses={
   morning:()=>{
-    return`========================================================\n  Good morning, Revanth. OpenYantra v3.0.0\n  ${new Date().toISOString().slice(0,10)}\n========================================================\n\n  🔓  Open Loops (${state.loops} total):\n     [High    ] Decide screenplay structure  (2d left)\n     [Medium  ] Follow up with Priya on budget\n  🚀  Stale Projects:\n     Feature Screenplay -- 9 days -> Write act 2\n  🔥  Streak: 3 days\n========================================================`;
+    return`========================================================\n  Good morning, Revanth. OpenYantra v3.0.1\n  ${new Date().toISOString().slice(0,10)}\n========================================================\n\n  🔓  Open Loops (${state.loops} total):\n     [High    ] Decide screenplay structure  (2d left)\n     [Medium  ] Follow up with Priya on budget\n  🚀  Stale Projects:\n     Feature Screenplay -- 9 days -> Write act 2\n  🔥  Streak: 3 days\n========================================================`;
   },
   inbox:(arg)=>{
     const idea=arg?arg.replace(/^["']|["']$/g,''):'new idea';
@@ -731,7 +731,7 @@ const responses={
     const items=['Decide screenplay structure','Follow up with Priya on budget','Add SHA-256 tests','Review AgentConfig schema'].slice(0,state.loops>4?4:state.loops);
     return`<span class="num">${state.loops}</span> open loops found\n`+items.map((l,i)=>`  <span class="hash">${(i+1).toString().padStart(2,'0')}</span> ${l}`).join('\n');
   },
-  health:()=>`Chitrapat.ods <span class="ok">OK</span> -- 1.2MB\nSQLite WAL: <span class="ok">2ms writes</span> -- v3.0.0\nLedger: <span class="num">489</span> entries -- Signatures: <span class="ok">valid</span>\nWriteQueue: <span class="num">0</span> pending\nLast write: <span class="num">${state.lastWrite}</span>`,
+  health:()=>`Chitrapat.ods <span class="ok">OK</span> -- 1.2MB\nSQLite WAL: <span class="ok">2ms writes</span> -- v3.0.1\nLedger: <span class="num">489</span> entries -- Signatures: <span class="ok">valid</span>\nWriteQueue: <span class="num">0</span> pending\nLast write: <span class="num">${state.lastWrite}</span>`,
   ledger:(arg)=>{
     const n=arg?parseInt(arg.replace(/\D/g,''))||5:5;
     const static_entries=[{id:'#FF1A2B',idea:'session start',ts:'09:00:01'},{id:'#FE9834',idea:'preference updated',ts:'09:12:44'},{id:'#FD4521',idea:'task closed',ts:'09:18:03'}];
@@ -792,7 +792,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const out=document.getElementById('simOutput');
   const welcome=document.createElement('div');
   welcome.className='sim-result';
-  welcome.innerHTML=`<span class="ok">OpenYantra v3.0.0 Simulation Ready</span>\nSQLite WAL backend -- <span class="num">${state.records}</span> records, <span class="num">489</span> ledger entries\nType a command or click a preset above.`;
+  welcome.innerHTML=`<span class="ok">OpenYantra v3.0.1 Simulation Ready</span>\nSQLite WAL backend -- <span class="num">${state.records}</span> records, <span class="num">489</span> ledger entries\nType a command or click a preset above.`;
   out.appendChild(welcome);
 });
 </script>

@@ -448,7 +448,7 @@ class OpenYantra:
         oy.health_check()        -- system status + stats
     """
 
-    VERSION = "2.12"
+    VERSION = "3.0.1"
 
     def __init__(self, path: str | Path, agent_name: str = "Agent",
                  dead_switch_minutes: int = 30):

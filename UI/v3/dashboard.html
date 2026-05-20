@@ -3,60 +3,125 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>OpenYantra v2.12 -- Briefing Room</title>
+<title>OpenYantra v3.0.1 -- Briefing Room</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400&display=swap');
-:root,[data-theme="dark"]{
-  --ink:#0a0a0b;--surface:#111113;--surface2:#161618;--border:rgba(255,255,255,0.07);
-  --border2:rgba(255,255,255,0.13);--dim:#252328;--muted:#524f58;--subtle:#7a7682;
-  --text:#e8e5de;--text-dim:rgba(232,229,222,0.52);--nav-bg:rgba(10,10,11,0.95);
-  --term-bg:#060607;
-}
-[data-theme="light"]{
-  --ink:#f3f1ec;--surface:#fff;--surface2:#ece9e2;--border:rgba(0,0,0,0.09);
-  --border2:rgba(0,0,0,0.16);--dim:#d0ccc4;--muted:#888380;--subtle:#555250;
-  --text:#1a1820;--text-dim:rgba(26,24,32,0.56);--nav-bg:rgba(243,241,236,0.96);
-  --term-bg:#1a1820;
-}
-:root{
-  --blue:#1c6fff;--indigo:#5535e0;--coral:#e84520;--amber:#f5a000;--green:#1aa167;
-  --grad:linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --grad-h:linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
-  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--ink);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;}
-a{color:inherit;text-decoration:none;}
-button{font-family:var(--mono);cursor:pointer;}
-::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--dim);}
-.grad-text{background:linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
-header{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+:root, [data-theme="dark"] {
+  --ink:        #0a0a0b;
+  --surface:    #111113;
+  --surface2:   #161618;
+  --surface3:   #1c1b1f;
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --dim:        #242228;
+  --muted:      #524f58;
+  --subtle:     #7a7682;
+  --text:       #e8e5de;
+  --text-dim:   rgba(232,229,222,0.55);
+  --grid-line:  rgba(255,255,255,0.018);
+  --nav-bg:     rgba(10,10,11,0.9);
+  --term-bg:    #080809;
+  --term-body:  #060607;
+  --card-item:  rgba(255,255,255,0.03);
+  --hover-row:  rgba(255,255,255,0.02);
+  --scrollbar:  #242228;
+}
+[data-theme="light"] {
+  --ink:        #f3f1ec;
+  --surface:    #ffffff;
+  --surface2:   #ece9e2;
+  --surface3:   #e4e0d8;
+  --border:     rgba(0,0,0,0.09);
+  --border2:    rgba(0,0,0,0.16);
+  --dim:        #d0ccc4;
+  --muted:      #888380;
+  --subtle:     #555250;
+  --text:       #1a1820;
+  --text-dim:   rgba(26,24,32,0.56);
+  --grid-line:  rgba(0,0,0,0.04);
+  --nav-bg:     rgba(243,241,236,0.93);
+  --term-bg:    #1a1820;
+  --term-body:  #141218;
+  --card-item:  rgba(0,0,0,0.025);
+  --hover-row:  rgba(0,0,0,0.018);
+  --scrollbar:  #d0ccc4;
+}
+:root {
+  --blue:    #1c6fff;
+  --indigo:  #5535e0;
+  --coral:   #e84520;
+  --amber:   #f5a000;
+  --green:   #1aa167;
+  --grad:    linear-gradient(135deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-h:  linear-gradient(90deg,#1c6fff 0%,#5535e0 32%,#e84520 66%,#f5a000 100%);
+  --grad-t:  linear-gradient(135deg,#1c6fff,#5535e0 40%,#e84520 70%,#f5a000);
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'IBM Plex Sans', sans-serif;
+  --ease:    cubic-bezier(0.16,1,0.3,1);
+  --tr:      background 0.28s,color 0.28s,border-color 0.28s,box-shadow 0.28s;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:var(--mono);font-size:13px;line-height:1.6;
+  transition:var(--tr);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;transition:var(--tr);
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--mono);cursor:pointer;transition:var(--tr);}
+input, select, textarea { transition:var(--tr); }
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.grad-text{background:var(--grad-t);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);transition:var(--tr);}
 header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--grad-h);}
 .hdr-l{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:0.06em;}
-.hdr-mark{width:22px;height:22px;animation:spin 90s linear infinite;}
+.hdr-mark{width:22px;height:22px;animation:spin 90s linear infinite;flex-shrink:0;transform-origin:center;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.hdr-badge{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--dim);color:var(--muted);margin-left:6px;}
+.hdr-badge{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border2);color:var(--muted);margin-left:6px;transition:var(--tr);}
 .hdr-r{display:flex;align-items:center;gap:10px;}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.4s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-.theme-row{display:flex;background:var(--surface);border:1px solid var(--border);padding:2px;gap:1px;}
-.th-btn{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 8px;background:transparent;border:none;color:var(--muted);cursor:pointer;}
+.theme-row{display:flex;background:var(--surface);border:1px solid var(--border);padding:2px;gap:1px;transition:var(--tr);}
+.th-btn{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 8px;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:3px;}
+.th-btn:hover{color:var(--text);}
 .th-btn.active{background:var(--dim);color:var(--text);}
 
-nav{position:fixed;top:52px;left:0;right:0;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;}
-nav::-webkit-scrollbar{height:2px;}
-.ntab{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 20px;background:transparent;border:none;border-right:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color 0.15s,background 0.15s;}
+nav{position:fixed;top:52px;left:0;bottom:0;width:200px;z-index:99;background:var(--surface);border-right:1px solid var(--border);border-bottom:none;display:flex;flex-direction:column;gap:0;overflow-y:auto;overflow-x:hidden;transition:var(--tr), width 0.28s var(--ease);}
+nav::-webkit-scrollbar{width:2px;}
+.ntab{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:14px 20px;background:transparent;border:none;border-bottom:1px solid var(--border);border-right:none;color:var(--muted);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:12px;width:100%;text-align:left;transition:var(--tr);}
+.ntab span{transition:opacity 0.28s var(--ease), width 0.28s var(--ease);}
 .ntab:hover{color:var(--text);background:var(--surface2);}
-.ntab.active{color:var(--text);border-bottom-color:var(--amber);}
+.ntab.active{color:var(--text);border-left:3px solid var(--amber);background:var(--surface2);padding-left:17px;}
 
-main{margin-top:100px;padding:20px;max-width:1200px;margin-left:auto;margin-right:auto;padding-bottom:80px;}
+main{margin-top:52px;padding:24px;margin-left:200px;padding-bottom:80px;position:relative;z-index:1;transition:margin-left 0.28s var(--ease);}
+
+/* Collapsed Sidebar overrides */
+body.sidebar-collapsed nav{width:60px;}
+body.sidebar-collapsed .ntab span{opacity:0;pointer-events:none;width:0;display:none;}
+body.sidebar-collapsed .ntab{padding:14px 0;justify-content:center;}
+body.sidebar-collapsed .ntab.active{padding-left:0;border-left:3px solid var(--amber);}
+body.sidebar-collapsed main{margin-left:60px;}
+
+/* Responsive adjustments */
+@media(max-width:768px){
+  nav{width:60px;}
+  main{margin-left:60px;padding:16px;}
+  body.sidebar-collapsed nav{width:0;border-right:none;}
+  body.sidebar-collapsed main{margin-left:0;}
+}
 .pane{display:none;}
 .pane.active{display:block;}
 
 /* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:18px;}
-.card{background:var(--surface2);border:1px solid var(--border);padding:13px;cursor:pointer;transition:border-color 0.15s;}
+.card{background:var(--surface2);border:1px solid var(--border);padding:13px;cursor:pointer;transition:var(--tr), border-color 0.15s;}
 .card:hover{border-color:rgba(255,153,51,0.4);}
 .card.warn{border-color:rgba(245,160,0,0.35);}
 .card.alert{border-color:rgba(232,69,32,0.35);}
@@ -65,36 +130,36 @@ main{margin-top:100px;padding:20px;max-width:1200px;margin-left:auto;margin-righ
 
 /* Section header */
 .sh{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px;margin:16px 0 10px;}
-.sh::after{content:'';flex:1;height:1px;background:var(--border);}
+.sh::after{content:'';flex:1;height:1px;background:var(--border);transition:var(--tr);}
 
 /* Table */
 table{width:100%;border-collapse:collapse;font-size:11px;}
-th{background:var(--surface2);color:var(--muted);padding:7px 10px;text-align:left;font-weight:400;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
-td{padding:6px 10px;border-bottom:1px solid var(--border);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+th{background:var(--surface2);color:var(--muted);padding:7px 10px;text-align:left;font-weight:400;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;transition:var(--tr);}
+td{padding:6px 10px;border-bottom:1px solid var(--border);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:var(--tr);}
 tr:hover td{background:var(--surface2);}
-.badge{display:inline-block;font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid;}
+.badge{display:inline-block;font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid;transition:var(--tr);}
 .b-ok{border-color:rgba(26,161,103,0.35);color:var(--green);}
 .b-hi{border-color:rgba(232,69,32,0.35);color:var(--coral);}
 .b-md{border-color:rgba(245,160,0,0.35);color:var(--amber);}
 .b-lo{border-color:rgba(28,111,255,0.35);color:var(--blue);}
 
 /* Ts-card (Today) */
-.ts-card{background:var(--surface2);border:1px solid var(--border);padding:13px;margin-bottom:10px;position:relative;overflow:hidden;}
+.ts-card{background:var(--surface2);border:1px solid var(--border);padding:13px;margin-bottom:10px;position:relative;overflow:hidden;transition:var(--tr);}
 .ts-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);}
 .ts-card h3{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
-.ti{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.ti{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);transition:var(--tr);}
 .ti:last-child{border-bottom:none;}
 .ti-pri{min-width:52px;font-size:8px;text-align:center;letter-spacing:0.08em;}
 .ti-con{flex:1;font-size:11px;}
 .ti-con small{color:var(--muted);font-size:10px;display:block;margin-top:2px;}
-.ti-act button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:9px;cursor:pointer;}
+.ti-act button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:9px;cursor:pointer;transition:var(--tr);}
 .ti-act button:hover{border-color:var(--amber);color:var(--amber);}
 
 /* Oracle card */
-.oracle-card{background:linear-gradient(135deg,#0e1628,#161830);border:1px solid rgba(28,111,255,0.25);padding:14px 18px;margin-bottom:12px;}
+.oracle-card{background:linear-gradient(135deg,#0e1628,#161830);border:1px solid rgba(28,111,255,0.25);padding:14px 18px;margin-bottom:12px;transition:var(--tr);}
 .oracle-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .oracle-card-title{font-size:11px;font-weight:500;color:var(--blue);letter-spacing:0.04em;}
-.oracle-item{padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.oracle-item{padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);transition:var(--tr);}
 .oracle-item:last-child{border-bottom:none;}
 .oracle-type{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px;}
 .oracle-detail{font-size:10px;color:var(--text-dim);}
@@ -156,6 +221,48 @@ tr:hover td{background:var(--surface2);}
 .empty{color:var(--muted);text-align:center;padding:24px;font-size:11px;}
 
 @media(max-width:600px){nav{gap:0;}main{padding:12px;}.cards{grid-template-columns:repeat(2,1fr);}}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85); z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  width: 500px; max-width: 95vw; padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative;
+}
+.modal-card::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: var(--grad);
+}
+.modal-card h3 {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 15px;
+}
+.form-group { margin-bottom: 12px; }
+.form-group label {
+  display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px; font-family: var(--mono); font-size: 11px; outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--amber); }
+
+/* Hierarchy & Graph Node Styles */
+.level-row {
+  display: flex; justify-content: space-around; align-items: center; width: 100%; min-height: 80px;
+}
+.agent-node {
+  background: var(--surface2); border: 1px solid var(--border); padding: 10px 16px; cursor: pointer; text-align: center; min-width: 130px; z-index: 2; position: relative; transition: border-color 0.2s;
+}
+.agent-node:hover {
+  border-color: var(--blue);
+}
+.agent-node.selected {
+  border-color: var(--amber); box-shadow: 0 0 10px rgba(245,160,0,0.2);
+}
 </style>
 </head>
 <body>
@@ -163,37 +270,69 @@ tr:hover td{background:var(--surface2);}
 <header>
   <div class="hdr-l">
     <svg class="hdr-mark" width="22" height="22" viewBox="0 0 100 100" fill="none">
-      <defs><linearGradient id="hG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1c6fff"/><stop offset="33%" stop-color="#5535e0"/><stop offset="66%" stop-color="#e84520"/><stop offset="100%" stop-color="#f5a000"/></linearGradient></defs>
-      <circle cx="50" cy="50" r="46" stroke="url(#hG)" stroke-width="2.5" fill="none"/>
-      <circle cx="50" cy="50" r="28" stroke="url(#hG)" stroke-width="1.5" fill="none" opacity="0.4"/>
-      <circle cx="50" cy="50" r="5" fill="url(#hG)"/>
-      <circle cx="50" cy="4" r="3" fill="#1c6fff"/><circle cx="96" cy="50" r="3" fill="#5535e0"/>
-      <circle cx="50" cy="96" r="3" fill="#e84520"/><circle cx="4" cy="50" r="3" fill="#f5a000"/>
+      <defs>
+        <linearGradient id="hG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1c6fff"/>
+          <stop offset="33%" stop-color="#5535e0"/>
+          <stop offset="66%" stop-color="#e84520"/>
+          <stop offset="100%" stop-color="#f5a000"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="47" stroke="url(#hG)" stroke-width="1.5" fill="none"/>
+      <circle cx="50" cy="50" r="33" stroke="url(#hG)" stroke-width="1" fill="none" opacity="0.5"/>
+      <circle cx="50" cy="50" r="18" stroke="url(#hG)" stroke-width="0.8" fill="none" opacity="0.3"/>
+      <circle cx="50" cy="50" r="4" fill="url(#hG)"/>
+      <line x1="50" y1="3" x2="50" y2="97" stroke="url(#hG)" stroke-width="0.6" opacity="0.18"/>
+      <line x1="3" y1="50" x2="97" y2="50" stroke="url(#hG)" stroke-width="0.6" opacity="0.18"/>
+      <circle cx="50" cy="3" r="3" fill="#1c6fff"/>
+      <circle cx="97" cy="50" r="3" fill="#5535e0"/>
+      <circle cx="50" cy="97" r="3" fill="#e84520"/>
+      <circle cx="3" cy="50" r="3" fill="#f5a000"/>
+      <path d="M50 3 Q68 26 50 50 Q32 26 50 3" stroke="url(#hG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M97 50 Q74 68 50 50 Q74 32 97 50" stroke="url(#hG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M50 97 Q32 74 50 50 Q68 74 50 97" stroke="url(#hG)" stroke-width="0.9" fill="none" opacity="0.42"/>
+      <path d="M3 50 Q26 32 50 50 Q26 68 3 50" stroke="url(#hG)" stroke-width="0.9" fill="none" opacity="0.42"/>
     </svg>
+    <button id="sidebarToggle" style="background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; display:inline-flex; align-items:center; transition:var(--tr); margin-left: 2px;" title="Toggle Sidebar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
     OpenYantra
-    <span class="hdr-badge">v2.12</span>
+    <span class="hdr-badge">v3.0.1</span>
   </div>
   <div class="hdr-r">
     <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green)"><span class="status-dot"></span>Chitragupta active</span>
     <div class="theme-row" id="tr">
-      <button class="th-btn" data-mode="light">Light</button>
-      <button class="th-btn" data-mode="dark">Dark</button>
-      <button class="th-btn" data-mode="auto">Auto</button>
+      <button class="th-btn" data-mode="light">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        Light
+      </button>
+      <button class="th-btn" data-mode="dark">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        Dark
+      </button>
+      <button class="th-btn" data-mode="auto">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>
+        Auto
+      </button>
     </div>
   </div>
 </header>
 
 <nav>
-  <button class="ntab active" onclick="go('today',this)">🌅 Today</button>
-  <button class="ntab" onclick="go('inbox',this)">📥 Inbox</button>
-  <button class="ntab" onclick="go('loops',this)">🔓 Loops</button>
-  <button class="ntab" onclick="go('projects',this)">🚀 Projects</button>
-  <button class="ntab" onclick="go('oracle',this)">🔮 Oracle</button>
-  <button class="ntab" onclick="go('review',this)">✏️ Review</button>
-  <button class="ntab" onclick="go('timeline',this)">📅 Timeline</button>
-  <button class="ntab" onclick="go('security',this)">🔒 Security</button>
-  <button class="ntab" onclick="go('ledger',this)">📒 Ledger</button>
-  <button class="ntab" onclick="go('health',this)">💚 Health</button>
+  <button class="ntab active" onclick="go('today',this)">🌅 <span>Today</span></button>
+  <button class="ntab" onclick="go('inbox',this)">📥 <span>Inbox</span></button>
+  <button class="ntab" onclick="go('loops',this)">🔓 <span>Loops</span></button>
+  <button class="ntab" onclick="go('projects',this)">🚀 <span>Projects</span></button>
+  <button class="ntab" onclick="go('oracle',this)">🔮 <span>Oracle</span></button>
+  <button class="ntab" onclick="go('review',this)">✏️ <span>Review</span></button>
+  <button class="ntab" onclick="go('timeline',this)">📅 <span>Timeline</span></button>
+  <button class="ntab" onclick="go('security',this)">🔒 <span>Security</span></button>
+  <button class="ntab" onclick="go('ledger',this)">📒 <span>Ledger</span></button>
+  <button class="ntab" onclick="go('health',this)">💚 <span>Health</span></button>
+  <button class="ntab" onclick="go('cognitive_memories',this)">🧠 <span>Memories</span></button>
+  <button class="ntab" onclick="go('cognitive_hierarchy',this)">👥 <span>Hierarchy</span></button>
+  <button class="ntab" onclick="go('cognitive_graph',this)">🕸️ <span>Graph</span></button>
+  <button class="ntab" onclick="go('config_settings',this)">⚙️ <span>Settings</span></button>
 </nav>
 
 <main>
@@ -207,6 +346,10 @@ tr:hover td{background:var(--surface2);}
   <div id="security" class="pane"></div>
   <div id="ledger" class="pane"></div>
   <div id="health" class="pane"></div>
+  <div id="cognitive_memories" class="pane"></div>
+  <div id="cognitive_hierarchy" class="pane"></div>
+  <div id="cognitive_graph" class="pane"></div>
+  <div id="config_settings" class="pane"></div>
 </main>
 
 <div id="fcap">
@@ -247,7 +390,11 @@ async function load(name){
     projects:()=>loadTable('projects',['Project','Domain','Status','Priority','Next Step'],'projects'),
     oracle:loadOracle,review:loadReview,timeline:loadTimeline,
     security:loadSecurity,ledger:()=>loadTable('ledger',['Timestamp','Agent','Sheet','Operation','Status'],'ledger'),
-    health:loadHealth};
+    health:loadHealth,
+    cognitive_memories:loadCognitiveMemories,
+    cognitive_hierarchy:loadCognitiveHierarchy,
+    cognitive_graph:loadCognitiveGraph,
+    config_settings:loadConfigSettings};
   if(L[name])await L[name]();
 }
 
@@ -433,7 +580,7 @@ async function loadHealth(){
 
 /* Actions */
 function goTo(name){
-  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health'];
+  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health','cognitive_memories','cognitive_hierarchy','cognitive_graph','config_settings'];
   const idx=tabs.indexOf(name);
   if(idx>=0)go(name,document.querySelectorAll('.ntab')[idx]);
 }
@@ -499,14 +646,1331 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape')floatClose();
 });
 
-/* Theme */
+/* Configuration & Settings & MCP Clients */
+const mcpClients = {
+  "claude_desktop": {
+    name: "Claude Desktop",
+    instructions: "Add this configuration to your local Claude Desktop config file.",
+    file_path: "~/Library/Application Support/Claude/claude_desktop_config.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "mcpServers": {
+        "openyantra": {
+          "command": paths.python_executable,
+          "args": [paths.mcp_script_path, "--file", paths.chitrapat_path]
+        }
+      }
+    }, null, 2)
+  },
+  "cursor": {
+    name: "Cursor",
+    instructions: "Navigate to **Cursor Settings -> Features -> MCP**. Click **+ Add New MCP Server**. Fill in the fields:",
+    fields: [
+      { label: "Name", value: "OpenYantra" },
+      { label: "Type", value: "stdio" },
+      { label: "Command", value: (paths) => paths.python_executable },
+      { label: "Arguments", value: (paths) => `"${paths.mcp_script_path}" --file "${paths.chitrapat_path}"` }
+    ]
+  },
+  "zed": {
+    name: "Zed Editor",
+    instructions: "Open your Zed settings (~/.config/zed/settings.json) and add the following config inside the root object:",
+    file_path: "~/.config/zed/settings.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "mcp": {
+        "servers": {
+          "openyantra": {
+            "command": paths.python_executable,
+            "args": [paths.mcp_script_path, "--file", paths.chitrapat_path]
+          }
+        }
+      }
+    }, null, 2)
+  },
+  "windsurf": {
+    name: "Windsurf IDE",
+    instructions: "Add the following configuration block to your Windsurf MCP settings file:",
+    file_path: "~/.codeium/windsurf/mcp_config.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "mcpServers": {
+        "openyantra": {
+          "command": paths.python_executable,
+          "args": [paths.mcp_script_path, "--file", paths.chitrapat_path]
+        }
+      }
+    }, null, 2)
+  },
+  "cline": {
+    name: "Cline (VS Code)",
+    instructions: "Cline loads MCP servers from a settings file. Put this content in the Cline MCP settings file:",
+    file_path: "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "mcpServers": {
+        "openyantra": {
+          "command": paths.python_executable,
+          "args": [paths.mcp_script_path, "--file", paths.chitrapat_path],
+          "disabled": false
+        }
+      }
+    }, null, 2)
+  },
+  "roo_code": {
+    name: "Roo Code (VS Code)",
+    instructions: "Put this content in the Roo Code MCP settings file:",
+    file_path: "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "mcpServers": {
+        "openyantra": {
+          "command": paths.python_executable,
+          "args": [paths.mcp_script_path, "--file", paths.chitrapat_path],
+          "disabled": false
+        }
+      }
+    }, null, 2)
+  },
+  "continue": {
+    name: "Continue (VS Code & JetBrains)",
+    instructions: "Open your Continue config (~/.continue/config.json) and add the server to your `contextProviders` or `experimental.mcp` section:",
+    file_path: "~/.continue/config.json",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "experimental": {
+        "modelContextProtocol": [
+          {
+            "name": "openyantra",
+            "command": paths.python_executable,
+            "args": [paths.mcp_script_path, "--file", paths.chitrapat_path]
+          }
+        ]
+      }
+    }, null, 2)
+  },
+  "goose": {
+    name: "Goose (Block)",
+    instructions: "Add the MCP server to Goose using the CLI:",
+    format: "bash",
+    template: (paths) => `goose mcp register openyantra ${paths.python_executable} "${paths.mcp_script_path}" --file "${paths.chitrapat_path}"`
+  },
+  "boltai": {
+    name: "BoltAI",
+    instructions: "Open BoltAI **Preferences -> MCP Servers**. Click **Add Server** and set:",
+    fields: [
+      { label: "Name", value: "OpenYantra" },
+      { label: "Connection Type", value: "Stdio (Command)" },
+      { label: "Command / Path", value: (paths) => paths.python_executable },
+      { label: "Arguments", value: (paths) => `"${paths.mcp_script_path}" --file "${paths.chitrapat_path}"` }
+    ]
+  },
+  "claude_code": {
+    name: "Claude Code",
+    instructions: "Run this command inside your terminal to add the OpenYantra MCP server to Claude Code:",
+    format: "bash",
+    template: (paths) => `claude mcp add openyantra ${paths.python_executable} "${paths.mcp_script_path}" --file "${paths.chitrapat_path}"`
+  },
+  "chatframe": {
+    name: "ChatFrame",
+    instructions: "In ChatFrame, open **Settings -> MCP**, add a new server with command and arguments:",
+    fields: [
+      { label: "Name", value: "OpenYantra" },
+      { label: "Command", value: (paths) => paths.python_executable },
+      { label: "Arguments", value: (paths) => `"${paths.mcp_script_path}" --file "${paths.chitrapat_path}"` }
+    ]
+  },
+  "glama": {
+    name: "Glama",
+    instructions: "Glama uses local MCP connections via the Glama Gateway. Run this gateway command locally to bridge it:",
+    format: "bash",
+    template: (paths) => `glama-gateway --server-name openyantra -- ${paths.python_executable} "${paths.mcp_script_path}" --file "${paths.chitrapat_path}"`
+  },
+  "postman": {
+    name: "Postman",
+    instructions: "Configure the Postman Agent for MCP testing. Set up a Stdio Client execution task in Postman pointing to:",
+    fields: [
+      { label: "Command", value: (paths) => paths.python_executable },
+      { label: "Args", value: (paths) => `["${paths.mcp_script_path}", "--file", "${paths.chitrapat_path}"]` }
+    ]
+  },
+  "genkit": {
+    name: "Firebase Genkit",
+    instructions: "In your Node.js/TypeScript Genkit project, install `genkitx-mcp` and load the stdio server config:",
+    format: "javascript",
+    template: (paths) => `import { mcpClient } from 'genkitx-mcp';\n\nconst openyantraClient = mcpClient({\n  name: 'openyantra',\n  command: '${paths.python_executable}',\n  args: ['${paths.mcp_script_path}', '--file', '${paths.chitrapat_path}'],\n});`
+  },
+  "emacs": {
+    name: "Emacs (emacs-mcp)",
+    instructions: "Add this configuration to your Emacs init file (`init.el`):",
+    format: "elisp",
+    template: (paths) => `(use-package mcp\n  :config\n  (mcp-register-server 'openyantra\n                       :command '("${paths.python_executable}" "${paths.mcp_script_path}" "--file" "${paths.chitrapat_path}")))`
+  },
+  "openclaw": {
+    name: "OpenClaw",
+    instructions: "OpenClaw interfaces natively with OpenYantra through plugins. Configure this MCP server in `config.yaml`:",
+    format: "yaml",
+    template: (paths) => `mcp_servers:\n  openyantra:\n    command: "${paths.python_executable}"\n    args:\n      - "${paths.mcp_script_path}"\n      - "--file"\n      - "${paths.chitrapat_path}"`
+  },
+  "hermes": {
+    name: "Hermes Agent",
+    instructions: "Define OpenYantra as a local tool provider inside your Hermes configuration files:",
+    format: "yaml",
+    template: (paths) => `tools:\n  - type: mcp\n    name: openyantra\n    command: "${paths.python_executable}"\n    args: ["${paths.mcp_script_path}", "--file", "${paths.chitrapat_path}"]`
+  },
+  "five_ire": {
+    name: "5ire",
+    instructions: "In the 5ire Desktop application settings, configure the custom tools provider path:",
+    fields: [
+      { label: "Provider Type", value: "stdio" },
+      { label: "Exec Path", value: (paths) => paths.python_executable },
+      { label: "Args List", value: (paths) => `["${paths.mcp_script_path}", "--file", "${paths.chitrapat_path}"]` }
+    ]
+  },
+  "aiql_tuui": {
+    name: "AIQL TUUI",
+    instructions: "In AIQL TUUI's local settings, add the following MCP tool registration:",
+    format: "json",
+    template: (paths) => JSON.stringify({
+      "name": "openyantra",
+      "command": paths.python_executable,
+      "args": [paths.mcp_script_path, "--file", paths.chitrapat_path]
+    }, null, 2)
+  },
+  "gemini_spark": {
+    name: "Google Gemini Spark",
+    instructions: "Gemini Spark communicates with local networks via secure tunnels. To connect it:\n1. Expose your local MCP server over HTTP using a bridge like `mcp-bridge` or `ngrok`.\n2. In your Google Cloud/Vertex AI Console, create a new Tool/Extension for your Gemini Spark agent using the tunnel endpoint.",
+    format: "bash",
+    template: (paths) => `# Run mcp-bridge to convert stdio to an HTTP server:\nnpm install -g @modelcontextprotocol/mcp-bridge\nmcp-bridge --command "${paths.python_executable}" --args "${paths.mcp_script_path},--file,${paths.chitrapat_path}" --port 8000\n\n# Then use ngrok to create a secure tunnel:\nngrok http 8000`
+  }
+};
+
+function renderMcpClientConfig() {
+  const select = document.getElementById('mcp-app-selector');
+  if (!select) return;
+  const key = select.value;
+  const client = mcpClients[key];
+  if (!client) return;
+
+  const paths = window.resolvedMcpPaths || {
+    python_executable: "/usr/bin/python3",
+    mcp_script_path: "/Users/revanthlevaka/openyantra/cognitive_mcp.py",
+    chitrapat_path: "/Users/revanthlevaka/openyantra/chitrapat.ods"
+  };
+
+  const instrContainer = document.getElementById('mcp-instructions-container');
+  if (instrContainer) {
+    instrContainer.innerHTML = client.instructions;
+  }
+
+  const pathContainer = document.getElementById('mcp-file-path-container');
+  const pathCode = document.getElementById('mcp-file-path');
+  if (pathContainer && pathCode) {
+    if (client.file_path) {
+      pathCode.textContent = client.file_path;
+      pathContainer.style.display = 'block';
+    } else {
+      pathContainer.style.display = 'none';
+    }
+  }
+
+  const codeBlock = document.getElementById('mcp-code-block');
+  if (codeBlock) {
+    if (client.template) {
+      codeBlock.textContent = client.template(paths);
+    } else if (client.fields) {
+      const renderedFields = client.fields.map(f => {
+        const val = typeof f.value === 'function' ? f.value(paths) : f.value;
+        return `${f.label}:\n${val}`;
+      }).join('\n\n');
+      codeBlock.textContent = renderedFields;
+    }
+  }
+}
+
+function copyMcpConfig() {
+  const codeBlock = document.getElementById('mcp-code-block');
+  if (!codeBlock) return;
+  navigator.clipboard.writeText(codeBlock.textContent).then(() => {
+    toast('MCP configuration copied to clipboard');
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+    toast('Failed to copy config', false);
+  });
+}
+
+let currentSettings = {};
+
+async function loadConfigSettings() {
+  let settings = {
+    fontSize: '13px',
+    aiProvider: 'local',
+    aiModelName: 'llama3',
+    localEndpoint: 'http://localhost:11434/v1',
+    openaiKey: '',
+    anthropicKey: '',
+    geminiKey: '',
+    oauthClientId: '',
+    oauthClientSecret: ''
+  };
+  try {
+    const s = await api('/api/settings');
+    if (s && !s.error) {
+      settings = s;
+    }
+  } catch (err) {
+    console.error('Failed to load settings from API:', err);
+  }
+  
+  currentSettings = settings;
+
+  // Load MCP Config Paths
+  try {
+    const mcpConf = await api('/api/mcp-config');
+    if (mcpConf && !mcpConf.error) {
+      window.resolvedMcpPaths = mcpConf;
+    }
+  } catch (err) {
+    console.error('Failed to load MCP config:', err);
+  }
+
+  const pane = document.getElementById('config_settings');
+  if (pane) {
+    pane.innerHTML = `
+      <div class="sh"><span>⚙️ System Configuration & Settings</span></div>
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:15px;">Interface Customization</div>
+        
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">UI Base Font Size</label>
+          <select id="cfg-fontSize" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;">
+            <option value="11px" ${settings.fontSize==='11px'?'selected':''}>11px (Compact)</option>
+            <option value="12px" ${settings.fontSize==='12px'?'selected':''}>12px (Small)</option>
+            <option value="13px" ${settings.fontSize==='13px'?'selected':''}>13px (Default)</option>
+            <option value="14px" ${settings.fontSize==='14px'?'selected':''}>14px (Medium)</option>
+            <option value="15px" ${settings.fontSize==='15px'?'selected':''}>15px (Large)</option>
+            <option value="16px" ${settings.fontSize==='16px'?'selected':''}>16px (Extra Large)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:15px;">Chitragupta Agent -- AI Model Configuration</div>
+        
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">AI Model Provider</label>
+          <select id="cfg-aiProvider" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" onchange="toggleProviderFields()">
+            <option value="local" ${settings.aiProvider==='local'?'selected':''}>Local Model / Ollama (Offline)</option>
+            <option value="openai" ${settings.aiProvider==='openai'?'selected':''}>OpenAI (Cloud)</option>
+            <option value="anthropic" ${settings.aiProvider==='anthropic'?'selected':''}>Anthropic (Cloud)</option>
+            <option value="gemini" ${settings.aiProvider==='gemini'?'selected':''}>Google Gemini (Cloud)</option>
+          </select>
+        </div>
+
+        <div id="div-local" style="margin-bottom:15px; display: ${settings.aiProvider==='local'?'block':'none'};">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Local API Endpoint</label>
+          <input id="cfg-localEndpoint" type="text" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="e.g. http://localhost:11434/v1" value="${settings.localEndpoint || ''}">
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Model Name</label>
+          <input id="cfg-aiModelName" type="text" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="e.g. llama3, gpt-4o, claude-3-5-sonnet" value="${settings.aiModelName || ''}">
+        </div>
+      </div>
+
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--coral);margin-bottom:15px;">API Keys & Credentials</div>
+        
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">OpenAI API Key</label>
+          <input id="cfg-openaiKey" type="password" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="sk-..." value="${settings.openaiKey || ''}">
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Anthropic API Key</label>
+          <input id="cfg-anthropicKey" type="password" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="sk-ant-..." value="${settings.anthropicKey || ''}">
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Gemini API Key</label>
+          <input id="cfg-geminiKey" type="password" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="AIzaSy..." value="${settings.geminiKey || ''}">
+        </div>
+      </div>
+
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:15px;">OAuth Authorization (Optional)</div>
+        
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">OAuth Client ID</label>
+          <input id="cfg-oauthClientId" type="text" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="Client ID" value="${settings.oauthClientId || ''}">
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">OAuth Client Secret</label>
+          <input id="cfg-oauthClientSecret" type="password" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;" placeholder="Client Secret" value="${settings.oauthClientSecret || ''}">
+        </div>
+
+        <div style="margin-bottom:5px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Redirect URI</label>
+          <input type="text" readonly style="width:100%;background:var(--surface3);border:1px solid var(--border);color:var(--muted);padding:8px;font-family:var(--mono);font-size:10px;outline:none;cursor:not-allowed;" value="http://localhost:7331/oauth/callback">
+        </div>
+      </div>
+
+      <div style="max-width:600px;display:flex;gap:10px;margin-bottom:30px;">
+        <button class="btn-p" onclick="saveSettings()" style="flex:1;">Save Configuration</button>
+        <button class="btn" onclick="loadConfigSettings()">Reset Fields</button>
+      </div>
+
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:15px;">🔌 Local MCP Server Connection</div>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:15px;line-height:1.5;">
+          Connect your OpenYantra system locally to any AI client or IDE that supports the Model Context Protocol (MCP).
+        </p>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Select AI Client App / IDE</label>
+          <select id="mcp-app-selector" onchange="renderMcpClientConfig()" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;">
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+
+        <div id="mcp-instructions-container" style="font-size:11px;color:var(--text);margin-bottom:12px;line-height:1.5;"></div>
+        
+        <div id="mcp-file-path-container" style="display:none;margin-bottom:10px;">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Configuration File Path</div>
+          <code id="mcp-file-path" style="background:var(--surface3);padding:4px 8px;font-family:var(--mono);font-size:10px;color:var(--amber);border:1px solid var(--border);display:block;word-break:break-all;"></code>
+        </div>
+
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Connection Command / Configuration Block</div>
+        <pre id="mcp-code-block" style="background:var(--surface);padding:12px;font-family:var(--mono);font-size:10px;color:var(--text);border:1px solid var(--border2);overflow-x:auto;margin-bottom:12px;max-height:250px;line-height:1.4;white-space:pre-wrap;word-break:break-all;"></pre>
+
+        <button class="btn-p" style="font-size:10px;padding:6px 12px;" onclick="copyMcpConfig()">📋 Copy Configuration</button>
+      </div>
+    `;
+
+    // Populate select options and render first selection
+    const select = document.getElementById('mcp-app-selector');
+    if (select) {
+      select.innerHTML = Object.keys(mcpClients).map(key => {
+        return `<option value="${key}">${mcpClients[key].name}</option>`;
+      }).join('');
+      renderMcpClientConfig();
+    }
+  }
+}
+
+function toggleProviderFields() {
+  const provider = document.getElementById('cfg-aiProvider').value;
+  const localDiv = document.getElementById('div-local');
+  if (localDiv) {
+    localDiv.style.display = provider === 'local' ? 'block' : 'none';
+  }
+}
+
+function applyFontSize(size) {
+  let styleEl = document.getElementById('oy-dynamic-font');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'oy-dynamic-font';
+    document.head.appendChild(styleEl);
+  }
+  const sizeNum = parseInt(size, 10) || 13;
+  const s_body = sizeNum;
+  const s_m1 = Math.max(9, sizeNum - 1);
+  const s_m2 = Math.max(9, sizeNum - 2);
+  const s_m3 = Math.max(8, sizeNum - 3);
+  const s_m4 = Math.max(8, sizeNum - 4);
+  const s_m5 = Math.max(8, sizeNum - 5);
+  const s_cn = Math.round(sizeNum * 2.2);
+
+  styleEl.innerHTML = `
+    body { font-size: ${s_body}px !important; }
+    
+    /* Headers & Navigation */
+    .hdr-l { font-size: ${s_m1}px !important; }
+    .hdr-badge { font-size: ${s_m4}px !important; }
+    .ntab { font-size: ${s_m3}px !important; }
+    .sh { font-size: ${s_m4}px !important; }
+    
+    /* Cards & Stats */
+    .card .cn { font-size: ${s_cn}px !important; }
+    .card .ck { font-size: ${s_m5}px !important; }
+    .insight-card span { font-size: ${s_m2}px !important; }
+    .insight-card div { font-size: ${s_m1}px !important; }
+    
+    /* Tables & Lists */
+    table, td { font-size: ${s_m2}px !important; }
+    th { font-size: ${s_m4}px !important; }
+    .badge { font-size: ${s_m5}px !important; }
+    
+    /* Item Lists */
+    .ts-card h3 { font-size: ${s_m3}px !important; }
+    .ti-con { font-size: ${s_m2}px !important; }
+    .ti-con small { font-size: ${s_m3}px !important; }
+    .ti-pri { font-size: ${s_m5}px !important; }
+    .ti-act button { font-size: ${s_m4}px !important; }
+    
+    /* Oracle */
+    .oracle-card-title { font-size: ${s_m2}px !important; }
+    .oracle-type { font-size: ${s_m5}px !important; }
+    .oracle-detail { font-size: ${s_m3}px !important; }
+    .oracle-action { font-size: ${s_m4}px !important; }
+    
+    /* Buttons & Form controls */
+    .btn, .btn-p { font-size: ${s_m3}px !important; }
+    input, textarea, select { font-size: ${s_m1}px !important; }
+    #finput { font-size: ${s_m2}px !important; }
+    #fform p { font-size: ${s_m4}px !important; }
+    #fbtn { font-size: ${Math.round(sizeNum * 1.7)}px !important; }
+    #toast { font-size: ${s_m3}px !important; }
+    
+    /* Timeline & Health */
+    .tl-ts { font-size: ${s_m4}px !important; }
+    .tl-body { font-size: ${s_m2}px !important; }
+    .tl-ag { font-size: ${s_m4}px !important; }
+    .hi-k { font-size: ${s_m4}px !important; }
+    .hi-v { font-size: ${s_body}px !important; }
+    .sec-clean { font-size: ${s_m2}px !important; }
+    .empty { font-size: ${s_m2}px !important; }
+    .ctx-hint { font-size: ${s_m3}px !important; }
+    .q-type { font-size: ${s_m4}px !important; }
+    
+    /* Catch-all for inline font-sizes in template scripts */
+    [style*="font-size:12px"], [style*="font-size: 12px"] { font-size: ${s_m1}px !important; }
+    [style*="font-size:11px"], [style*="font-size: 11px"] { font-size: ${s_m2}px !important; }
+    [style*="font-size:10px"], [style*="font-size: 10px"] { font-size: ${s_m3}px !important; }
+    [style*="font-size:9px"], [style*="font-size: 9px"] { font-size: ${s_m4}px !important; }
+    [style*="font-size:8px"], [style*="font-size: 8px"] { font-size: ${s_m5}px !important; }
+  `;
+}
+
+async function saveSettings() {
+  const d = {
+    fontSize: document.getElementById('cfg-fontSize').value,
+    aiProvider: document.getElementById('cfg-aiProvider').value,
+    aiModelName: document.getElementById('cfg-aiModelName').value,
+    localEndpoint: document.getElementById('cfg-localEndpoint').value,
+    openaiKey: document.getElementById('cfg-openaiKey').value,
+    anthropicKey: document.getElementById('cfg-anthropicKey').value,
+    geminiKey: document.getElementById('cfg-geminiKey').value,
+    oauthClientId: document.getElementById('cfg-oauthClientId').value,
+    oauthClientSecret: document.getElementById('cfg-oauthClientSecret').value
+  };
+
+  const r = await api('/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(d)
+  });
+
+  if (r && r.status === 'ok') {
+    toast('Settings saved successfully');
+    applyFontSize(d.fontSize);
+    currentSettings = r.settings;
+  } else {
+    toast('Failed to save settings', false);
+  }
+}
+
+/* Theme & Sidebar */
 (function(){
   const root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme:light)');
-  function apply(m){root.setAttribute('data-theme',m==='auto'?(mq.matches?'light':'dark'):m);document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));localStorage.setItem('oy-t',m);}
+  function apply(m){
+    root.setAttribute('data-theme',m==='auto'?(mq.matches?'light':'dark'):m);
+    document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+    localStorage.setItem('oy-t',m);
+    if(typeof renderGraphCanvas === 'function' && cur === 'cognitive_graph') {
+      renderGraphCanvas();
+    }
+  }
   apply(localStorage.getItem('oy-t')||'auto');
   mq.addEventListener('change',()=>{if((localStorage.getItem('oy-t')||'auto')==='auto')apply('auto');});
   document.querySelectorAll('.th-btn').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.mode)));
+
+  // Sidebar Toggling & Persistence
+  const body = document.body;
+  const isCollapsed = localStorage.getItem('oy-sb-collapsed') === 'true';
+  if (isCollapsed) body.classList.add('sidebar-collapsed');
+
+  const toggleBtn = document.getElementById('sidebarToggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('sidebar-collapsed');
+      localStorage.setItem('oy-sb-collapsed', body.classList.contains('sidebar-collapsed'));
+      // Redraw cognitive graph if resizing sidebar
+      setTimeout(() => {
+        if (typeof renderGraphCanvas === 'function' && cur === 'cognitive_graph') {
+          renderGraphCanvas();
+        }
+      }, 300);
+    });
+  }
+
+  // Load and apply base font size on startup
+  api('/api/settings').then(s => {
+    if (s && s.fontSize) applyFontSize(s.fontSize);
+  }).catch(err => console.error('Failed to pre-load settings:', err));
 })();
+
+</script>
+
+<!-- Memory Add/Edit Modal -->
+<div id="memoryModal" class="modal-overlay">
+  <div class="modal-card">
+    <h3 id="memoryModalTitle">Add Memory</h3>
+    <input type="hidden" id="memModalIsEdit" value="false" />
+    <div class="form-group">
+      <label>Memory Key</label>
+      <input type="text" id="memModalKey" placeholder="e.g. cto-agent-profile" />
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="memModalType">
+        <option value="decision">Decision</option>
+        <option value="fact">Fact</option>
+        <option value="context">Context</option>
+        <option value="observation">Observation</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Agent (Author)</label>
+      <input type="text" id="memModalAgent" placeholder="e.g. System, CEO, CTO" />
+    </div>
+    <div class="form-group">
+      <label>Tags (Comma separated)</label>
+      <input type="text" id="memModalTags" placeholder="e.g. profile, specs" />
+    </div>
+    <div class="form-group">
+      <label>Content</label>
+      <textarea id="memModalContent" rows="6" placeholder="Details..."></textarea>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+      <button class="btn" onclick="closeMemoryModal()">Cancel</button>
+      <button class="btn-p" onclick="saveMemoryFromModal()">Save Memory</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Agent Modal -->
+<div id="agentModal" class="modal-overlay">
+  <div class="modal-card">
+    <h3>Add Agent Node</h3>
+    <div class="form-group">
+      <label>Agent Name</label>
+      <input type="text" id="agentModalName" placeholder="e.g. Designer, QA" />
+    </div>
+    <div class="form-group">
+      <label>Reports To (Parent)</label>
+      <select id="agentModalParent"></select>
+    </div>
+    <div class="form-group">
+      <label>System Prompt (Agent Profile)</label>
+      <textarea id="agentModalPrompt" rows="6" placeholder="You are a specialized agent..."></textarea>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+      <button class="btn" onclick="closeAgentModal()">Cancel</button>
+      <button class="btn-p" onclick="saveNewAgent()">Create Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- Agent Sidebar Editor -->
+<div id="agentSidebar" style="position:fixed; top:52px; right:-360px; bottom:0; width:360px; background:var(--surface); border-left:1px solid var(--border2); padding:20px; z-index:150; transition:right 0.3s ease; display:flex; flex-direction:column; box-shadow:-5px 0 20px rgba(0,0,0,0.5);">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+    <h3 id="sidebarAgentTitle" style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--amber); margin:0;">Agent Profile</h3>
+    <button class="btn" style="padding:2px 8px; font-size:9px;" onclick="closeAgentSidebar()">X</button>
+  </div>
+  <div style="flex:1; overflow-y:auto; padding-right:5px;">
+    <div class="form-group">
+      <label>Reports To (Parent)</label>
+      <select id="sidebarAgentParentSelect" onchange="updateAgentParent()"></select>
+    </div>
+    <div class="form-group" style="display:flex; flex-direction:column; height:calc(100% - 100px);">
+      <label>System Prompt (Agent Profile)</label>
+      <textarea id="sidebarAgentPrompt" style="flex:1; min-height:280px; resize:vertical;"></textarea>
+    </div>
+  </div>
+  <div style="margin-top:15px; display:flex; gap:10px; border-top:1px solid var(--border); padding-top:10px;">
+    <button class="btn-p" style="flex:1;" onclick="saveAgentProfile()">Save Profile</button>
+  </div>
+</div>
+
+<script>
+// ── Cognitive Memory Explorer ────────────────────────────────────────────────
+
+let allMemories = [];
+
+async function loadCognitiveMemories() {
+  const d = await api('/api/cognitive/memories');
+  allMemories = d.memories || [];
+  
+  const pane = document.getElementById('cognitive_memories');
+  pane.innerHTML = `
+    <div class="sh"><span>Memory Explorer</span></div>
+    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+      <input id="memSearchQuery" placeholder="Search key or content..." style="flex:2; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
+      <select id="memSearchType" style="flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" onchange="filterMemories()">
+        <option value="">All Types</option>
+        <option value="decision">Decision</option>
+        <option value="fact">Fact</option>
+        <option value="context">Context</option>
+        <option value="observation">Observation</option>
+      </select>
+      <input id="memSearchTags" placeholder="Tags (comma separated)..." style="flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
+      <button class="btn btn-ok" onclick="openAddMemoryModal()">+ Add Memory</button>
+    </div>
+    <div id="memoriesTableContainer"></div>
+  `;
+  renderMemoriesTable(allMemories);
+}
+
+function renderMemoriesTable(memories) {
+  const container = document.getElementById('memoriesTableContainer');
+  if (!container) return;
+  if (!memories || !memories.length) {
+    container.innerHTML = '<div class="empty">No memories found.</div>';
+    return;
+  }
+  
+  let html = '<table>';
+  html += '<tr><th>Key</th><th>Type</th><th>Agent</th><th>Content</th><th>Tags</th><th>Timestamp</th><th>Actions</th></tr>';
+  
+  memories.forEach(m => {
+    const key = m.key || '';
+    const type = m.type || '';
+    const agent = m.agent || '';
+    const content = m.content || '';
+    const tags = (m.tags || []).map(t => `<span class="badge b-lo" style="margin-right:2px; font-size:8px; padding:1px 4px;">${t}</span>`).join('');
+    const ts = (m.timestamp || '').substring(0,16).replace('T',' ');
+    const keyEsc = key.replace(/'/g, "\\'");
+    
+    html += `<tr>
+      <td style="font-weight:600; color:var(--amber); max-width:180px; overflow:hidden; text-overflow:ellipsis;" title="${key}">${key}</td>
+      <td>${ptag(type)}</td>
+      <td>${agent}</td>
+      <td title="${content}" style="font-family:var(--sans); font-size:11px; max-width:300px; overflow:hidden; text-overflow:ellipsis;">${content}</td>
+      <td>${tags}</td>
+      <td style="color:var(--muted); font-size:9px;">${ts}</td>
+      <td>
+        <button class="btn" style="padding:2px 6px; font-size:8px; margin-right:4px;" onclick="editMemory('${keyEsc}')">Edit</button>
+        <button class="btn btn-x" style="padding:2px 6px; font-size:8px;" onclick="deleteMemory('${keyEsc}')">Delete</button>
+      </td>
+    </tr>`;
+  });
+  
+  html += '</table>';
+  container.innerHTML = html;
+}
+
+async function filterMemories() {
+  const query = document.getElementById('memSearchQuery').value.trim();
+  const type = document.getElementById('memSearchType').value;
+  const tagsInput = document.getElementById('memSearchTags').value.trim();
+  
+  let url = `/api/cognitive/memories?1=1`;
+  if (query) url += `&query=${encodeURIComponent(query)}`;
+  if (type) url += `&type=${encodeURIComponent(type)}`;
+  if (tagsInput) url += `&tags=${encodeURIComponent(tagsInput)}`;
+  
+  const d = await api(url);
+  renderMemoriesTable(d.memories || []);
+}
+
+function openAddMemoryModal() {
+  document.getElementById('memoryModalTitle').textContent = 'Add Memory';
+  document.getElementById('memModalIsEdit').value = 'false';
+  document.getElementById('memModalKey').value = '';
+  document.getElementById('memModalKey').disabled = false;
+  document.getElementById('memModalType').value = 'decision';
+  document.getElementById('memModalAgent').value = '';
+  document.getElementById('memModalTags').value = '';
+  document.getElementById('memModalContent').value = '';
+  document.getElementById('memoryModal').classList.add('open');
+}
+
+function closeMemoryModal() {
+  document.getElementById('memoryModal').classList.remove('open');
+}
+
+async function saveMemoryFromModal() {
+  const isEdit = document.getElementById('memModalIsEdit').value === 'true';
+  const key = document.getElementById('memModalKey').value.trim();
+  const type = document.getElementById('memModalType').value;
+  const agent = document.getElementById('memModalAgent').value.trim();
+  const tagsStr = document.getElementById('memModalTags').value.trim();
+  const content = document.getElementById('memModalContent').value;
+  
+  if (!key || !agent) {
+    toast('Key and Agent are required', false);
+    return;
+  }
+  
+  const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+  
+  const res = await api('/api/cognitive/write', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, type, agent, content, tags })
+  });
+  
+  if (res.key) {
+    toast(isEdit ? 'Memory updated' : 'Memory created');
+    closeMemoryModal();
+    await loadCognitiveMemories();
+  } else {
+    toast('Failed to save memory', false);
+  }
+}
+
+function editMemory(key) {
+  const m = allMemories.find(item => item.key.toLowerCase() === key.toLowerCase());
+  if (!m) return;
+  
+  document.getElementById('memoryModalTitle').textContent = 'Edit Memory';
+  document.getElementById('memModalIsEdit').value = 'true';
+  document.getElementById('memModalKey').value = m.key;
+  document.getElementById('memModalKey').disabled = true;
+  document.getElementById('memModalType').value = m.type;
+  document.getElementById('memModalAgent').value = m.agent;
+  document.getElementById('memModalTags').value = (m.tags || []).join(', ');
+  document.getElementById('memModalContent').value = m.content || '';
+  
+  document.getElementById('memoryModal').classList.add('open');
+}
+
+async function deleteMemory(key) {
+  if (!confirm(`Are you sure you want to delete memory '${key}'?`)) return;
+  const res = await api('/api/cognitive/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key })
+  });
+  if (res.success) {
+    toast('Memory deleted');
+    await loadCognitiveMemories();
+  } else {
+    toast('Delete failed', false);
+  }
+}
+
+// ── Agent Hierarchy & BFS solver ─────────────────────────────────────────────
+
+let hierarchyData = { agents: [], levels: {}, connections: [] };
+let selectedAgent = null;
+
+async function loadCognitiveHierarchy() {
+  const res = await api('/api/cognitive/hierarchy');
+  hierarchyData = res;
+  renderHierarchyMap();
+}
+
+function renderHierarchyMap() {
+  const container = document.getElementById('cognitive_hierarchy');
+  
+  let html = `
+    <div class="sh" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Reporting Hierarchy (BFS Solved)</span>
+      <button class="btn btn-ok" style="font-size:9px; padding:4px 10px;" onclick="openAgentModal()">+ Add Agent</button>
+    </div>
+    <div style="position:relative; width:100%; min-height:450px; background:var(--surface); border:1px solid var(--border); overflow:hidden; padding: 20px;">
+      <svg id="hierarchySvg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;"></svg>
+      <div id="hierarchyLevelsContainer" style="display:flex; flex-direction:column; gap:65px; position:relative; z-index:2;"></div>
+    </div>
+  `;
+  container.innerHTML = html;
+  
+  const levelsContainer = document.getElementById('hierarchyLevelsContainer');
+  const levels = hierarchyData.levels || {};
+  const agents = hierarchyData.agents || [];
+  
+  const maxLevel = Math.max(-1, ...Object.values(levels));
+  if (maxLevel === -1) {
+    levelsContainer.innerHTML = '<div class="empty">No agents in reporting structure yet.</div>';
+    return;
+  }
+  
+  for (let l = 0; l <= maxLevel; l++) {
+    const levelAgents = agents.filter(a => levels[a] === l);
+    if (!levelAgents.length) continue;
+    
+    const row = document.createElement('div');
+    row.className = 'level-row';
+    
+    levelAgents.forEach(a => {
+      const node = document.createElement('div');
+      node.className = `agent-node ${selectedAgent === a ? 'selected' : ''}`;
+      node.setAttribute('data-agent-name', a);
+      
+      const parentConn = (hierarchyData.connections || []).find(c => c.to === a);
+      const parentName = parentConn ? parentConn.from : 'None (Root)';
+      
+      node.innerHTML = `
+        <div style="font-weight:600; color:var(--text); font-size:12px;">${a}</div>
+        <div style="font-size:9px; color:var(--muted); margin-top:2px;">Parent: ${parentName}</div>
+      `;
+      node.onclick = (e) => {
+        e.stopPropagation();
+        openAgentSidebar(a);
+      };
+      row.appendChild(node);
+    });
+    
+    levelsContainer.appendChild(row);
+  }
+  
+  setTimeout(drawHierarchyCurves, 80);
+}
+
+function drawHierarchyCurves() {
+  const svg = document.getElementById('hierarchySvg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  
+  const container = document.getElementById('hierarchyLevelsContainer');
+  if (!container) return;
+  const containerRect = container.getBoundingClientRect();
+  
+  svg.style.width = containerRect.width + 'px';
+  svg.style.height = containerRect.height + 'px';
+  
+  const connections = hierarchyData.connections || [];
+  connections.forEach(conn => {
+    const parentNode = container.querySelector(`.agent-node[data-agent-name="${conn.from}"]`);
+    const childNode = container.querySelector(`.agent-node[data-agent-name="${conn.to}"]`);
+    if (parentNode && childNode) {
+      const pRect = parentNode.getBoundingClientRect();
+      const cRect = childNode.getBoundingClientRect();
+      
+      const x1 = (pRect.left + pRect.right) / 2 - containerRect.left;
+      const y1 = pRect.bottom - containerRect.top;
+      const x2 = (cRect.left + cRect.right) / 2 - containerRect.left;
+      const y2 = cRect.top - containerRect.top;
+      
+      const controlY = y1 + (y2 - y1) * 0.55;
+      const d = `M ${x1} ${y1} C ${x1} ${controlY}, ${x2} ${controlY}, ${x2} ${y2}`;
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', 'var(--blue)');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0.4');
+      svg.appendChild(path);
+    }
+  });
+}
+
+window.addEventListener('resize', () => {
+  if (cur === 'cognitive_hierarchy') {
+    drawHierarchyCurves();
+  }
+});
+
+function openAgentModal() {
+  const select = document.getElementById('agentModalParent');
+  select.innerHTML = '<option value="">None (Root)</option>' + 
+    hierarchyData.agents.map(a => `<option value="${a}">${a}</option>`).join('');
+  
+  document.getElementById('agentModalName').value = '';
+  document.getElementById('agentModalPrompt').value = '';
+  document.getElementById('agentModal').classList.add('open');
+}
+
+function closeAgentModal() {
+  document.getElementById('agentModal').classList.remove('open');
+}
+
+async function saveNewAgent() {
+  const name = document.getElementById('agentModalName').value.trim();
+  const parent = document.getElementById('agentModalParent').value;
+  const system_prompt = document.getElementById('agentModalPrompt').value;
+  
+  if (!name) {
+    toast('Agent Name is required', false);
+    return;
+  }
+  
+  const res = await api('/api/cognitive/agent/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, parent, system_prompt })
+  });
+  
+  if (res.status === 'ok') {
+    toast('Agent created successfully');
+    closeAgentModal();
+    await loadCognitiveHierarchy();
+  } else {
+    toast('Failed to create agent', false);
+  }
+}
+
+async function openAgentSidebar(agent) {
+  selectedAgent = agent;
+  
+  document.querySelectorAll('.agent-node').forEach(n => {
+    n.classList.toggle('selected', n.getAttribute('data-agent-name') === agent);
+  });
+  
+  document.getElementById('sidebarAgentTitle').textContent = `${agent} Agent Profile`;
+  
+  const select = document.getElementById('sidebarAgentParentSelect');
+  const currentParentConn = (hierarchyData.connections || []).find(c => c.to === agent);
+  const currentParent = currentParentConn ? currentParentConn.from : '';
+  
+  select.innerHTML = '<option value="">None (Root)</option>' +
+    hierarchyData.agents.filter(a => a !== agent).map(a => `<option value="${a}" ${a === currentParent ? 'selected' : ''}>${a}</option>`).join('');
+    
+  const key = `${agent}-agent-profile`;
+  const memoriesRes = await api(`/api/cognitive/memories?query=${encodeURIComponent(key)}`);
+  const profileMemory = (memoriesRes.memories || []).find(m => m.key.toLowerCase() === key.toLowerCase());
+  
+  document.getElementById('sidebarAgentPrompt').value = profileMemory ? profileMemory.content : '';
+  
+  document.getElementById('agentSidebar').style.right = '0';
+}
+
+function closeAgentSidebar() {
+  selectedAgent = null;
+  document.querySelectorAll('.agent-node').forEach(n => n.classList.remove('selected'));
+  document.getElementById('agentSidebar').style.right = '-360px';
+}
+
+async function updateAgentParent() {
+  if (!selectedAgent) return;
+  const parent = document.getElementById('sidebarAgentParentSelect').value;
+  
+  const res = await api('/api/cognitive/hierarchy/set-parent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ agent: selectedAgent, parent })
+  });
+  
+  if (res.status === 'ok') {
+    toast('Hierarchy updated');
+    await loadCognitiveHierarchy();
+  } else {
+    toast('Failed to update hierarchy', false);
+  }
+}
+
+async function saveAgentProfile() {
+  if (!selectedAgent) return;
+  const content = document.getElementById('sidebarAgentPrompt').value;
+  const key = `${selectedAgent}-agent-profile`;
+  
+  const res = await api('/api/cognitive/write', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      key,
+      type: 'context',
+      agent: selectedAgent,
+      content,
+      tags: ['agent-profile']
+    })
+  });
+  
+  if (res.key) {
+    toast('System prompt saved');
+    closeAgentSidebar();
+    await loadCognitiveHierarchy();
+  } else {
+    toast('Failed to save prompt', false);
+  }
+}
+
+// ── Cognitive Force-Directed Graph ───────────────────────────────────────────
+
+let graphCanvas = null;
+let graphCtx = null;
+let graphNodes = [];
+let graphEdges = [];
+let graphAnimationId = null;
+let draggedNode = null;
+
+async function loadCognitiveGraph() {
+  const container = document.getElementById('cognitive_graph');
+  
+  container.innerHTML = `
+    <div class="sh"><span>Conceptual Cognitive Graph</span></div>
+    <p style="font-family:var(--sans); font-size:12px; color:var(--text-dim); margin-bottom:12px;">Interactive force-directed simulation. Nodes represent Agents (blue), Memory Documents (coral), and Tags (amber). Drag to interact.</p>
+    <div style="background:var(--surface); border:1px solid var(--border); width:100%; height:550px; position:relative; overflow:hidden;">
+      <canvas id="graphCanvas" style="display:block; width:100%; height:100%;"></canvas>
+    </div>
+  `;
+  
+  graphCanvas = document.getElementById('graphCanvas');
+  graphCtx = graphCanvas.getContext('2d');
+  
+  const rect = graphCanvas.parentElement.getBoundingClientRect();
+  graphCanvas.width = rect.width;
+  graphCanvas.height = rect.height;
+  
+  const [memoriesRes, hierarchyRes] = await Promise.all([
+    api('/api/cognitive/memories'),
+    api('/api/cognitive/hierarchy')
+  ]);
+  
+  const memories = memoriesRes.memories || [];
+  const agents = hierarchyRes.agents || [];
+  
+  buildGraphElements(memories, agents);
+  setupGraphEvents();
+  
+  if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
+  graphAnimationId = requestAnimationFrame(simulateGraphPhysics);
+}
+
+function buildGraphElements(memories, agents) {
+  graphNodes = [];
+  graphEdges = [];
+  
+  const width = graphCanvas.width;
+  const height = graphCanvas.height;
+  const addedNodes = new Set();
+  
+  agents.forEach(a => {
+    const id = `agent:${a}`;
+    if (!addedNodes.has(id)) {
+      graphNodes.push({
+        id,
+        label: a,
+        type: 'agent',
+        x: width/2 + (Math.random() - 0.5) * 120,
+        y: height/2 + (Math.random() - 0.5) * 120,
+        vx: 0,
+        vy: 0,
+        radius: 25
+      });
+      addedNodes.add(id);
+    }
+  });
+  
+  memories.forEach(m => {
+    if (m.key === 'agent-hierarchy-connections') return;
+    
+    const docId = `doc:${m.key}`;
+    if (!addedNodes.has(docId)) {
+      graphNodes.push({
+        id: docId,
+        label: m.key,
+        type: 'doc',
+        x: width/2 + (Math.random() - 0.5) * 220,
+        y: height/2 + (Math.random() - 0.5) * 220,
+        vx: 0,
+        vy: 0,
+        radius: 16
+      });
+      addedNodes.add(docId);
+    }
+    
+    const authorAgentId = `agent:${m.agent}`;
+    if (addedNodes.has(authorAgentId)) {
+      graphEdges.push({ from: docId, to: authorAgentId });
+    }
+    
+    (m.tags || []).forEach(t => {
+      const tagId = `tag:${t}`;
+      if (!addedNodes.has(tagId)) {
+        graphNodes.push({
+          id: tagId,
+          label: t,
+          type: 'tag',
+          x: width/2 + (Math.random() - 0.5) * 280,
+          y: height/2 + (Math.random() - 0.5) * 280,
+          vx: 0,
+          vy: 0,
+          radius: 12
+        });
+        addedNodes.add(tagId);
+      }
+      
+      graphEdges.push({ from: docId, to: tagId });
+    });
+  });
+}
+
+function setupGraphEvents() {
+  graphCanvas.addEventListener('mousedown', e => {
+    const rect = graphCanvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    
+    draggedNode = graphNodes.find(n => {
+      const dx = n.x - mx;
+      const dy = n.y - my;
+      return Math.sqrt(dx*dx + dy*dy) < n.radius + 5;
+    });
+  });
+  
+  graphCanvas.addEventListener('mousemove', e => {
+    if (draggedNode) {
+      const rect = graphCanvas.getBoundingClientRect();
+      draggedNode.x = e.clientX - rect.left;
+      draggedNode.y = e.clientY - rect.top;
+    }
+  });
+  
+  const endDrag = () => { draggedNode = null; };
+  graphCanvas.addEventListener('mouseup', endDrag);
+  graphCanvas.addEventListener('mouseleave', endDrag);
+}
+
+function simulateGraphPhysics() {
+  if (cur !== 'cognitive_graph') return;
+  
+  const width = graphCanvas.width;
+  const height = graphCanvas.height;
+  
+  const kRep = 500;
+  const kAtt = 0.035;
+  const restLength = 85;
+  const gravity = 0.015;
+  const friction = 0.85;
+  
+  for (let i = 0; i < graphNodes.length; i++) {
+    const u = graphNodes[i];
+    for (let j = i + 1; j < graphNodes.length; j++) {
+      const v = graphNodes[j];
+      const dx = v.x - u.x;
+      const dy = v.y - u.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      
+      if (dist < 350) {
+        const force = kRep / (dist * dist);
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        
+        u.vx -= fx;
+        u.vy -= fy;
+        v.vx += fx;
+        v.vy += fy;
+      }
+    }
+  }
+  
+  graphEdges.forEach(edge => {
+    const u = graphNodes.find(n => n.id === edge.from);
+    const v = graphNodes.find(n => n.id === edge.to);
+    if (u && v) {
+      const dx = v.x - u.x;
+      const dy = v.y - u.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const delta = dist - restLength;
+      const force = delta * kAtt;
+      const fx = (dx / dist) * force;
+      const fy = (dy / dist) * force;
+      
+      u.vx += fx;
+      u.vy += fy;
+      v.vx -= fx;
+      v.vy -= fy;
+    }
+  });
+  
+  const cx = width / 2;
+  const cy = height / 2;
+  
+  graphNodes.forEach(node => {
+    if (node === draggedNode) {
+      node.vx = 0;
+      node.vy = 0;
+      return;
+    }
+    
+    node.vx += (cx - node.x) * gravity;
+    node.vy += (cy - node.y) * gravity;
+    
+    node.x += node.vx;
+    node.y += node.vy;
+    
+    node.vx *= friction;
+    node.vy *= friction;
+    
+    node.x = Math.max(node.radius, Math.min(width - node.radius, node.x));
+    node.y = Math.max(node.radius, Math.min(height - node.radius, node.y));
+  });
+  
+  for (let i = 0; i < graphNodes.length; i++) {
+    const u = graphNodes[i];
+    for (let j = i + 1; j < graphNodes.length; j++) {
+      const v = graphNodes[j];
+      const dx = v.x - u.x;
+      const dy = v.y - u.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const minDist = u.radius + v.radius + 15;
+      
+      if (dist < minDist) {
+        const push = (minDist - dist) * 0.5;
+        const px = (dx / dist) * push;
+        const py = (dy / dist) * push;
+        
+        if (u !== draggedNode) {
+          u.x -= px;
+          u.y -= py;
+        }
+        if (v !== draggedNode) {
+          v.x += px;
+          v.y += py;
+        }
+      }
+    }
+  }
+  
+  renderGraphCanvas();
+  graphAnimationId = requestAnimationFrame(simulateGraphPhysics);
+}
+
+function renderGraphCanvas() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+  
+  graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.06)';
+  graphCtx.lineWidth = 1.2;
+  graphEdges.forEach(edge => {
+    const u = graphNodes.find(n => n.id === edge.from);
+    const v = graphNodes.find(n => n.id === edge.to);
+    if (u && v) {
+      graphCtx.beginPath();
+      graphCtx.moveTo(u.x, u.y);
+      graphCtx.lineTo(v.x, v.y);
+      graphCtx.stroke();
+    }
+  });
+  
+  graphNodes.forEach(node => {
+    graphCtx.beginPath();
+    graphCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+    
+    if (node.type === 'agent') {
+      graphCtx.fillStyle = '#1c6fff';
+      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.25)';
+    } else if (node.type === 'doc') {
+      graphCtx.fillStyle = '#e84520';
+      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
+    } else {
+      graphCtx.fillStyle = '#f5a000';
+      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
+    }
+    
+    graphCtx.lineWidth = 1.5;
+    graphCtx.fill();
+    graphCtx.stroke();
+    
+    graphCtx.fillStyle = '#ffffff';
+    graphCtx.font = node.type === 'agent' ? 'bold 9px monospace' : '8px monospace';
+    graphCtx.textAlign = 'center';
+    graphCtx.textBaseline = 'middle';
+    
+    const labelLimit = node.type === 'agent' ? 9 : 6;
+    let text = node.label;
+    if (text.length > labelLimit) {
+      text = text.substring(0, labelLimit) + '..';
+    }
+    graphCtx.fillText(text, node.x, node.y);
+  });
+}
 
 /* Auto refresh Today */
 setInterval(()=>{if(cur==='today')loadToday();},30000);
