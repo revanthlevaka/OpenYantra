@@ -213,7 +213,7 @@ install_deps() {
 download_files() {
   step "Downloading OpenYantra v${VERSION} files"
 
-  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs}
+  mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs,UI/v4}
 
   FILES=(
     "openyantra/__init__.py"
@@ -245,6 +245,7 @@ download_files() {
     "SKILL.md"
     "MYTHOLOGY.md"
     "WHITEPAPER.md"
+    "UI/v4/dashboard.html"
   )
 
   for file in "${FILES[@]}"; do

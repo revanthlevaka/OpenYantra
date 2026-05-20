@@ -3,7 +3,7 @@ yantra_ui.py -- OpenYantra Browser Dashboard v4.0.0
 Run: yantra ui -> http://localhost:7331
 
 v4.0.0:
-  - Serves UI/v3/dashboard.html (Briefing Room) via FileResponse
+  - Serves UI/v4/dashboard.html (Briefing Room) via FileResponse
   - /api/oracle endpoint wired to oracle-card
   - /api/export endpoint
   - 13 tabs: Today, Inbox, Loops, Projects, Oracle, Review, Timeline, Security, Ledger, Health, Memories, Hierarchy, Graph
@@ -51,8 +51,8 @@ def get_cog_store() -> CognitiveMemoryStore:
         _cog_store = CognitiveMemoryStore()
     return _cog_store
 
-# Dashboard served from UI/v3/dashboard.html
-_DASHBOARD = Path(__file__).parent / "UI" / "v3" / "dashboard.html"
+# Dashboard served from UI/v4/dashboard.html
+_DASHBOARD = Path(__file__).parent.parent / "UI" / "v4" / "dashboard.html"
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
