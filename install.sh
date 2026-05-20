@@ -269,18 +269,20 @@ create_cli() {
   cat > "$BIN" << SCRIPT
 #!/usr/bin/env bash
 # yantra -- OpenYantra v${VERSION} CLI
-INSTALL_DIR="\$HOME/openyantra"
+INSTALL_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
 VENV="\$INSTALL_DIR/.venv"
-OY_FILE="\${OPENYANTRA_FILE:-\$HOME/openyantra/chitrapat.ods}"
-PYTHON="\$VENV/bin/python"
+OY_FILE="\${OPENYANTRA_FILE:-\$INSTALL_DIR/chitrapat.ods}"
 
-# Activate venv
+# Activate venv if it exists
 if [[ -f "\$VENV/bin/activate" ]]; then
   source "\$VENV/bin/activate"
+  PYTHON="\$VENV/bin/python"
+else
+  PYTHON="python3"
 fi
 
-# Pass all arguments to the Python CLI
-\$PYTHON -m openyantra.cli "\$@"
+# Pass all arguments to the Python CLI with PYTHONPATH set to INSTALL_DIR
+PYTHONPATH="\$INSTALL_DIR" "\$PYTHON" -m openyantra.cli "\$@"
 SCRIPT
 
   chmod +x "$BIN"
