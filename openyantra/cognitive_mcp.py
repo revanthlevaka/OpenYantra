@@ -53,7 +53,7 @@ def log(msg: str):
 # Load the main OpenYantra sheet engine
 oy = None
 try:
-    sys.path.insert(0, str(Path(__file__).parent))
+    sys.path.insert(0, str(Path(__file__).parent.parent))
     from openyantra import OpenYantra, WriteRequest
     log(f"Attempting to load OpenYantra sheet: {sheet_path}")
     if sheet_path.exists():

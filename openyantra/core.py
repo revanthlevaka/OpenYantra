@@ -27,6 +27,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+__version__ = "4.0.0"
+
+
 try:
     import pandas as pd
 except ImportError:

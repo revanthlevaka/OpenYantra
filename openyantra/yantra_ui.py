@@ -1,8 +1,8 @@
 """
-yantra_ui.py -- OpenYantra Browser Dashboard v3.0.1
+yantra_ui.py -- OpenYantra Browser Dashboard v4.0.0
 Run: yantra ui -> http://localhost:7331
 
-v3.0.1:
+v4.0.0:
   - Serves UI/v3/dashboard.html (Briefing Room) via FileResponse
   - /api/oracle endpoint wired to oracle-card
   - /api/export endpoint
@@ -14,7 +14,7 @@ from __future__ import annotations
 import argparse, sys, json
 from datetime import datetime
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from fastapi import FastAPI, HTTPException, Request
@@ -35,9 +35,9 @@ try:
 except ImportError:
     print("openyantra.py not found."); sys.exit(1)
 
-from cognitive_db import CognitiveMemoryStore
+from openyantra.cognitive_db import CognitiveMemoryStore
 
-app = FastAPI(title="OpenYantra", version="3.0.1", docs_url=None, redoc_url=None)
+app = FastAPI(title="OpenYantra", version="4.0.0", docs_url=None, redoc_url=None)
 _oy = None
 _cog_store = None
 
@@ -321,7 +321,7 @@ async def api_mcp_config():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v3.0.1")
+    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v4.0.0")
     parser.add_argument("--file","-f",default=str(Path.home()/"openyantra"/"chitrapat.ods"))
     parser.add_argument("--port","-p",type=int,default=7331)
     parser.add_argument("--host",default="127.0.0.1")
@@ -333,7 +333,7 @@ def main():
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     _cog_store = CognitiveMemoryStore(path.parent / "cognitive_memories.json")
     h = _oy.health_check()
-    print(f"\n{'='*50}\n  OpenYantra Dashboard v3.0.1\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
+    print(f"\n{'='*50}\n  OpenYantra Dashboard v4.0.0\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 
 if __name__ == "__main__":
