@@ -43,6 +43,91 @@ def check_dependencies():
             missing.append(pkg)
     return missing
 
+def stop_background_servers():
+    import signal
+    targets = ["yantra_ui.py", "yantra_mail.py", "cognitive_mcp.py", "telegram_bot.py"]
+    stopped = []
+    
+    if sys.platform != "win32":
+        try:
+            out = subprocess.check_output(["ps", "-eo", "pid,args"], text=True)
+            for line in out.splitlines():
+                parts = line.strip().split(None, 1)
+                if len(parts) < 2:
+                    continue
+                pid_str, cmdline = parts[0], parts[1]
+                try:
+                    pid = int(pid_str)
+                except ValueError:
+                    continue
+                if pid == os.getpid():
+                    continue
+                for target in targets:
+                    if target in cmdline and "python" in cmdline.lower():
+                        try:
+                            os.kill(pid, signal.SIGTERM)
+                            stopped.append(f"{target} (PID {pid})")
+                        except Exception as e:
+                            print(f"Failed to stop {target} (PID {pid}): {e}")
+        except Exception as e:
+            print(f"Error listing processes: {e}")
+    else:
+        try:
+            out = subprocess.check_output(["wmic", "process", "get", "processid,commandline"], text=True)
+            for line in out.splitlines():
+                if not line.strip() or "CommandLine" in line:
+                    continue
+                parts = line.strip().rsplit(None, 1)
+                if len(parts) < 2:
+                    continue
+                cmdline, pid_str = parts[0], parts[1]
+                try:
+                    pid = int(pid_str)
+                except ValueError:
+                    continue
+                if pid == os.getpid():
+                    continue
+                for target in targets:
+                    if target in cmdline and "python" in cmdline.lower():
+                        try:
+                            subprocess.run(["taskkill", "/F", "/PID", str(pid)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            stopped.append(f"{target} (PID {pid})")
+                        except Exception as e:
+                            print(f"Failed to stop {target} (PID {pid}): {e}")
+        except Exception:
+            try:
+                out = subprocess.check_output(["tasklist", "/v", "/fo", "csv"], text=True)
+                import csv
+                import io
+                reader = csv.reader(io.StringIO(out))
+                for row in reader:
+                    if len(row) < 9:
+                        continue
+                    image_name, pid_str, window_title = row[0], row[1], row[8]
+                    try:
+                        pid = int(pid_str)
+                    except ValueError:
+                        continue
+                    if pid == os.getpid():
+                        continue
+                    if "python" in image_name.lower():
+                        for target in targets:
+                            if target in window_title or target in row[6]:
+                                try:
+                                    subprocess.run(["taskkill", "/F", "/PID", str(pid)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                                    stopped.append(f"{target} (PID {pid})")
+                                except Exception:
+                                    pass
+            except Exception as e:
+                print(f"Error listing processes: {e}")
+
+    if stopped:
+        print("Stopped background services:")
+        for item in stopped:
+            print(f"- {item}")
+    else:
+        print("No running OpenYantra background services found.")
+
 def main():
     parser = argparse.ArgumentParser(description="OpenYantra CLI", usage="yantra <command> [options]")
     parser.add_argument("--file", default="chitrapat.ods", help="Path to Chitrapat ODS file")
@@ -89,6 +174,7 @@ def main():
     subparsers.add_parser("security", help="Full Chitrapat security audit")
     subparsers.add_parser("open", help="Open Chitrapat in LibreOffice")
     subparsers.add_parser("version", help="Show version")
+    subparsers.add_parser("stop", aliases=["kill"], help="Stop running background servers")
 
     args = parser.parse_args()
     
@@ -131,7 +217,7 @@ def main():
         sys.exit(0)
 
     # All commands below here need a valid chitrapat
-    if not os.path.exists(oy_file) and args.command not in ["ui", "mcp", "mail", "shortcut", "telegram"]:
+    if not os.path.exists(oy_file) and args.command not in ["ui", "mcp", "mail", "shortcut", "telegram", "stop", "kill"]:
         print(f"Error: Could not find {oy_file}. Run 'yantra bootstrap' first.")
         sys.exit(1)
 
@@ -217,6 +303,8 @@ def main():
     elif args.command == "schedule":
         print("To schedule the daily digest, add this to your crontab (crontab -e):")
         print(f"0 18 * * * {sys.executable} {script_dir}/yantra_digest.py --file {oy_file}")
+    elif args.command in ["stop", "kill"]:
+        stop_background_servers()
 
 if __name__ == "__main__":
     main()

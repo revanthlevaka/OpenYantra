@@ -833,7 +833,13 @@ class OpenYantra:
                 engine="odf", header=0, dtype=str,
                 usecols=cols if cols else None,
             )
-            return df.where(pd.notna(df), None).to_dict("records")
+            records = df.to_dict("records")
+            import math
+            for r in records:
+                for k, v in r.items():
+                    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                        r[k] = None
+            return records
         except Exception:
             return self._read_sheet(sheet_name)
 
@@ -842,7 +848,13 @@ class OpenYantra:
         try:
             df = pd.read_excel(str(self.path), sheet_name=sheet_name,
                                engine="odf", header=0, dtype=str)
-            return df.where(pd.notna(df), None).to_dict("records")
+            records = df.to_dict("records")
+            import math
+            for r in records:
+                for k, v in r.items():
+                    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                        r[k] = None
+            return records
         except Exception: return []
 
     def load_session_context(self, agent_name: Optional[str] = None) -> dict:

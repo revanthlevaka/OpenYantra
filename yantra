@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# yantra -- OpenYantra v4.0.0 CLI
+INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV="$INSTALL_DIR/.venv"
+OY_FILE="${OPENYANTRA_FILE:-$INSTALL_DIR/chitrapat.ods}"
+
+# Activate venv if it exists
+if [[ -f "$VENV/bin/activate" ]]; then
+  source "$VENV/bin/activate"
+  PYTHON="$VENV/bin/python"
+else
+  PYTHON="python3"
+fi
+
+# Pass all arguments to the Python CLI with PYTHONPATH set to INSTALL_DIR
+PYTHONPATH="$INSTALL_DIR" "$PYTHON" -m openyantra.cli "$@"
