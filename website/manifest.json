@@ -1,0 +1,21 @@
+{
+  "name": "OpenYantra - The Sacred Memory Machine",
+  "short_name": "OpenYantra",
+  "description": "An open-source, local-first framework combining ancient Indian mnemonic structures with AI context processing to create a 'second brain' powered by LibreOffice Calc and Python.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#d97706",
+  "icons": [
+    {
+      "src": "/assets/icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

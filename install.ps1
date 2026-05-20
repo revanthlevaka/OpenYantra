@@ -14,7 +14,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 $ErrorActionPreference = "Stop"
-$VERSION = "2.12"
+$VERSION = "4.0.0"
 $INSTALL_DIR = "$env:USERPROFILE\openyantra"
 $VENV_DIR    = "$INSTALL_DIR\.venv"
 $RAW         = "https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"
@@ -158,8 +158,14 @@ function Download-Files {
     }
 
     $files = @(
-        "openyantra.py", "vidyakosha.py", "yantra_ui.py",
-        "yantra_digest.py", "telegram_bot.py",
+        "openyantra/__init__.py", "openyantra/core.py", "openyantra/cli.py",
+        "openyantra/vidyakosha.py", "openyantra/yantra_ui.py",
+        "openyantra/yantra_digest.py", "openyantra/telegram_bot.py",
+        "openyantra/ios_shortcut.py", "openyantra/yantra_mail.py",
+        "openyantra/yantra_migrate.py", "openyantra/yantra_security.py",
+        "openyantra/yantra_morning.py", "openyantra/yantra_context.py",
+        "openyantra/yantra_sqlite.py", "openyantra/cognitive_mcp.py",
+        "openyantra/cognitive_db.py", "openyantra/chitrapat_template.ods",
         "openclaw/hooks.py", "openclaw/plugin.py", "openclaw/__init__.py",
         "examples/bootstrap.py", "examples/langchain_adapter.py",
         "examples/__init__.py", "references/controlled-vocab.md",
@@ -193,48 +199,8 @@ function Create-CLI {
 `$PYTHON = "`$VENV\Scripts\python.exe"
 `$OY_FILE = if (`$env:OPENYANTRA_FILE) { `$env:OPENYANTRA_FILE } else { "`$env:USERPROFILE\openyantra\chitrapat.ods" }
 
-switch (`$args[0]) {
-    "bootstrap" { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import run_bootstrap_interview; run_bootstrap_interview('`$OY_FILE')" }
-    "ui" {
-        `$port = if (`$args[1]) { `$args[1] } else { "$PORT" }
-        Start-Process `$PYTHON -ArgumentList "`$INSTALL_DIR\yantra_ui.py --file `$OY_FILE --port `$port" -NoNewWindow
-        Start-Sleep 2
-        Start-Process "http://localhost:`$port"
-    }
-    "doctor" {
-        & `$PYTHON -c "
-import sys, importlib, socket
-sys.path.insert(0,'`$INSTALL_DIR')
-print('OpenYantra Doctor v$VERSION'); print('='*45)
-pv = sys.version_info
-print(f'  Python {pv.major}.{pv.minor}  {chr(10003) if pv.major==3 and pv.minor>=9 else chr(10007)+\" Need 3.9+\"}')
-for pkg in ['odfpy','pandas','sklearn','faiss','fastapi','uvicorn']:
-    try: importlib.import_module(pkg); print(f'  {pkg:20} {chr(10003)}')
-    except: print(f'  {pkg:20} {chr(10007)} missing')
-try:
-    s=socket.socket(); s.bind(('127.0.0.1',$PORT)); s.close(); print('  Port $PORT           {chr(10003)} available')
-except: print('  Port $PORT           {chr(10007)} in use')
-import os; f=os.path.expanduser('`$OY_FILE')
-print(f'  Chitrapat  {chr(10003) if os.path.exists(f) else chr(10007)+\" run: yantra bootstrap\"}')"
-    }
-    "health"  { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); h=oy.health_check(); [print(f'  {k}: {v}') for k,v in h.items() if k!='rows']" }
-    "inbox"   {
-        `$text = `$args[1..`$args.Length] -join ' '
-        if (-not `$text) { `$text = Read-Host "Capture" }
-        & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra; oy=OpenYantra('`$OY_FILE'); r=oy.inbox('`$text'); print('Captured' if r.get('status')=='written' else r.get('status'))"
-    }
-    "digest"  { & `$PYTHON "`$INSTALL_DIR\yantra_digest.py" --file `$OY_FILE }
-    "loops"   { & `$PYTHON -c "import sys; sys.path.insert(0,'`$INSTALL_DIR'); from openyantra import OpenYantra,SHEET_OPEN_LOOPS; oy=OpenYantra('`$OY_FILE'); loops=[r for r in oy._read_sheet(SHEET_OPEN_LOOPS) if r.get('Resolved?')=='No']; print(f'Open Loops ({len(loops)}):'); [print(f'  [{l.get(\"Priority\",\"?\"):8}] {l.get(\"Topic\",\"\")[:55]}') for l in loops]" }
-    "telegram"{ & `$PYTHON "`$INSTALL_DIR\telegram_bot.py" --file `$OY_FILE }
-    "open"    { Start-Process soffice -ArgumentList `$OY_FILE }
-    "version" { Write-Host "OpenYantra v$VERSION" }
-    default   {
-        Write-Host "`n  OpenYantra v$VERSION -- The Sacred Memory Machine"
-        Write-Host "`n  COMMANDS:"
-        @("bootstrap","ui [port]","doctor","health","inbox [text]","digest","loops","telegram","open","version") | ForEach-Object { Write-Host "    yantra $_" }
-        Write-Host ""
-    }
-}
+# Pass all arguments to the Python CLI
+& `$PYTHON -m openyantra.cli `$args
 "@
 
     $ps1 | Out-File -FilePath "$INSTALL_DIR\yantra.ps1" -Encoding UTF8

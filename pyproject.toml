@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openyantra"
-version = "2.12.0"
+version = "4.0.0"
 description = "The Sacred Memory Machine -- persistent memory for personal agentic AI"
 authors = [
   { name = "Revanth Levaka", email = "revanth@revanthlevaka.com" }
@@ -88,16 +88,7 @@ Changelog = "https://github.com/revanthlevaka/OpenYantra/blob/main/CHANGELOG.md"
 yantra = "openyantra.cli:main"
 
 [tool.setuptools]
-py-modules = [
-  "openyantra",
-  "vidyakosha",
-  "yantra_security",
-  "yantra_digest",
-  "yantra_migrate",
-  "yantra_ui",
-  "telegram_bot",
-  "ios_shortcut",
-]
+packages = ["openyantra"]
 
 [tool.setuptools.package-data]
 "*" = ["chitrapat_template.ods", "SKILL.md"]

@@ -15,7 +15,7 @@
 
 set -e
 
-VERSION="2.12"
+VERSION="4.0.0"
 INSTALL_DIR="$HOME/openyantra"
 VENV_DIR="$INSTALL_DIR/.venv"
 RAW="https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"
@@ -216,14 +216,23 @@ download_files() {
   mkdir -p "$INSTALL_DIR"/{openclaw,examples,references,docs}
 
   FILES=(
-    "openyantra.py"
-    "vidyakosha.py"
-    "yantra_ui.py"
-    "yantra_digest.py"
-    "telegram_bot.py"
-    "ios_shortcut.py"
-    "yantra_mail.py"
-    "yantra_migrate.py"
+    "openyantra/__init__.py"
+    "openyantra/core.py"
+    "openyantra/cli.py"
+    "openyantra/vidyakosha.py"
+    "openyantra/yantra_ui.py"
+    "openyantra/yantra_digest.py"
+    "openyantra/telegram_bot.py"
+    "openyantra/ios_shortcut.py"
+    "openyantra/yantra_mail.py"
+    "openyantra/yantra_migrate.py"
+    "openyantra/yantra_security.py"
+    "openyantra/yantra_morning.py"
+    "openyantra/yantra_context.py"
+    "openyantra/yantra_sqlite.py"
+    "openyantra/cognitive_mcp.py"
+    "openyantra/cognitive_db.py"
+    "openyantra/chitrapat_template.ods"
     "openclaw/hooks.py"
     "openclaw/plugin.py"
     "openclaw/__init__.py"
@@ -270,223 +279,8 @@ if [[ -f "\$VENV/bin/activate" ]]; then
   source "\$VENV/bin/activate"
 fi
 
-case "\$1" in
-  bootstrap|init)
-    echo "Starting Bootstrap Interview..."
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import run_bootstrap_interview
-run_bootstrap_interview('\$OY_FILE')
-"
-    ;;
-  ui|dashboard)
-    PORT="\${2:-7331}"
-    echo "Opening OpenYantra Dashboard..."
-    \$PYTHON "\$INSTALL_DIR/yantra_ui.py" --file "\$OY_FILE" --port "\$PORT" &
-    sleep 1
-    # Auto-open browser
-    if command -v open &>/dev/null; then
-      open "http://localhost:\$PORT"
-    elif command -v xdg-open &>/dev/null; then
-      xdg-open "http://localhost:\$PORT"
-    fi
-    wait
-    ;;
-  health|status)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-h = oy.health_check()
-print('OpenYantra Health Check v${VERSION}')
-print('='*45)
-for k,v in h.items():
-    if k != 'rows': print(f'  {k:28} {v}')
-if h.get('rows'):
-    print('  Sheet row counts:')
-    for s,n in h['rows'].items(): print(f'    {s}: {n}')
-"
-    ;;
-  doctor)
-    \$PYTHON -c "
-import sys, importlib, socket
-sys.path.insert(0, '\$INSTALL_DIR')
-print('OpenYantra Doctor v${VERSION}')
-print('='*45)
-# Python version
-pv = sys.version_info
-ok = pv.major == 3 and pv.minor >= 9
-print(f'  Python {pv.major}.{pv.minor}  {\"✓\" if ok else \"✗ Need 3.9+\"}')
-# Required packages
-for pkg in ['odfpy','pandas','sklearn','faiss','fastapi','uvicorn']:
-    try:
-        importlib.import_module(pkg.replace('sklearn','sklearn'))
-        print(f'  {pkg:20} ✓')
-    except ImportError:
-        print(f'  {pkg:20} ✗ missing')
-# Port check
-try:
-    s = socket.socket(); s.bind(('127.0.0.1', 7331)); s.close()
-    print(f'  Port 7331           ✓ available')
-except:
-    print(f'  Port 7331           ✗ in use')
-# File check
-import os
-f = os.path.expanduser('\$OY_FILE')
-if os.path.exists(f):
-    kb = os.path.getsize(f)//1024
-    print(f'  Chitrapat           ✓ {kb}KB')
-else:
-    print(f'  Chitrapat           ✗ not found -- run: yantra bootstrap')
-print('='*45)
-"
-    ;;
-  inbox)
-    shift; TEXT="\$*"
-    [[ -z "\$TEXT" ]] && read -p "Capture: " TEXT
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-r = oy.inbox('\$TEXT')
-print('✓ Captured to Inbox' if r.get('status')=='written' else f'Status: {r.get(\"status\")}')
-"
-    ;;
-  digest)
-    \$PYTHON "\$INSTALL_DIR/yantra_digest.py" --file "\$OY_FILE"
-    ;;
-  oracle)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-print(oy.oracle_text(max_insights=8))
-"
-    ;;
-  export)
-    SHEET=""; FMT="markdown"; SINCE=""; OUTPUT=""
-    shift
-    while [[ \$# -gt 0 ]]; do
-      case "\$1" in
-        --sheet|-s) SHEET="\$2"; shift 2 ;;
-        --format|-f) FMT="\$2"; shift 2 ;;
-        --since)     SINCE="\$2"; shift 2 ;;
-        --output|-o) OUTPUT="\$2"; shift 2 ;;
-        *) shift ;;
-      esac
-    done
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-kw = {}
-if '\$SHEET': kw['sheet'] = '\$SHEET'
-if '\$SINCE': kw['since'] = '\$SINCE'
-if '\$OUTPUT': kw['output_path'] = '\$OUTPUT'
-result = oy.export(fmt='\$FMT' or 'markdown', **kw)
-if not '\$OUTPUT': print(result)
-"
-    ;;
-  route)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-d = oy.route_inbox()
-r = sum(1 for x in d if x.get('routed'))
-print(f'✓ Routed {r}/{len(d)} inbox items')
-for x in d: print(f'  {str(x.get(\"content\",\"\"))[:50]:50} → {x.get(\"target\",\"unrouted\")}')
-"
-    ;;
-  loops)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra, SHEET_OPEN_LOOPS
-oy = OpenYantra('\$OY_FILE')
-loops = [r for r in oy._read_sheet(SHEET_OPEN_LOOPS) if r.get('Resolved?')=='No']
-print(f'Open Loops ({len(loops)}):')
-for l in loops:
-    print(f'  [{l.get(\"Priority\",\"?\"):8}] {l.get(\"Topic\",\"\")[:55]}')
-"
-    ;;
-  diff|beliefs)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-d = oy.diff_beliefs()
-if d:
-    print(f'Belief contradictions ({len(d)}):')
-    for x in d: print(f'  {x[\"message\"]}')
-else: print('✓ No contradictions detected')
-"
-    ;;
-  ttl|expire)
-    \$PYTHON -c "
-import sys; sys.path.insert(0, '\$INSTALL_DIR')
-from openyantra import OpenYantra
-oy = OpenYantra('\$OY_FILE')
-e = oy.check_anishtha_ttl()
-if e:
-    print(f'Expired loops ({len(e)}):')
-    for x in e: print(f'  {x[\"message\"]}')
-else: print('✓ No expired loops')
-"
-    ;;
-  telegram)
-    echo "Starting Telegram bot..."
-    \$PYTHON "\$INSTALL_DIR/telegram_bot.py" --file "\$OY_FILE"
-    ;;
-  open|edit)
-    if command -v libreoffice &>/dev/null; then
-      libreoffice "\$OY_FILE" &
-    elif command -v soffice &>/dev/null; then
-      soffice "\$OY_FILE" &
-    else
-      echo "LibreOffice not found. Install from: https://libreoffice.org"
-    fi
-    ;;
-  version)
-    echo "OpenYantra v${VERSION}"
-    ;;
-  help|--help|-h|"")
-    echo ""
-    echo "  OpenYantra v${VERSION} -- The Sacred Memory Machine"
-    echo "  Inspired by Chitragupta, the Hindu God of Data"
-    echo ""
-    echo "  COMMANDS:"
-    echo "    yantra bootstrap    Interview-based setup (first time)"
-    echo "    yantra ui [port]    Browser dashboard → http://localhost:7331"
-    echo "    yantra doctor       System health check"
-    echo "    yantra health       Memory stats"
-    echo "    yantra inbox [text] Quick capture to Inbox"
-    echo "    yantra route        Route Inbox items to correct sheets"
-    echo "    yantra digest       Daily summary -- loops, projects, insights"
-    echo "    yantra loops        List open loops (Anishtha)"
-    echo "    yantra diff         Belief contradiction check"
-    echo "    yantra ttl          Check expired open loops"
-    echo "    yantra telegram     Start Telegram bot capture"
-    echo "    yantra open         Open Chitrapat in LibreOffice"
-    echo "    yantra stats        Memory growth analytics
-    yantra morning      Daily brief -- urgent loops, tasks, insight, streak
-    yantra context      Copy full context to clipboard -- paste into any AI chat
-    yantra integrity    Verify Agrasandhani SHA-256 Mudra signatures
-    yantra archive      Rotate session log (default: keep 90 days)
-    yantra shortcut     Start iOS Shortcut server (port 7332)
-    yantra mail         Start Email-to-Inbox SMTP server (port 2525)
-    yantra migrate      Upgrade older Chitrapat to current schema
-    yantra schedule     Schedule daily digest via cron/launchd
-    yantra version      Show version"
-    echo ""
-    echo "  FILE: \$OY_FILE"
-    echo "  Set OPENYANTRA_FILE to change location"
-    echo ""
-    ;;
-  *)
-    echo "Unknown command: \$1. Run 'yantra help'"
-    exit 1
-    ;;
-esac
+# Pass all arguments to the Python CLI
+\$PYTHON -m openyantra.cli "\$@"
 SCRIPT
 
   chmod +x "$BIN"

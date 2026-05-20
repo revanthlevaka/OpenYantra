@@ -4,6 +4,27 @@ All notable changes documented here. Follows semantic versioning.
 
 ---
 
+## [4.0.0] -- 2026-05-20
+
+### Added
+- Native MCP Server Support integrating top 20 apps including OpenRouter and Gemini Spark
+- ChitraGupta Agent integration with local and remote AI APIs
+- Settings Dashboard in Web UI to manage AI models, API keys, OAuth, and font sizes
+- Dynamic Font Scaling across all Web UI tabs
+- Command-line interface availability via `openyantra.cli` entry points
+- Complete codebase restructure to python standard `openyantra` package and pyproject.toml
+- Revamped GitHub repository layout moving web files to `website/` for Cloudflare deployment
+- Added automated SEO elements: sitemap.xml, robots.txt, manifest.json
+
+### Changed
+- Moved v3.x legacy codebase to `v3.0.1` branch. Main branch now defaults to v4.0.0
+- Web UI updated with new capabilities and seamless AI Model settings
+- Installation scripts updated to utilize modern CLI module
+
+---
+
+
+
 ## [3.0.0] -- 2026-03-21
 
 ### Breaking changes

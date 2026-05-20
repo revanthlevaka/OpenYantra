@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://openyantra.revanthlevaka.com/sitemap.xml

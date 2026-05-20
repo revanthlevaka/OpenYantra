@@ -58,7 +58,7 @@ It is:
 - **Agent-agnostic** -- works with Claude, ChatGPT, OpenClaw, LangChain, AutoGen
 - **Auditable** -- every write signed with SHA-256, permanent audit trail
 - **Protected** -- Raksha security engine blocks prompt injection attempts
-- **Fast** -- v3.0 SQLite WAL backend: 2ms writes at any scale
+- **Fast** -- v4.0 SQLite WAL backend: 2ms writes at any scale
 
 Named after **Chitragupta** (चित्रगुप्त) -- the Hindu God of Data, divine scribe who keeps the complete record of every soul's deeds. The architecture mirrors the mythology precisely: one trusted recorder, one immutable ledger, and a rule that the user's word (Dharma-Adesh) always overrides everything else.
 
@@ -100,7 +100,7 @@ No API keys required. No cloud account. No configuration files.
 When you start an AI session, OpenYantra injects a context block into the system prompt:
 
 ```
-[OPENYANTRA CONTEXT -- v3.0.0]
+[OPENYANTRA CONTEXT -- v4.0.0]
 User: Revanth Levaka | Filmmaker | Hyderabad, IN
 Active Projects: Feature Screenplay -> Write act 2 (High)
 Open Loops: [High] 3-act vs 5-act -- undecided | [Medium] Follow up with Priya
@@ -112,11 +112,11 @@ Your AI agent now knows who you are and what is unresolved -- without you saying
 
 ---
 
-## v3.0 -- What Changed
+## v4.0 -- What Changed
 
-v3.0 is the SQLite Foundation release. The architecture is the same -- Chitragupta still controls all writes, the single-writer rule is unchanged. What changed is the storage layer underneath.
+v4.0 is the SQLite Foundation release. The architecture is the same -- Chitragupta still controls all writes, the single-writer rule is unchanged. What changed is the storage layer underneath.
 
-| Metric | v2.x (ODS only) | v3.0 (SQLite WAL + ODS export) |
+| Metric | v2.x (ODS only) | v4.0 (SQLite WAL + ODS export) |
 |---|---|---|
 | Write latency at 200 rows | 78ms | 2ms |
 | Write latency at 1000 rows | 366ms | 2ms |
@@ -127,14 +127,14 @@ v3.0 is the SQLite Foundation release. The architecture is the same -- Chitragup
 
 The ODS file remains the human-readable canonical export. You can still open `chitrapat.ods` in LibreOffice and read everything. User edits via LibreOffice are imported back via `yantra sync`.
 
-**Sort Catastrophe warning:** Sorting a single column in LibreOffice scrambles all row data because ODS rows are not database rows. The v3.0 ODS export includes a Sort Warning sheet explaining this. Use `yantra sync` after any direct ODS edits rather than sorting.
+**Sort Catastrophe warning:** Sorting a single column in LibreOffice scrambles all row data because ODS rows are not database rows. The v4.0 ODS export includes a Sort Warning sheet explaining this. Use `yantra sync` after any direct ODS edits rather than sorting.
 
 ---
 
 ## The 14-Sheet Memory File
 
 <p align="center">
-  <img src="screenshots/screenshot_today.png" alt="Today Tab" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_today.svg" alt="Today Tab" width="100%"/>
   <em>The Today tab -- daily command centre with Daily Insight card and one-click actions.</em>
 </p>
 
@@ -162,7 +162,7 @@ The ODS file remains the human-readable canonical export. You can still open `ch
 ## Morning Briefing
 
 <p align="center">
-  <img src="screenshots/screenshot_morning.png" alt="Morning Brief" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_morning.svg" alt="Morning Brief" width="100%"/>
   <em>The morning brief in your terminal -- surfaces what matters before you open any other app.</em>
 </p>
 
@@ -174,7 +174,7 @@ yantra morning
 
 ```
 ========================================================
-  Good morning, Revanth. OpenYantra v3.0.0  2026-03-21
+  Good morning, Revanth. OpenYantra v4.0.0  2026-03-21
 ========================================================
 
   🔓  Open Loops (12 total):
@@ -210,12 +210,12 @@ yantra ui   # -> http://localhost:7331
 ```
 
 <p align="center">
-  <img src="screenshots/screenshot_loops.png" alt="Open Loops Tab" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_loops.svg" alt="Open Loops Tab" width="100%"/>
   <em>Open Loops tab -- all unresolved Anishtha with priority and TTL countdown.</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/screenshot_timeline.png" alt="Timeline Tab" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_timeline.svg" alt="Timeline Tab" width="100%"/>
   <em>Timeline tab -- every write Chitragupta has ever made, chronologically.</em>
 </p>
 
@@ -239,7 +239,7 @@ yantra ui   # -> http://localhost:7331
 ## Security -- Raksha Engine
 
 <p align="center">
-  <img src="screenshots/screenshot_security.png" alt="Security Tab" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_security.svg" alt="Security Tab" width="100%"/>
   <em>Security tab -- quarantine review, threat log, agent trust tiers.</em>
 </p>
 
@@ -261,7 +261,7 @@ Every write scanned before Chitragupta commits it. Only confirmed threats are bl
 ## Bootstrap Interview
 
 <p align="center">
-  <img src="screenshots/screenshot_bootstrap.png" alt="Bootstrap Interview" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_bootstrap.svg" alt="Bootstrap Interview" width="100%"/>
   <em>The 12-question bootstrap interview -- populates all key sheets via conversation.</em>
 </p>
 
@@ -289,7 +289,7 @@ yantra bootstrap
 ## Memory Analytics
 
 <p align="center">
-  <img src="screenshots/screenshot_stats.png" alt="Stats Tab" width="100%"/>
+  <img src="website/assets/screenshots/screenshot_stats.svg" alt="Stats Tab" width="100%"/>
   <em>Stats tab -- memory growth, writes by sheet and agent, loop resolution rate.</em>
 </p>
 
@@ -464,18 +464,18 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -> [docs/D
 | v2.9 | Agrasandhanī integrity check, session log archival, Stats tab |
 | v2.12 | Morning Briefing, Daily Insight card, streak counter, iOS Shortcut, email-to-inbox, `yantra migrate` |
 | v2.13.0 | Token alignment, em dash cleanup, brand asset suite, visual-guide.html, brand-manual.html |
-| **v3.0.0** | **SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context`** |
-| v3.1.0 *(planned)* | Dense embeddings (sentence-transformers), date range filter |
-| v3.2.0 *(planned)* | Morning briefing filter (importance>=7), dashboard reads from SQLite |
-| v3.3.0 *(planned)* | pip install openyantra[full], pyproject.toml packaging |
+| **v4.0.0** | **SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context`** |
+| v4.1.0 *(planned)* | Dense embeddings (sentence-transformers), date range filter |
+| v4.2.0 *(planned)* | Morning briefing filter (importance>=7), dashboard reads from SQLite |
+| v4.3.0 *(planned)* | pip install openyantra[full], pyproject.toml packaging |
 
 ---
 
 ## Global Stress-Test -- 8 AI Models, 3 Continents, 5 Rounds
 
-The architecture was independently reviewed five times. The v3.0 release is based on Round 5 findings (7 models: ChatGPT, Qwen, Kimi, Mistral, DeepSeek, Grok, GLM5).
+The architecture was independently reviewed five times. The v4.0 release is based on Round 5 findings (7 models: ChatGPT, Qwen, Kimi, Mistral, DeepSeek, Grok, GLM5).
 
-**7/7 consensus findings that drove v3.0:**
+**7/7 consensus findings that drove v4.0:**
 - SQLite WAL as operational backend (ODS as export)
 - Write idempotency via request_id dedup
 - portalocker for concurrent read safety
@@ -527,10 +527,10 @@ See [PRIVACY.md](PRIVACY.md) for full regional specifications.
 
 ```
 openyantra/
-├── openyantra.py             <- Core library v3.0.0
-├── yantra_sqlite.py          <- SyncEngine: SQLite WAL + atomic ODS export (NEW v3.0)
-├── yantra_morning.py         <- Morning Briefing (NEW v3.0)
-├── yantra_context.py         <- Copy Context: paste into any AI chat (NEW v3.0)
+├── openyantra.py             <- Core library v4.0.0
+├── yantra_sqlite.py          <- SyncEngine: SQLite WAL + atomic ODS export (NEW v4.0)
+├── yantra_morning.py         <- Morning Briefing (NEW v4.0)
+├── yantra_context.py         <- Copy Context: paste into any AI chat (NEW v4.0)
 ├── vidyakosha.py             <- Semantic search (VidyaKosha)
 ├── yantra_ui.py              <- Browser dashboard (12 tabs)
 ├── yantra_security.py        <- Raksha security engine
@@ -588,8 +588,8 @@ Library: **MIT License**
 
 | Today Tab | CLI Terminal | Web UI |
 |---|---|---|
-| ![Today](screenshots/screenshot_today.png) | ![CLI](screenshots/screenshot_cli.png) | ![Web UI](screenshots/screenshot_webui.png) |
+| ![Today](website/assets/screenshots/screenshot_today.svg) | ![CLI](website/assets/screenshots/screenshot_cli.svg) | ![Web UI](website/assets/screenshots/screenshot_webui.svg) |
 
 | Mobile | Architecture | Open Loops |
 |---|---|---|
-| ![Mobile](screenshots/screenshot_mobile.png) | ![Architecture](screenshots/screenshot_architecture.png) | ![Loops](screenshots/screenshot_loops.png) |
+| ![Mobile](website/assets/screenshots/screenshot_mobile.svg) | ![Architecture](website/assets/screenshots/screenshot_architecture.svg) | ![Loops](website/assets/screenshots/screenshot_loops.svg) |
