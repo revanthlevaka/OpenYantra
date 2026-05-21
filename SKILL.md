@@ -1,8 +1,8 @@
 ---
 name: openyantra
-version: 4.0.0
+version: 4.1.0
 description: >
-  Implements OpenYantra v4.0.0 -- The Sacred Memory Machine -- persistent,
+  Implements OpenYantra v4.1.0 -- The Sacred Memory Machine -- persistent,
   structured, human-readable memory for personal agentic AI, inspired by
   Chitragupta (the Hindu God of Data). Uses open-standard .ods files,
   SQLite WAL operational backend, Chitragupta/LedgerAgent single-writer,
@@ -14,7 +14,7 @@ description: >
   "I have to repeat myself", "how do I give my agent memory".
 ---
 
-# OpenYantra v4.0.0 -- The Sacred Memory Machine
+# OpenYantra v4.1.0 -- The Sacred Memory Machine
 
 > *Inspired by Chitragupta, the Hindu God of Data*
 
@@ -29,7 +29,7 @@ description: >
 | Chitrapat | Memory file | `chitrapat.ods` |
 | Karma-Lekha | WriteRequest | Write to Chitragupta |
 | Sanchitta | WriteQueue | Crash-safe queue |
-| Setu | SyncEngine | SQLite-to-ODS bridge (v4.0) |
+| Setu | SyncEngine | SQLite-to-ODS bridge (v4.1) |
 | Smarana | Session Load | Load at session start |
 | Anishtha | Open Loops | Unresolved threads |
 | Mudra | Signature | SHA-256 seal |
@@ -117,7 +117,7 @@ Universal columns: `Confidence` · `Source` · `Last Updated` · `Importance` (1
 
 ---
 
-## v4.0 Architecture: SQLite + ODS
+## v4.1 Architecture: SQLite + ODS
 
 ```
 Agent -> WriteRequest -> Chitragupta (LedgerAgent)
@@ -162,7 +162,7 @@ Sync   = bidirectional: yantra sync imports ODS edits back
 ### System Prompt Block
 
 ```
-[OPENYANTRA CONTEXT -- v4.0.0 | Chitragupta-secured]
+[OPENYANTRA CONTEXT -- v4.1.0 | Chitragupta-secured]
 User: {Name} | {Occupation} | {Location}
 Active Projects (Karma): {Project} -> {NextStep}
 Open Loops (Anishtha, top 15): [{Priority}] {Topic} -- {Context}
@@ -230,7 +230,7 @@ oy.release_pratibimba()              # release
 
 ```
 openyantra/core.py         <- Core library (Chitragupta pattern)
-openyantra/yantra_sqlite.py      <- SyncEngine (v4.0 SQLite WAL + atomic ODS export)
+openyantra/yantra_sqlite.py      <- SyncEngine (v4.1 SQLite WAL + atomic ODS export)
 openyantra/yantra_morning.py     <- Morning Briefing
 openyantra/yantra_context.py     <- Copy Context (paste into any AI)
 openyantra/vidyakosha.py         <- Semantic index

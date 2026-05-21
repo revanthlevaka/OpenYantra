@@ -15,7 +15,7 @@
 
 set -e
 
-VERSION="4.0.0"
+VERSION="4.1.0"
 INSTALL_DIR="$HOME/openyantra"
 VENV_DIR="$INSTALL_DIR/.venv"
 RAW="https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main"

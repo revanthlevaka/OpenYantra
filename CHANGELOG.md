@@ -4,6 +4,23 @@ All notable changes documented here. Follows semantic versioning.
 
 ---
 
+## [4.1.0] -- 2026-05-20
+
+### Added
+- Google and Apple Passkey (WebAuthn) authentication support to protect local memory dashboard
+- Dense embeddings support using `sentence-transformers` for VidyaKosha hybrid semantic search
+- ISO-timestamp-based `start_date` and `end_date` filtering for cognitive memories and MCP search
+- Safe CLI commands: `yantra stop` and `yantra kill` to stop background processes cleanly
+- Safety options to reset or clean up half-finished bootstrap runs
+- Manual UI Lock button and session lock overlay screen in Web UI
+
+### Changed
+- Incremented version to v4.1.0 across codebase, website, and visual manuals
+- Web UI updated with Date Range picker inputs in Memory Explorer and embedder selector dropdown in settings
+
+
+---
+
 ## [4.0.0] -- 2026-05-20
 
 ### Added

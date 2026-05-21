@@ -1,4 +1,4 @@
-"""OpenYantra -- The Sacred Memory Machine v4.0.0"""
+"""OpenYantra -- The Sacred Memory Machine v4.1.0"""
 
 from openyantra.core import (
     OpenYantra,
@@ -10,5 +10,5 @@ from openyantra.core import (
     SHEET_INBOX, SHEET_CORRECTIONS, SHEET_QUARANTINE, SHEET_SECURITY_LOG
 )
 
-__version__ = "4.0.0"
+__version__ = "4.1.0"
 __all__ = ["OpenYantra", "WriteRequest", "run_bootstrap_interview", "__version__"]

@@ -110,9 +110,9 @@ class CognitiveMemoryStore:
             return True
         return False
 
-    def search(self, query: Optional[str] = None, type_val: Optional[str] = None, tags: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    def search(self, query: Optional[str] = None, type_val: Optional[str] = None, tags: Optional[List[str]] = None, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List[Dict[str, Any]]:
         """
-        Search memories with partial match on key/content, type match, and tag intersection (all tags match).
+        Search memories with partial match on key/content, type match, tag intersection, and date range.
         """
         memories = self._load()
         filtered = []
@@ -134,6 +134,15 @@ class CognitiveMemoryStore:
             # Type filter
             if type_val and type_val.strip():
                 if m.get("type", "").lower() != type_val.strip().lower():
+                    continue
+
+            # Date filters (lexicographical string prefix matching)
+            ts = m.get("timestamp", "")
+            if start_date and start_date.strip():
+                if not ts or ts[:10] < start_date.strip():
+                    continue
+            if end_date and end_date.strip():
+                if not ts or ts[:10] > end_date.strip():
                     continue
 
             # Tags filter (memory must match ALL requested tags)

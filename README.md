@@ -100,7 +100,7 @@ No API keys required. No cloud account. No configuration files.
 When you start an AI session, OpenYantra injects a context block into the system prompt:
 
 ```
-[OPENYANTRA CONTEXT -- v4.0.0]
+[OPENYANTRA CONTEXT -- v4.1.0]
 User: Revanth Levaka | Filmmaker | Hyderabad, IN
 Active Projects: Feature Screenplay -> Write act 2 (High)
 Open Loops: [High] 3-act vs 5-act -- undecided | [Medium] Follow up with Priya
@@ -174,7 +174,7 @@ yantra morning
 
 ```
 ========================================================
-  Good morning, Revanth. OpenYantra v4.0.0  2026-03-21
+  Good morning, Revanth. OpenYantra v4.1.0  2026-05-20
 ========================================================
 
   🔓  Open Loops (12 total):
@@ -464,8 +464,8 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -> [docs/D
 | v2.9 | Agrasandhanī integrity check, session log archival, Stats tab |
 | v2.12 | Morning Briefing, Daily Insight card, streak counter, iOS Shortcut, email-to-inbox, `yantra migrate` |
 | v2.13.0 | Token alignment, em dash cleanup, brand asset suite, visual-guide.html, brand-manual.html |
-| **v4.0.0** | **SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context`** |
-| v4.1.0 *(planned)* | Dense embeddings (sentence-transformers), date range filter |
+| v4.0.0 | SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context` |
+| **v4.1.0** | **Dense embeddings (sentence-transformers), date range filter, Google/Apple passkey support** |
 | v4.2.0 *(planned)* | Morning briefing filter (importance>=7), dashboard reads from SQLite |
 | v4.3.0 *(planned)* | pip install openyantra[full], pyproject.toml packaging |
 
@@ -527,7 +527,7 @@ See [PRIVACY.md](PRIVACY.md) for full regional specifications.
 
 ```
 openyantra/
-├── openyantra.py             <- Core library v4.0.0
+├── openyantra.py             <- Core library v4.1.0
 ├── yantra_sqlite.py          <- SyncEngine: SQLite WAL + atomic ODS export (NEW v4.0)
 ├── yantra_morning.py         <- Morning Briefing (NEW v4.0)
 ├── yantra_context.py         <- Copy Context: paste into any AI chat (NEW v4.0)

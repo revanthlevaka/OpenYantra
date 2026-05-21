@@ -58,7 +58,7 @@
   <!-- Main text -->
   <text x="140" y="170" font-family="'IBM Plex Mono', monospace" font-size="52" font-weight="300" letter-spacing="-1.5" fill="#e8e5de">Open</text>
   <text x="285" y="170" font-family="'IBM Plex Mono', monospace" font-size="52" font-weight="600" letter-spacing="-1.5" fill="url(#grad)">Yantra</text>
-  <text x="140" y="200" font-family="'IBM Plex Mono', monospace" font-size="13" letter-spacing="3" fill="rgba(232,229,222,0.45)">v4.0.0</text>
+  <text x="140" y="200" font-family="'IBM Plex Mono', monospace" font-size="13" letter-spacing="3" fill="rgba(232,229,222,0.45)">v4.1.0</text>
 
   <text x="140" y="242" font-family="'IBM Plex Sans', sans-serif" font-size="15" font-weight="300" fill="rgba(232,229,222,0.45)">Local-first personal memory for AI agents.</text>
   <text x="140" y="264" font-family="'IBM Plex Sans', sans-serif" font-size="15" font-weight="300" fill="rgba(232,229,222,0.35)">One file. One trusted writer. Any agent. Zero cloud.</text>

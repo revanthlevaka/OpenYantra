@@ -157,3 +157,47 @@ def test_mcp_tool_calls(temp_db):
     assert "error" not in resp_del
     assert "successful: True" in resp_del["result"]["content"][0]["text"]
     assert temp_db.read("mcp-key") is None
+
+def test_search_memories_date_filtering(temp_db):
+    # Write some memories
+    temp_db.write("key1", "fact", "CEO", "Content 1")
+    temp_db.write("key2", "fact", "CEO", "Content 2")
+    temp_db.write("key3", "fact", "CEO", "Content 3")
+
+    # Manually edit the timestamp in the JSON file to test different dates
+    memories = temp_db._load()
+    for m in memories:
+        if m["key"] == "key1":
+            m["timestamp"] = "2026-05-10T12:00:00Z"
+        elif m["key"] == "key2":
+            m["timestamp"] = "2026-05-15T12:00:00Z"
+        elif m["key"] == "key3":
+            m["timestamp"] = "2026-05-20T12:00:00Z"
+    temp_db._save(memories)
+
+    # Test filtering
+    # 1. No filter (all three should return)
+    res = temp_db.search()
+    assert len(res) == 3
+
+    # 2. start_date filter only
+    res = temp_db.search(start_date="2026-05-15")
+    assert len(res) == 2
+    assert any(m["key"] == "key2" for m in res)
+    assert any(m["key"] == "key3" for m in res)
+
+    # 3. end_date filter only
+    res = temp_db.search(end_date="2026-05-15")
+    assert len(res) == 2
+    assert any(m["key"] == "key1" for m in res)
+    assert any(m["key"] == "key2" for m in res)
+
+    # 4. Both start_date and end_date filters
+    res = temp_db.search(start_date="2026-05-12", end_date="2026-05-18")
+    assert len(res) == 1
+    assert res[0]["key"] == "key2"
+
+    # 5. Out of bounds range
+    res = temp_db.search(start_date="2026-05-25")
+    assert len(res) == 0
+

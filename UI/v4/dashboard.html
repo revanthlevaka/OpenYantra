@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>OpenYantra v4.0.0 -- Briefing Room</title>
+<title>OpenYantra v4.1.0 -- Briefing Room</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
@@ -238,6 +238,24 @@ tr:hover td{background:var(--surface2);}
 .modal-card::before {
   content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: var(--grad);
 }
+
+/* Lock Overlay */
+.lock-overlay {
+  position: fixed; inset: 0;
+  background: var(--ink); z-index: 10000;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(12px);
+  transition: var(--tr);
+}
+.lock-overlay.open { display: flex; }
+.lock-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  width: 380px; padding: 30px; text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8); position: relative;
+}
+.lock-card::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: var(--grad);
+}
 .modal-card h3 {
   font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 15px;
 }
@@ -297,9 +315,10 @@ tr:hover td{background:var(--surface2);}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
     </button>
     OpenYantra
-    <span class="hdr-badge">v4.0.0</span>
+    <span class="hdr-badge">v4.1.0</span>
   </div>
   <div class="hdr-r">
+    <button id="lockBtn" class="btn" style="display:none; font-size:9px; padding:3px 6px; border-color:var(--border2); margin-right:8px; align-items:center; gap:3px;" onclick="lockYantraManual()">🔒 Lock</button>
     <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green)"><span class="status-dot"></span>Chitragupta active</span>
     <div class="theme-row" id="tr">
       <button class="th-btn" data-mode="light">
@@ -317,6 +336,27 @@ tr:hover td{background:var(--surface2);}
     </div>
   </div>
 </header>
+
+<div id="lockOverlay" class="lock-overlay">
+  <div class="lock-card">
+    <svg class="hdr-mark" width="48" height="48" viewBox="0 0 100 100" fill="none" style="margin: 0 auto 20px auto; display: block; animation: spin 90s linear infinite;">
+      <defs>
+        <linearGradient id="lockG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1c6fff"/>
+          <stop offset="33%" stop-color="#5535e0"/>
+          <stop offset="66%" stop-color="#e84520"/>
+          <stop offset="100%" stop-color="#f5a000"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="47" stroke="url(#lockG)" stroke-width="1.5" fill="none"/>
+      <circle cx="50" cy="50" r="33" stroke="url(#lockG)" stroke-width="1" fill="none" opacity="0.5"/>
+      <circle cx="50" cy="50" r="4" fill="url(#lockG)"/>
+    </svg>
+    <h2 style="font-size: 14px; font-weight: 500; margin-bottom: 8px; font-family: monospace; color: var(--text);">OpenYantra Locked</h2>
+    <p style="font-size: 10px; color: var(--muted); margin-bottom: 24px; font-family: monospace; line-height: 1.5; padding: 0 10px;">Please authenticate with Google or Apple Passkey to access your personal AI memory vault.</p>
+    <button class="btn-p" onclick="unlockYantra()" style="width: 100%; padding: 10px; font-family: monospace; font-size: 10px;">Unlock with Passkey</button>
+  </div>
+</div>
 
 <nav>
   <button class="ntab active" onclick="go('today',this)">🌅 <span>Today</span></button>
@@ -366,8 +406,204 @@ tr:hover td{background:var(--surface2);}
 <div id="toast"></div>
 
 <script>
-const api = async(url,opts={})=>{try{const r=await fetch(url,opts);return await r.json();}catch(e){return{};}};
+const api = async(url,opts={})=>{
+  try {
+    const r = await fetch(url,opts);
+    if (r.status === 401) {
+      showLockScreen();
+      return { error: 'Unauthorized' };
+    }
+    return await r.json();
+  } catch(e) {
+    return {};
+  }
+};
 const toast = (m,ok=true)=>{const t=document.getElementById('toast');t.textContent=m;t.style.borderColor=ok?'var(--green)':'var(--coral)';t.style.color=ok?'var(--green)':'var(--coral)';t.style.display='block';setTimeout(()=>t.style.display='none',2500);};
+
+function base64urlToBuffer(base64url) {
+  let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = base64.length % 4;
+  if (pad) {
+    base64 += '='.repeat(4 - pad);
+  }
+  const binary = atob(base64);
+  const buffer = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    buffer[i] = binary.charCodeAt(i);
+  }
+  return buffer.buffer;
+}
+
+function bufferToBase64url(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binary);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function showLockScreen() {
+  document.getElementById('lockOverlay').classList.add('open');
+}
+
+function hideLockScreen() {
+  document.getElementById('lockOverlay').classList.remove('open');
+}
+
+async function unlockYantra() {
+  try {
+    const resOptions = await fetch('/api/passkey/login/options', { method: 'POST' });
+    if (!resOptions.ok) {
+      const errText = await resOptions.text();
+      toast('Failed to get login options: ' + errText, false);
+      return;
+    }
+    const data = await resOptions.json();
+    const stateId = data.state_id;
+    const options = data.options;
+
+    options.publicKey.challenge = base64urlToBuffer(options.publicKey.challenge);
+    if (options.publicKey.allowCredentials) {
+      options.publicKey.allowCredentials.forEach(cred => {
+        cred.id = base64urlToBuffer(cred.id);
+      });
+    }
+
+    const assertion = await navigator.credentials.get({
+      publicKey: options.publicKey
+    });
+
+    const credential = {
+      id: assertion.id,
+      rawId: bufferToBase64url(assertion.rawId),
+      type: assertion.type,
+      response: {
+        authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+        clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+        signature: bufferToBase64url(assertion.response.signature),
+        userHandle: assertion.response.userHandle ? bufferToBase64url(assertion.response.userHandle) : null
+      }
+    };
+
+    const resVerify = await fetch('/api/passkey/login/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state_id: stateId, credential })
+    });
+
+    if (resVerify.ok) {
+      toast('Access unlocked');
+      hideLockScreen();
+      const status = await api('/api/passkey/status');
+      const lockBtn = document.getElementById('lockBtn');
+      if (status.passkeyEnabled) {
+        if (lockBtn) lockBtn.style.display = 'inline-flex';
+      }
+      load(cur);
+    } else {
+      const errText = await resVerify.text();
+      toast('Verification failed: ' + errText, false);
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Authentication error: ' + err.message, false);
+  }
+}
+
+async function registerPasskey() {
+  const label = prompt('Enter a label for this passkey (e.g. MacBook, YubiKey):');
+  if (!label) return;
+
+  try {
+    const resOptions = await fetch('/api/passkey/register/options', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label })
+    });
+    if (!resOptions.ok) {
+      const errText = await resOptions.text();
+      toast('Failed to get registration options: ' + errText, false);
+      return;
+    }
+    const data = await resOptions.json();
+    const stateId = data.state_id;
+    const options = data.options;
+
+    options.publicKey.challenge = base64urlToBuffer(options.publicKey.challenge);
+    options.publicKey.user.id = base64urlToBuffer(options.publicKey.user.id);
+    if (options.publicKey.excludeCredentials) {
+      options.publicKey.excludeCredentials.forEach(cred => {
+        cred.id = base64urlToBuffer(cred.id);
+      });
+    }
+
+    const credential = await navigator.credentials.create({
+      publicKey: options.publicKey
+    });
+
+    const credentialData = {
+      id: credential.id,
+      rawId: bufferToBase64url(credential.rawId),
+      type: credential.type,
+      response: {
+        attestationObject: bufferToBase64url(credential.response.attestationObject),
+        clientDataJSON: bufferToBase64url(credential.response.clientDataJSON),
+        transports: credential.response.getTransports ? credential.response.getTransports() : []
+      }
+    };
+
+    const resVerify = await fetch('/api/passkey/register/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state_id: stateId, credential: credentialData, label })
+    });
+
+    if (resVerify.ok) {
+      toast('Passkey registered successfully!');
+      const lockBtn = document.getElementById('lockBtn');
+      if (lockBtn) lockBtn.style.display = 'inline-flex';
+      loadConfigSettings();
+    } else {
+      const errText = await resVerify.text();
+      toast('Registration failed: ' + errText, false);
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Registration error: ' + err.message, false);
+  }
+}
+
+async function deletePasskey(credId) {
+  if (!confirm('Are you sure you want to delete this passkey? If you delete all passkeys, Passkey Security will be disabled.')) return;
+  const res = await api('/api/passkey/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential_id: credId })
+  });
+  if (res && res.status === 'ok') {
+    toast('Passkey deleted');
+    const status = await api('/api/passkey/status');
+    const lockBtn = document.getElementById('lockBtn');
+    if (!status.passkeyEnabled) {
+      if (lockBtn) lockBtn.style.display = 'none';
+    }
+    loadConfigSettings();
+  } else {
+    toast('Failed to delete passkey', false);
+  }
+}
+
+async function lockYantraManual() {
+  const r = await api('/api/passkey/logout', { method: 'POST' });
+  if (r && r.status === 'ok') {
+    toast('System locked');
+    showLockScreen();
+  } else {
+    toast('Logout failed', false);
+  }
+}
 const ptag = s=>{if(!s)return'';const m={'Active':'b-ok','Pending':'b-md','High':'b-hi','Critical':'b-hi','Medium':'b-md','Low':'b-lo','Done':'b-lo','written':'b-ok','confirmed':'b-hi','suspicious':'b-md','clean':'b-ok'};return`<span class="badge ${m[s]||''}">${s}</span>`;};
 const tbl = (rows,cols)=>{
   if(!rows||!rows.length)return'<div class="empty">No data yet.</div>';
@@ -911,7 +1147,8 @@ async function loadConfigSettings() {
     anthropicKey: '',
     geminiKey: '',
     oauthClientId: '',
-    oauthClientSecret: ''
+    oauthClientSecret: '',
+    embedder: 'auto'
   };
   try {
     const s = await api('/api/settings');
@@ -950,6 +1187,18 @@ async function loadConfigSettings() {
             <option value="14px" ${settings.fontSize==='14px'?'selected':''}>14px (Medium)</option>
             <option value="15px" ${settings.fontSize==='15px'?'selected':''}>15px (Large)</option>
             <option value="16px" ${settings.fontSize==='16px'?'selected':''}>16px (Extra Large)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple);margin-bottom:15px;">🧠 Cognitive Memory & Embeddings</div>
+        <div style="margin-bottom:15px;">
+          <label style="display:block;font-size:9px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;">Dense Embeddings Model (VidyaKosha)</label>
+          <select id="cfg-embedder" style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:8px;font-family:var(--mono);font-size:11px;outline:none;">
+            <option value="auto" ${settings.embedder==='auto'?'selected':''}>Auto (sentence-transformers if installed, else BM25)</option>
+            <option value="sentence-transformers" ${settings.embedder==='sentence-transformers'?'selected':''}>Force Dense (sentence-transformers)</option>
+            <option value="bm25" ${settings.embedder==='bm25'?'selected':''}>Force Sparse (BM25 Only)</option>
           </select>
         </div>
       </div>
@@ -1016,6 +1265,15 @@ async function loadConfigSettings() {
         </div>
       </div>
 
+      <div style="max-width:600px;background:var(--surface2);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:15px;">🔒 Security & Passkeys</div>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:15px;line-height:1.5;">
+          Protect your AI memory database with Apple, Google, or hardware passkeys. Once registered, OpenYantra will require verification to load.
+        </p>
+        <div id="passkeys-list" style="margin-bottom:15px;"></div>
+        <button class="btn-p" onclick="registerPasskey()" style="font-size:10px;padding:6px 12px;font-family:var(--mono);">➕ Register New Passkey</button>
+      </div>
+
       <div style="max-width:600px;display:flex;gap:10px;margin-bottom:30px;">
         <button class="btn-p" onclick="saveSettings()" style="flex:1;">Save Configuration</button>
         <button class="btn" onclick="loadConfigSettings()">Reset Fields</button>
@@ -1055,6 +1313,29 @@ async function loadConfigSettings() {
         return `<option value="${key}">${mcpClients[key].name}</option>`;
       }).join('');
       renderMcpClientConfig();
+    }
+
+    // Populate passkeys list
+    const pkList = document.getElementById('passkeys-list');
+    if (pkList) {
+      const pks = settings.passkeys || [];
+      if (pks.length === 0) {
+        pkList.innerHTML = `<div style="color:var(--muted);font-size:10px;margin-bottom:10px;">No passkeys registered. Register a passkey below to enable local protection.</div>`;
+      } else {
+        pkList.innerHTML = pks.map(pk => {
+          const added = pk.added_at ? new Date(pk.added_at).toLocaleString() : 'Unknown';
+          const escLabel = (pk.label || 'Unnamed Passkey').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+          return `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:10px;">
+              <div style="flex:1;">
+                <div style="font-weight:500;color:var(--text);font-size:11px;font-family:var(--mono);">🔑 ${escLabel}</div>
+                <div style="font-size:9px;color:var(--muted);margin-top:2px;font-family:var(--mono);">Added: ${added} · Count: ${pk.sign_count || 0}</div>
+              </div>
+              <button class="btn btn-x" style="padding:4px 8px;font-size:9px;font-family:var(--mono);" onclick="deletePasskey('${pk.credential_id}')">Delete</button>
+            </div>
+          `;
+        }).join('');
+      }
     }
   }
 }
@@ -1154,7 +1435,8 @@ async function saveSettings() {
     anthropicKey: document.getElementById('cfg-anthropicKey').value,
     geminiKey: document.getElementById('cfg-geminiKey').value,
     oauthClientId: document.getElementById('cfg-oauthClientId').value,
-    oauthClientSecret: document.getElementById('cfg-oauthClientSecret').value
+    oauthClientSecret: document.getElementById('cfg-oauthClientSecret').value,
+    embedder: document.getElementById('cfg-embedder').value
   };
 
   const r = await api('/api/settings', {
@@ -1307,17 +1589,25 @@ async function loadCognitiveMemories() {
   const pane = document.getElementById('cognitive_memories');
   pane.innerHTML = `
     <div class="sh"><span>Memory Explorer</span></div>
-    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
-      <input id="memSearchQuery" placeholder="Search key or content..." style="flex:2; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
-      <select id="memSearchType" style="flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" onchange="filterMemories()">
+    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items: stretch;">
+      <input id="memSearchQuery" placeholder="Search key or content..." style="flex:2; min-width:160px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
+      <select id="memSearchType" style="flex:1; min-width:110px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" onchange="filterMemories()">
         <option value="">All Types</option>
         <option value="decision">Decision</option>
         <option value="fact">Fact</option>
         <option value="context">Context</option>
         <option value="observation">Observation</option>
       </select>
-      <input id="memSearchTags" placeholder="Tags (comma separated)..." style="flex:1; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
-      <button class="btn btn-ok" onclick="openAddMemoryModal()">+ Add Memory</button>
+      <input id="memSearchTags" placeholder="Tags..." style="flex:1; min-width:90px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 12px; font-family:var(--mono); font-size:12px; outline:none;" oninput="filterMemories()"/>
+      <div style="display:flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border); padding:0 8px;">
+        <span style="font-size:9px; color:var(--muted); text-transform:uppercase; font-family:var(--mono);">From</span>
+        <input id="memSearchStartDate" type="date" style="background:transparent; border:none; color:var(--text); padding:4px 0; font-family:var(--mono); font-size:11px; outline:none; color-scheme:dark;" onchange="filterMemories()"/>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border); padding:0 8px;">
+        <span style="font-size:9px; color:var(--muted); text-transform:uppercase; font-family:var(--mono);">To</span>
+        <input id="memSearchEndDate" type="date" style="background:transparent; border:none; color:var(--text); padding:4px 0; font-family:var(--mono); font-size:11px; outline:none; color-scheme:dark;" onchange="filterMemories()"/>
+      </div>
+      <button class="btn btn-ok" onclick="openAddMemoryModal()" style="height: auto;">+ Add Memory</button>
     </div>
     <div id="memoriesTableContainer"></div>
   `;
@@ -1366,11 +1656,15 @@ async function filterMemories() {
   const query = document.getElementById('memSearchQuery').value.trim();
   const type = document.getElementById('memSearchType').value;
   const tagsInput = document.getElementById('memSearchTags').value.trim();
+  const startDate = document.getElementById('memSearchStartDate').value;
+  const endDate = document.getElementById('memSearchEndDate').value;
   
   let url = `/api/cognitive/memories?1=1`;
   if (query) url += `&query=${encodeURIComponent(query)}`;
   if (type) url += `&type=${encodeURIComponent(type)}`;
   if (tagsInput) url += `&tags=${encodeURIComponent(tagsInput)}`;
+  if (startDate) url += `&start_date=${encodeURIComponent(startDate)}`;
+  if (endDate) url += `&end_date=${encodeURIComponent(endDate)}`;
   
   const d = await api(url);
   renderMemoriesTable(d.memories || []);
@@ -1974,7 +2268,26 @@ function renderGraphCanvas() {
 
 /* Auto refresh Today */
 setInterval(()=>{if(cur==='today')loadToday();},30000);
-load('today');
+
+async function initApp() {
+  try {
+    const status = await api('/api/passkey/status');
+    const lockBtn = document.getElementById('lockBtn');
+    if (status.passkeyEnabled) {
+      if (lockBtn) lockBtn.style.display = 'inline-flex';
+      if (!status.authenticated) {
+        showLockScreen();
+        return;
+      }
+    } else {
+      if (lockBtn) lockBtn.style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Failed to init passkey check', err);
+  }
+  load('today');
+}
+initApp();
 </script>
 </body>
 </html>

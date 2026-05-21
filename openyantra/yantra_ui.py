@@ -1,8 +1,8 @@
 """
-yantra_ui.py -- OpenYantra Browser Dashboard v4.0.0
+yantra_ui.py -- OpenYantra Browser Dashboard v4.1.0
 Run: yantra ui -> http://localhost:7331
 
-v4.0.0:
+v4.1.0:
   - Serves UI/v4/dashboard.html (Briefing Room) via FileResponse
   - /api/oracle endpoint wired to oracle-card
   - /api/export endpoint
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from fastapi import FastAPI, HTTPException, Request
-    from fastapi.responses import HTMLResponse, FileResponse
+    from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
     import uvicorn
 except ImportError:
     print("pip install fastapi uvicorn"); sys.exit(1)
@@ -36,14 +36,76 @@ except ImportError:
     print("openyantra.py not found."); sys.exit(1)
 
 from openyantra.cognitive_db import CognitiveMemoryStore
+import secrets
+from openyantra.yantra_passkey import (
+    make_registration_options,
+    check_registration_response,
+    make_authentication_options,
+    check_authentication_response
+)
 
-app = FastAPI(title="OpenYantra", version="4.0.0", docs_url=None, redoc_url=None)
+app = FastAPI(title="OpenYantra", version="4.1.0", docs_url=None, redoc_url=None)
 _oy = None
 _cog_store = None
+
+active_challenges: dict[str, str] = {}
+authenticated_sessions: set[str] = set()
 
 def get_oy() -> OpenYantra:
     if _oy is None: raise HTTPException(500, "Not initialised")
     return _oy
+
+def get_settings_file() -> Path:
+    oy = get_oy()
+    return Path(oy.path).parent / "settings.json"
+
+DEFAULT_SETTINGS = {
+    "fontSize": "11px",
+    "aiProvider": "local",
+    "aiModelName": "llama3",
+    "localEndpoint": "http://localhost:11434/v1",
+    "openaiKey": "",
+    "anthropicKey": "",
+    "geminiKey": "",
+    "oauthClientId": "",
+    "oauthClientSecret": "",
+    "passkeyEnabled": False,
+    "passkeys": [],
+    "embedder": "auto"
+}
+
+def get_settings_data() -> dict:
+    sf = get_settings_file()
+    if sf.exists():
+        try:
+            with open(sf, "r") as f:
+                data = json.load(f)
+            # Ensure all keys exist
+            for k, v in DEFAULT_SETTINGS.items():
+                if k not in data:
+                    data[k] = v
+            return data
+        except Exception:
+            return DEFAULT_SETTINGS.copy()
+    return DEFAULT_SETTINGS.copy()
+
+@app.middleware("http")
+async def check_auth_middleware(request: Request, call_next):
+    path = request.url.path
+    if path.startswith("/api") and not (
+        path == "/api/passkey/status" or
+        path == "/api/passkey/login/options" or
+        path == "/api/passkey/login/verify" or
+        path == "/api/health"
+    ):
+        settings = get_settings_data()
+        if settings.get("passkeyEnabled", False):
+            session_token = request.cookies.get("yantra_session")
+            if not session_token or session_token not in authenticated_sessions:
+                from fastapi.responses import JSONResponse
+                return JSONResponse(status_code=401, content={"error": "Unauthorized: Passkey verification required"})
+                
+    return await call_next(request)
 
 def get_cog_store() -> CognitiveMemoryStore:
     global _cog_store
@@ -131,11 +193,11 @@ async def api_stats():
 
 
 @app.get("/api/cognitive/memories")
-async def get_cognitive_memories(query: str = None, type: str = None, tags: str = None):
+async def get_cognitive_memories(query: str = None, type: str = None, tags: str = None, start_date: str = None, end_date: str = None):
     tags_list = None
     if tags:
         tags_list = [t.strip() for t in tags.split(",") if t.strip()]
-    return {"memories": get_cog_store().search(query=query, type_val=type, tags=tags_list)}
+    return {"memories": get_cog_store().search(query=query, type_val=type, tags=tags_list, start_date=start_date, end_date=end_date)}
 
 @app.post("/api/cognitive/write")
 async def post_cognitive_write(req: Request):
@@ -202,52 +264,262 @@ async def post_cognitive_add_agent(req: Request):
     return {"status": "ok", "agent": name}
 
 
-def get_settings_file() -> Path:
-    oy = get_oy()
-    return Path(oy.path).parent / "settings.json"
-
-DEFAULT_SETTINGS = {
-    "fontSize": "11px",
-    "aiProvider": "local",
-    "aiModelName": "llama3",
-    "localEndpoint": "http://localhost:11434/v1",
-    "openaiKey": "",
-    "anthropicKey": "",
-    "geminiKey": "",
-    "oauthClientId": "",
-    "oauthClientSecret": ""
-}
-
 @app.get("/api/settings")
 async def get_settings():
-    sf = get_settings_file()
-    if sf.exists():
-        try:
-            with open(sf, "r") as f:
-                data = json.load(f)
-            # Ensure all keys exist
-            for k, v in DEFAULT_SETTINGS.items():
-                if k not in data:
-                    data[k] = v
-            return data
-        except Exception:
-            return DEFAULT_SETTINGS
-    return DEFAULT_SETTINGS
+    return get_settings_data()
 
 @app.post("/api/settings")
 async def post_settings(req: Request):
     d = await req.json()
     sf = get_settings_file()
-    settings = {}
-    for k, v in DEFAULT_SETTINGS.items():
-        settings[k] = d.get(k, v)
+    current = get_settings_data()
+    # Update current settings with only what's provided in request
+    for k in DEFAULT_SETTINGS.keys():
+        if k in d:
+            current[k] = d[k]
     try:
         sf.parent.mkdir(parents=True, exist_ok=True)
         with open(sf, "w") as f:
-            json.dump(settings, f, indent=2)
-        return {"status": "ok", "settings": settings}
+            json.dump(current, f, indent=2)
+        
+        # Re-initialize VidyaKosha in _oy to apply the new embedder preference
+        oy = get_oy()
+        try:
+            from openyantra.core import _VIDYAKOSHA_AVAILABLE
+            if _VIDYAKOSHA_AVAILABLE:
+                from vidyakosha import VidyaKosha as _VK
+                oy._vidyakosha = _VK(str(Path(oy.path).parent), embedder_pref=current.get("embedder", "auto"))
+                oy._vidyakosha.sync(oy.path)
+        except Exception as e:
+            print(f"[Yantra-UI] Error updating VidyaKosha: {e}")
+
+        return {"status": "ok", "settings": current}
     except Exception as e:
         raise HTTPException(500, f"Failed to save settings: {e}")
+
+# Passkey Endpoints
+
+@app.get("/api/passkey/status")
+async def get_passkey_status(req: Request):
+    settings = get_settings_data()
+    session_token = req.cookies.get("yantra_session")
+    is_authenticated = False
+    if session_token and session_token in authenticated_sessions:
+        is_authenticated = True
+    return {
+        "passkeyEnabled": settings.get("passkeyEnabled", False),
+        "hasPasskeys": len(settings.get("passkeys", [])) > 0,
+        "authenticated": is_authenticated
+    }
+
+@app.post("/api/passkey/register/options")
+async def post_register_options(req: Request):
+    try:
+        d = await req.json()
+    except Exception:
+        d = {}
+    label = d.get("label", "My Authenticator")
+    
+    settings = get_settings_data()
+    rp_id = req.url.hostname or "localhost"
+    username = "OpenYantra User"
+    existing_creds = settings.get("passkeys", [])
+    
+    try:
+        options = make_registration_options(
+            username=username,
+            rp_id=rp_id,
+            existing_credentials=existing_creds
+        )
+        
+        state_id = secrets.token_hex(16)
+        active_challenges[state_id] = options["challenge"]
+        
+        return {
+            "options": options,
+            "state_id": state_id
+        }
+    except Exception as e:
+        raise HTTPException(400, f"Failed to generate registration options: {e}")
+
+@app.post("/api/passkey/register/verify")
+async def post_register_verify(req: Request):
+    d = await req.json()
+    state_id = d.get("state_id")
+    credential_data = d.get("credential")
+    label = d.get("label", "My Authenticator")
+    
+    if not state_id or not credential_data:
+        raise HTTPException(400, "Missing state_id or credential data")
+        
+    expected_challenge = active_challenges.pop(state_id, None)
+    if not expected_challenge:
+        raise HTTPException(400, "Invalid or expired session challenge")
+        
+    rp_id = req.url.hostname or "localhost"
+    origin = f"{req.url.scheme}://{req.url.netloc}"
+    
+    try:
+        verification = check_registration_response(
+            credential_data=credential_data,
+            expected_challenge=expected_challenge,
+            expected_rp_id=rp_id,
+            expected_origin=origin
+        )
+        
+        sf = get_settings_file()
+        settings = get_settings_data()
+        
+        new_passkey = {
+            "label": label,
+            "credential_id": verification["credential_id"],
+            "public_key": verification["public_key"],
+            "sign_count": verification["sign_count"],
+            "added_at": datetime.now().isoformat()
+        }
+        
+        if "passkeys" not in settings:
+            settings["passkeys"] = []
+        settings["passkeys"].append(new_passkey)
+        
+        settings["passkeyEnabled"] = True
+        
+        with open(sf, "w") as f:
+            json.dump(settings, f, indent=2)
+            
+        session_token = secrets.token_hex(32)
+        authenticated_sessions.add(session_token)
+        
+        response = JSONResponse(content={"status": "ok", "settings": settings})
+        response.set_cookie(
+            key="yantra_session",
+            value=session_token,
+            httponly=True,
+            samesite="strict",
+            max_age=3600 * 24 * 30  # 30 days
+        )
+        return response
+    except Exception as e:
+        raise HTTPException(400, f"Registration verification failed: {e}")
+
+@app.post("/api/passkey/login/options")
+async def post_login_options(req: Request):
+    settings = get_settings_data()
+    rp_id = req.url.hostname or "localhost"
+    
+    registered_creds = settings.get("passkeys", [])
+    if not registered_creds:
+        raise HTTPException(400, "No passkeys registered on this system")
+        
+    try:
+        options = make_authentication_options(
+            rp_id=rp_id,
+            registered_credentials=registered_creds
+        )
+        
+        state_id = secrets.token_hex(16)
+        active_challenges[state_id] = options["challenge"]
+        
+        return {
+            "options": options,
+            "state_id": state_id
+        }
+    except Exception as e:
+        raise HTTPException(400, f"Failed to generate login options: {e}")
+
+@app.post("/api/passkey/login/verify")
+async def post_login_verify(req: Request):
+    d = await req.json()
+    state_id = d.get("state_id")
+    credential_data = d.get("credential")
+    
+    if not state_id or not credential_data:
+        raise HTTPException(400, "Missing state_id or credential data")
+        
+    expected_challenge = active_challenges.pop(state_id, None)
+    if not expected_challenge:
+        raise HTTPException(400, "Invalid or expired session challenge")
+        
+    rp_id = req.url.hostname or "localhost"
+    origin = f"{req.url.scheme}://{req.url.netloc}"
+    
+    settings = get_settings_data()
+    registered_creds = settings.get("passkeys", [])
+    
+    cred_id = credential_data.get("id")
+    matching_cred = None
+    matching_index = -1
+    for i, cred in enumerate(registered_creds):
+        if cred["credential_id"] == cred_id:
+            matching_cred = cred
+            matching_index = i
+            break
+            
+    if not matching_cred:
+        raise HTTPException(400, "Credential not recognized")
+        
+    try:
+        verification = check_authentication_response(
+            credential_data=credential_data,
+            expected_challenge=expected_challenge,
+            expected_rp_id=rp_id,
+            expected_origin=origin,
+            public_key_b64=matching_cred["public_key"],
+            current_sign_count=matching_cred.get("sign_count", 0)
+        )
+        
+        settings["passkeys"][matching_index]["sign_count"] = verification["new_sign_count"]
+        
+        sf = get_settings_file()
+        with open(sf, "w") as f:
+            json.dump(settings, f, indent=2)
+            
+        session_token = secrets.token_hex(32)
+        authenticated_sessions.add(session_token)
+        
+        response = JSONResponse(content={"status": "ok"})
+        response.set_cookie(
+            key="yantra_session",
+            value=session_token,
+            httponly=True,
+            samesite="strict",
+            max_age=3600 * 24 * 30  # 30 days
+        )
+        return response
+    except Exception as e:
+        raise HTTPException(400, f"Login verification failed: {e}")
+
+@app.post("/api/passkey/logout")
+async def post_logout(req: Request):
+    session_token = req.cookies.get("yantra_session")
+    if session_token in authenticated_sessions:
+        authenticated_sessions.remove(session_token)
+        
+    response = JSONResponse(content={"status": "ok"})
+    response.delete_cookie(key="yantra_session")
+    return response
+
+@app.post("/api/passkey/delete")
+async def post_delete_passkey(req: Request):
+    d = await req.json()
+    cred_id = d.get("credential_id")
+    if not cred_id:
+        raise HTTPException(400, "credential_id is required")
+        
+    settings = get_settings_data()
+    passkeys = settings.get("passkeys", [])
+    
+    new_passkeys = [pk for pk in passkeys if pk["credential_id"] != cred_id]
+    
+    settings["passkeys"] = new_passkeys
+    if not new_passkeys:
+        settings["passkeyEnabled"] = False
+        
+    sf = get_settings_file()
+    with open(sf, "w") as f:
+        json.dump(settings, f, indent=2)
+        
+    return {"status": "ok", "settings": settings}
 
 
 @app.get("/api/morning")
@@ -321,7 +593,7 @@ async def api_mcp_config():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v4.0.0")
+    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v4.1.0")
     parser.add_argument("--file","-f",default=str(Path.home()/"openyantra"/"chitrapat.ods"))
     parser.add_argument("--port","-p",type=int,default=7331)
     parser.add_argument("--host",default="127.0.0.1")
@@ -333,7 +605,7 @@ def main():
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     _cog_store = CognitiveMemoryStore(path.parent / "cognitive_memories.json")
     h = _oy.health_check()
-    print(f"\n{'='*50}\n  OpenYantra Dashboard v4.0.0\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
+    print(f"\n{'='*50}\n  OpenYantra Dashboard v4.1.0\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 
 if __name__ == "__main__":

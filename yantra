@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# yantra -- OpenYantra v4.0.0 CLI
+# yantra -- OpenYantra v4.1.0 CLI
 INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV="$INSTALL_DIR/.venv"
 OY_FILE="${OPENYANTRA_FILE:-$INSTALL_DIR/chitrapat.ods}"

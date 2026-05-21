@@ -150,13 +150,15 @@ def handle_list_tools(req_id):
                 },
                 {
                     "name": "memory_search",
-                    "description": "Searches cognitive memories with filters (substring search on key/content, type, and tags).",
+                    "description": "Searches cognitive memories with filters (substring search on key/content, type, tags, and date range).",
                     "inputSchema": {
                         "type": "object",
                         "properties": {
                             "query": {"type": "string", "description": "Substring matching memory key or content"},
                             "type": {"type": "string", "description": "Filter by type (decision, fact, context, observation)"},
-                            "tags": {"type": "array", "items": {"type": "string"}, "description": "Filter by tags (memory must match ALL tags)"}
+                            "tags": {"type": "array", "items": {"type": "string"}, "description": "Filter by tags (memory must match ALL tags)"},
+                            "start_date": {"type": "string", "description": "Filter memories updated on or after this date (YYYY-MM-DD)"},
+                            "end_date": {"type": "string", "description": "Filter memories updated on or before this date (YYYY-MM-DD)"}
                         }
                     }
                 },
@@ -330,8 +332,10 @@ def handle_call_tool(req_id, params, store=None):
             query = arguments.get("query")
             type_val = arguments.get("type")
             tags = arguments.get("tags")
+            start_date = arguments.get("start_date")
+            end_date = arguments.get("end_date")
             
-            res = active_db.search(query, type_val, tags)
+            res = active_db.search(query, type_val, tags, start_date=start_date, end_date=end_date)
             return make_text_response(req_id, json.dumps(res, indent=2))
 
         elif name == "memory_delete":

@@ -27,7 +27,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-__version__ = "4.0.0"
+__version__ = "4.1.0"
 
 
 try:
@@ -451,7 +451,7 @@ class OpenYantra:
         oy.health_check()        -- system status + stats
     """
 
-    VERSION = "4.0.0"
+    VERSION = "4.1.0"
 
     def __init__(self, path: str | Path, agent_name: str = "Agent",
                  dead_switch_minutes: int = 30):
@@ -467,7 +467,17 @@ class OpenYantra:
         self._vidyakosha = None
         if _VIDYAKOSHA_AVAILABLE and self.path.exists():
             try:
-                self._vidyakosha = _VK(str(self.path.parent), embedder_pref="auto")
+                embedder_pref = "auto"
+                settings_path = self.path.parent / "settings.json"
+                if settings_path.exists():
+                    try:
+                        import json
+                        with open(settings_path, "r", encoding="utf-8") as f:
+                            s_data = json.load(f)
+                        embedder_pref = s_data.get("embedder", "auto")
+                    except Exception:
+                        pass
+                self._vidyakosha = _VK(str(self.path.parent), embedder_pref=embedder_pref)
             except Exception: pass
 
         # Raksha -- security engine (v2.4)
@@ -967,7 +977,17 @@ class OpenYantra:
             print("[OpenYantra] VidyaKosha not available.")
             return []
         if self._vidyakosha is None:
-            self._vidyakosha = _VK(str(self.path.parent), embedder_pref="auto")
+            embedder_pref = "auto"
+            settings_path = self.path.parent / "settings.json"
+            if settings_path.exists():
+                try:
+                    import json
+                    with open(settings_path, "r", encoding="utf-8") as f:
+                        s_data = json.load(f)
+                    embedder_pref = s_data.get("embedder", "auto")
+                except Exception:
+                    pass
+            self._vidyakosha = _VK(str(self.path.parent), embedder_pref=embedder_pref)
             self._vidyakosha.sync(self.path)
         if snapshot_mode is None and _get_snap_mode:
             snapshot_mode = _get_snap_mode(self.agent_name, self.path)
@@ -2140,11 +2160,43 @@ def run_bootstrap_interview(path: str, agent_name: str = "Chitragupta"):
     - Sheet preview after completion (the aha moment)
     - Anti-goals, belief evolution, decision principles
     """
+    from pathlib import Path
+    p = Path(path)
+    if p.exists():
+        print(f"\n[OpenYantra] Chitrapat already exists at {p}")
+        try:
+            choice = input("[OpenYantra] Do you want to re-run the bootstrap interview? WARNING: This will overwrite your existing data. (y/N): ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            choice = "n"
+        if choice in ("y", "yes"):
+            try:
+                p.unlink()
+                for suffix in (".db", ".db-journal", ".db-wal", ".db-shm"):
+                    sp = p.with_suffix(suffix)
+                    if sp.exists(): sp.unlink()
+                
+                # Delete write queue
+                qp = p.parent / "sanchitta.json"
+                if qp.exists(): qp.unlink()
+                
+                # Delete cognitive memories
+                cmp = p.parent / "cognitive_memories.json"
+                if cmp.exists(): cmp.unlink()
+                
+                # Delete VidyaKosha index files
+                for vk_name in ("vidyakosha.faiss", "vidyakosha_bm25.pkl", "vidyakosha_manifest.json", "vidyakosha_registry.json"):
+                    vkp = p.parent / vk_name
+                    if vkp.exists(): vkp.unlink()
+                
+                print("[OpenYantra] Reset successful. Starting fresh bootstrap interview...")
+            except Exception as e:
+                print(f"[OpenYantra] Error resetting file: {e}")
+                return OpenYantra(path, agent_name=agent_name)
+        else:
+            print("[OpenYantra] Bootstrap skipped. Run `yantra ui` to review and edit in browser.")
+            return OpenYantra(path, agent_name=agent_name)
+
     oy = OpenYantra(path, agent_name=agent_name)
-    if oy.path.exists():
-        print(f"\n[OpenYantra] Chitrapat already exists at {oy.path}")
-        print("[OpenYantra] Run `yantra ui` to review and edit it.")
-        return oy
 
     print("\n" + "="*62)
     print("  OpenYantra -- Chitragupta Puja")
