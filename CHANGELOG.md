@@ -4,6 +4,33 @@ All notable changes documented here. Follows semantic versioning.
 
 ---
 
+## [5.0.0] -- 2026-05-22
+
+### Added
+- **Sutradhar Graph Layer** (`yantra_sqlite.py`): SQLite-backed relationship edges with `edges` table, bidirectional indexes, and recursive CTE traversal up to 6 hops with cycle guards
+- `SyncEngine.traverse(source_type, source_id, max_hops)`: Bidirectional BFS using recursive CTE with path cycle detection
+- `SyncEngine.add_edge()`, `delete_edge()`, `get_edges()`: Full CRUD for relationship edges
+- `SyncEngine.infer_edges()`: Auto-edge inference on writes -- tasks linked to projects, @Name mentions linked to people
+- Graph API endpoints in `yantra_ui.py`: `GET /api/graph/edges`, `POST /api/graph/edge`, `DELETE /api/graph/edge/{id}`, `GET /api/graph/traverse`
+- `graph_traverse` MCP tool in `cognitive_mcp.py` for agentic graph queries
+- **Sutra Context Pruning Engine** (`yantra_sutra.py`): Token-budget-aware context compiler with weighted scoring (semantic similarity, recency, importance, relation proximity)
+- Context compile/preview endpoints: `POST /api/context/compile`, `GET /api/context/preview`
+- Context tab in dashboard with mode presets (default, creative, analytical, conversational)
+- **Setu Sync Durability**: `_sync_state` table for crash-safe reconciliation, LibreOffice lockfile detection, ODS header validation
+- 1MB clipboard guard in `yantra_context.py`
+- `db_engine` (SyncEngine) instantiated in `OpenYantra.__init__` for SQLite graph access
+
+### Changed
+- Dashboard read endpoints (`/api/sheet/{name}`) now prefer SQLite via `SyncEngine.read()` for 2ms query times, with ODS fallback
+- Graph tab upgraded to **Sutradhar Relationship Graph** showing real edges from SQLite alongside cognitive memory connections
+- Force-directed graph now renders entity-type-specific colors (Projects=teal, Tasks=purple, People=pink) with glow effects
+- Version bumped to `5.0.0` across all modules: `__init__.py`, `pyproject.toml`, `core.py`, `yantra_sqlite.py`, `yantra_context.py`, `yantra_morning.py`, `yantra_ui.py`, `cognitive_mcp.py`
+
+### Architecture
+- SyncEngine extended with graph capabilities (Sutradhar): edges table with uniqueness constraints and bidirectional indexes
+- Recursive CTE traversal supports forward and reverse edge walking with `instr()` cycle guard
+- Auto-edge inference runs on every write via `OpenYantra.request_write()` hook
+
 ## [4.1.0] -- 2026-05-20
 
 ### Added

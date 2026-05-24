@@ -1,5 +1,5 @@
 """
-yantra_migrate.py -- OpenYantra Schema Migration Tool v2.12
+yantra_migrate.py -- OpenYantra Schema Migration Tool v4.1.0
 Upgrades older Chitrapat files to the current schema.
 
 Detects version from sheet count and column presence.
@@ -34,6 +34,7 @@ try:
         SHEET_INBOX, SHEET_CORRECTIONS, SHEET_QUARANTINE,
         SHEET_SECURITY_LOG, ALL_SHEETS
     )
+    from openyantra.yantra_sqlite import validate_ods_headers
 except ImportError:
     print("openyantra.py not found."); sys.exit(1)
 
@@ -193,14 +194,21 @@ def run_migration(path: str, dry_run: bool = False) -> dict:
     from_version = detect_version(str(file_path))
 
     print(f"\n{'='*55}")
-    print(f"  OpenYantra Migration Tool v2.8")
+    print(f"  OpenYantra Migration Tool v4.1.0")
     print(f"{'='*55}")
     print(f"\n  File:         {file_path}")
     print(f"  Detected:     v{from_version}")
-    print(f"  Target:       v2.8")
+    print(f"  Target:       v4.1.0")
 
     if from_version in ("2.4+",):
-        print(f"\n  ✓ Already at v2.4+ schema -- checking for v2.8 additions...")
+        print(f"\n  ✓ Already at v2.4+ schema -- checking for v4.1.0 additions...")
+
+    # Pre-migration compatibility check
+    validation_errors = validate_ods_headers(str(file_path))
+    if validation_errors:
+        print(f"\n  ℹ Pre-migration template deviations (expected for older versions):")
+        for err in validation_errors:
+            print(f"    - {err}")
 
     if dry_run:
         print(f"\n  DRY RUN -- no changes will be made\n")
@@ -242,6 +250,16 @@ def run_migration(path: str, dry_run: bool = False) -> dict:
 
     print(f"\n  Migration complete -- {len([c for c in changes if c['status']=='ok'])} changes applied.")
     print(f"  Backup at: {backup_path}")
+
+    # Post-migration compatibility check
+    post_errors = validate_ods_headers(str(file_path))
+    if post_errors:
+        print(f"\n  ⚠ Warning: Migrated file has template compatibility deviations:")
+        for err in post_errors:
+            print(f"    - {err}")
+    else:
+        print(f"\n  ✓ Migrated file is fully compatible with current ODS template headers.")
+
     print(f"{'='*55}\n")
 
     return {"status": "migrated", "changes": changes,
@@ -342,7 +360,7 @@ def _write_sheet(path: str, sheet_name: str, df: pd.DataFrame):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OpenYantra Schema Migration Tool v2.8"
+        description="OpenYantra Schema Migration Tool v4.1.0"
     )
     parser.add_argument(
         "--file", "-f",

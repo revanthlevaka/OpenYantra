@@ -110,7 +110,7 @@ def handle_initialize(req_id, params):
             },
             "serverInfo": {
                 "name": "openyantra-mcp-server",
-                "version": "1.1.0"
+                "version": "2.0.0"
             }
         }
     }
@@ -297,6 +297,19 @@ def handle_list_tools(req_id):
                         },
                         "required": ["project"]
                     }
+                },
+                {
+                    "name": "graph_traverse",
+                    "description": "Traverse the OpenYantra relationship graph from a source entity, discovering connected nodes up to N hops via bidirectional edges.",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "source_type": {"type": "string", "description": "Entity type (e.g. projects, tasks, people, open_loops, goals)"},
+                            "source_id": {"type": "string", "description": "Entity identifier (e.g. project name, task name)"},
+                            "max_hops": {"type": "integer", "description": "Maximum traversal depth (1-6)", "default": 3}
+                        },
+                        "required": ["source_type", "source_id"]
+                    }
                 }
             ]
         }
@@ -445,6 +458,22 @@ def handle_call_tool(req_id, params, store=None):
             next_step = arguments.get("next_step", "")
             success = oy.add_project(project, domain, status, next_step)
             return make_text_response(req_id, json.dumps({"success": success, "project": project}, indent=2))
+
+        elif name == "graph_traverse":
+            if not oy:
+                return make_error_response(req_id, "OpenYantra sheet engine not initialized.")
+            if not getattr(oy, 'db_engine', None):
+                return make_error_response(req_id, "Graph engine (db_engine) not available.")
+            source_type = arguments.get("source_type", "")
+            source_id = arguments.get("source_id", "")
+            max_hops = int(arguments.get("max_hops", 3))
+            nodes = oy.db_engine.traverse(source_type, source_id, max_hops)
+            return make_text_response(req_id, json.dumps({
+                "source_type": source_type,
+                "source_id": source_id,
+                "max_hops": max_hops,
+                "connected_nodes": nodes
+            }, indent=2))
 
         else:
             return make_error_response(req_id, f"Unknown tool: {name}")

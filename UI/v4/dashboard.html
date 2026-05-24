@@ -372,6 +372,7 @@ tr:hover td{background:var(--surface2);}
   <button class="ntab" onclick="go('cognitive_memories',this)">🧠 <span>Memories</span></button>
   <button class="ntab" onclick="go('cognitive_hierarchy',this)">👥 <span>Hierarchy</span></button>
   <button class="ntab" onclick="go('cognitive_graph',this)">🕸️ <span>Graph</span></button>
+  <button class="ntab" onclick="go('context_compile',this)">📖 <span>Context</span></button>
   <button class="ntab" onclick="go('config_settings',this)">⚙️ <span>Settings</span></button>
 </nav>
 
@@ -389,6 +390,7 @@ tr:hover td{background:var(--surface2);}
   <div id="cognitive_memories" class="pane"></div>
   <div id="cognitive_hierarchy" class="pane"></div>
   <div id="cognitive_graph" class="pane"></div>
+  <div id="context_compile" class="pane"></div>
   <div id="config_settings" class="pane"></div>
 </main>
 
@@ -630,6 +632,7 @@ async function load(name){
     cognitive_memories:loadCognitiveMemories,
     cognitive_hierarchy:loadCognitiveHierarchy,
     cognitive_graph:loadCognitiveGraph,
+    context_compile:loadContextCompile,
     config_settings:loadConfigSettings};
   if(L[name])await L[name]();
 }
@@ -816,7 +819,7 @@ async function loadHealth(){
 
 /* Actions */
 function goTo(name){
-  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health','cognitive_memories','cognitive_hierarchy','cognitive_graph','config_settings'];
+  const tabs=['today','inbox','loops','projects','oracle','review','timeline','security','ledger','health','cognitive_memories','cognitive_hierarchy','cognitive_graph','context_compile','config_settings'];
   const idx=tabs.indexOf(name);
   if(idx>=0)go(name,document.querySelectorAll('.ntab')[idx]);
 }
@@ -1987,9 +1990,14 @@ async function loadCognitiveGraph() {
   const container = document.getElementById('cognitive_graph');
   
   container.innerHTML = `
-    <div class="sh"><span>Conceptual Cognitive Graph</span></div>
-    <p style="font-family:var(--sans); font-size:12px; color:var(--text-dim); margin-bottom:12px;">Interactive force-directed simulation. Nodes represent Agents (blue), Memory Documents (coral), and Tags (amber). Drag to interact.</p>
-    <div style="background:var(--surface); border:1px solid var(--border); width:100%; height:550px; position:relative; overflow:hidden;">
+    <div class="sh"><span>🕸️ Sutradhar Relationship Graph</span></div>
+    <p style="font-family:var(--sans); font-size:12px; color:var(--text-dim); margin-bottom:12px;">Force-directed graph of your memory relationships. <strong style="color:#1c6fff;">●</strong> Agents &nbsp; <strong style="color:#e84520;">●</strong> Memories &nbsp; <strong style="color:#f5a000;">●</strong> Tags &nbsp; <strong style="color:#00c9a7;">●</strong> Projects &nbsp; <strong style="color:#a855f7;">●</strong> Tasks &nbsp; <strong style="color:#ec4899;">●</strong> People &nbsp; <strong style="color:#64748b;">●</strong> Other entities. Drag nodes to interact.</p>
+    <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap: wrap;">
+      <button onclick="addEdgePrompt()" style="background:var(--surface2); border:1px solid var(--border2); color:var(--text); padding:6px 14px; font-family:var(--mono); font-size:10px; cursor:pointer; letter-spacing:0.05em;">+ Add Edge</button>
+      <button onclick="loadCognitiveGraph()" style="background:var(--surface2); border:1px solid var(--border2); color:var(--text); padding:6px 14px; font-family:var(--mono); font-size:10px; cursor:pointer; letter-spacing:0.05em;">↻ Refresh</button>
+      <span id="graphEdgeCount" style="font-family:var(--mono); font-size:10px; color:var(--muted); align-self:center;"></span>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); width:100%; height:550px; position:relative; overflow:hidden; border-radius:4px;">
       <canvas id="graphCanvas" style="display:block; width:100%; height:100%;"></canvas>
     </div>
   `;
@@ -2001,22 +2009,52 @@ async function loadCognitiveGraph() {
   graphCanvas.width = rect.width;
   graphCanvas.height = rect.height;
   
-  const [memoriesRes, hierarchyRes] = await Promise.all([
+  // Fetch all data sources in parallel
+  const [memoriesRes, hierarchyRes, sutradharRes] = await Promise.all([
     api('/api/cognitive/memories'),
-    api('/api/cognitive/hierarchy')
+    api('/api/cognitive/hierarchy'),
+    api('/api/graph/edges')
   ]);
   
   const memories = memoriesRes.memories || [];
   const agents = hierarchyRes.agents || [];
+  const sutradharEdges = sutradharRes.edges || [];
   
-  buildGraphElements(memories, agents);
+  buildGraphElements(memories, agents, sutradharEdges);
   setupGraphEvents();
+  
+  const countEl = document.getElementById('graphEdgeCount');
+  if (countEl) countEl.textContent = `${graphNodes.length} nodes · ${graphEdges.length} edges`;
   
   if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
   graphAnimationId = requestAnimationFrame(simulateGraphPhysics);
 }
 
-function buildGraphElements(memories, agents) {
+function getNodeColor(type) {
+  const colors = {
+    agent: '#1c6fff',
+    doc: '#e84520',
+    tag: '#f5a000',
+    projects: '#00c9a7',
+    tasks: '#a855f7',
+    people: '#ec4899',
+    open_loops: '#f97316',
+    goals: '#eab308',
+  };
+  return colors[type] || '#64748b';
+}
+
+function getNodeRadius(type) {
+  if (type === 'agent') return 25;
+  if (type === 'doc') return 16;
+  if (type === 'projects' || type === 'goals') return 20;
+  if (type === 'tasks') return 14;
+  if (type === 'people') return 18;
+  if (type === 'tag') return 12;
+  return 14;
+}
+
+function buildGraphElements(memories, agents, sutradharEdges) {
   graphNodes = [];
   graphEdges = [];
   
@@ -2024,65 +2062,73 @@ function buildGraphElements(memories, agents) {
   const height = graphCanvas.height;
   const addedNodes = new Set();
   
+  // Helper to add a node if not already added
+  function ensureNode(id, label, type) {
+    if (addedNodes.has(id)) return;
+    graphNodes.push({
+      id,
+      label: label || id.split(':').pop(),
+      type,
+      x: width/2 + (Math.random() - 0.5) * 250,
+      y: height/2 + (Math.random() - 0.5) * 250,
+      vx: 0,
+      vy: 0,
+      radius: getNodeRadius(type)
+    });
+    addedNodes.add(id);
+  }
+  
+  // Add agent nodes
   agents.forEach(a => {
-    const id = `agent:${a}`;
-    if (!addedNodes.has(id)) {
-      graphNodes.push({
-        id,
-        label: a,
-        type: 'agent',
-        x: width/2 + (Math.random() - 0.5) * 120,
-        y: height/2 + (Math.random() - 0.5) * 120,
-        vx: 0,
-        vy: 0,
-        radius: 25
-      });
-      addedNodes.add(id);
-    }
+    ensureNode(`agent:${a}`, a, 'agent');
   });
   
+  // Add cognitive memory nodes + edges
   memories.forEach(m => {
     if (m.key === 'agent-hierarchy-connections') return;
-    
     const docId = `doc:${m.key}`;
-    if (!addedNodes.has(docId)) {
-      graphNodes.push({
-        id: docId,
-        label: m.key,
-        type: 'doc',
-        x: width/2 + (Math.random() - 0.5) * 220,
-        y: height/2 + (Math.random() - 0.5) * 220,
-        vx: 0,
-        vy: 0,
-        radius: 16
-      });
-      addedNodes.add(docId);
-    }
+    ensureNode(docId, m.key, 'doc');
     
-    const authorAgentId = `agent:${m.agent}`;
-    if (addedNodes.has(authorAgentId)) {
-      graphEdges.push({ from: docId, to: authorAgentId });
+    const authorId = `agent:${m.agent}`;
+    if (addedNodes.has(authorId)) {
+      graphEdges.push({ from: docId, to: authorId, type: 'authored_by' });
     }
     
     (m.tags || []).forEach(t => {
       const tagId = `tag:${t}`;
-      if (!addedNodes.has(tagId)) {
-        graphNodes.push({
-          id: tagId,
-          label: t,
-          type: 'tag',
-          x: width/2 + (Math.random() - 0.5) * 280,
-          y: height/2 + (Math.random() - 0.5) * 280,
-          vx: 0,
-          vy: 0,
-          radius: 12
-        });
-        addedNodes.add(tagId);
-      }
-      
-      graphEdges.push({ from: docId, to: tagId });
+      ensureNode(tagId, t, 'tag');
+      graphEdges.push({ from: docId, to: tagId, type: 'tagged' });
     });
   });
+  
+  // Add Sutradhar relationship edges
+  sutradharEdges.forEach(e => {
+    const srcId = `${e.source_type}:${e.source_id}`;
+    const tgtId = `${e.target_type}:${e.target_id}`;
+    ensureNode(srcId, e.source_id, e.source_type);
+    ensureNode(tgtId, e.target_id, e.target_type);
+    graphEdges.push({ from: srcId, to: tgtId, type: e.edge_type || 'related_to' });
+  });
+}
+
+async function addEdgePrompt() {
+  const src_type = prompt('Source type (e.g. projects, tasks, people):');
+  if (!src_type) return;
+  const src_id = prompt('Source ID (name):');
+  if (!src_id) return;
+  const tgt_type = prompt('Target type:');
+  if (!tgt_type) return;
+  const tgt_id = prompt('Target ID (name):');
+  if (!tgt_id) return;
+  const edge_type = prompt('Edge type (e.g. related_to, belongs_to, mentions):', 'related_to');
+  if (!edge_type) return;
+  
+  await fetch('/api/graph/edge', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({source_type: src_type, source_id: src_id, target_type: tgt_type, target_id: tgt_id, edge_type: edge_type})
+  });
+  loadCognitiveGraph();
 }
 
 function setupGraphEvents() {
@@ -2220,8 +2266,7 @@ function renderGraphCanvas() {
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
   
-  graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.06)';
-  graphCtx.lineWidth = 1.2;
+  // Draw edges with subtle glow
   graphEdges.forEach(edge => {
     const u = graphNodes.find(n => n.id === edge.from);
     const v = graphNodes.find(n => n.id === edge.to);
@@ -2229,41 +2274,388 @@ function renderGraphCanvas() {
       graphCtx.beginPath();
       graphCtx.moveTo(u.x, u.y);
       graphCtx.lineTo(v.x, v.y);
+      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.07)';
+      graphCtx.lineWidth = edge.type === 'belongs_to' ? 2 : 1.2;
       graphCtx.stroke();
     }
   });
   
+  // Draw nodes with glow
   graphNodes.forEach(node => {
+    const color = getNodeColor(node.type);
+    
+    // Outer glow
+    graphCtx.beginPath();
+    graphCtx.arc(node.x, node.y, node.radius + 4, 0, Math.PI * 2);
+    graphCtx.fillStyle = color + '18';
+    graphCtx.fill();
+    
+    // Node fill
     graphCtx.beginPath();
     graphCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-    
-    if (node.type === 'agent') {
-      graphCtx.fillStyle = '#1c6fff';
-      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.25)';
-    } else if (node.type === 'doc') {
-      graphCtx.fillStyle = '#e84520';
-      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
-    } else {
-      graphCtx.fillStyle = '#f5a000';
-      graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
-    }
-    
+    graphCtx.fillStyle = color;
+    graphCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)';
     graphCtx.lineWidth = 1.5;
     graphCtx.fill();
     graphCtx.stroke();
     
+    // Label
     graphCtx.fillStyle = '#ffffff';
-    graphCtx.font = node.type === 'agent' ? 'bold 9px monospace' : '8px monospace';
+    graphCtx.font = node.radius >= 20 ? 'bold 9px monospace' : '8px monospace';
     graphCtx.textAlign = 'center';
     graphCtx.textBaseline = 'middle';
     
-    const labelLimit = node.type === 'agent' ? 9 : 6;
+    const labelLimit = node.radius >= 20 ? 9 : 6;
     let text = node.label;
     if (text.length > labelLimit) {
       text = text.substring(0, labelLimit) + '..';
     }
     graphCtx.fillText(text, node.x, node.y);
   });
+}
+
+
+/* --- Context Pruning Engine (Sutra) --- */
+let lastCtxQuery = "";
+let lastCtxBudget = 4096;
+let lastCtxMode = "default";
+let lastCtxSections = ["identity", "instructions", "goals", "projects", "loops", "tasks", "preferences", "beliefs", "people"];
+let ctxDebounceTimeout = null;
+
+function debouncedPreview() {
+  clearTimeout(ctxDebounceTimeout);
+  ctxDebounceTimeout = setTimeout(previewContext, 300);
+}
+
+async function loadContextCompile() {
+  const pane = document.getElementById('context_compile');
+  if (!pane) return;
+  
+  pane.innerHTML = `
+    <div class="sh"><span>📖 Context Pruning Engine (Sutra)</span></div>
+    
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+      <!-- Left panel: configuration inputs -->
+      <div style="flex: 1.2; min-width: 320px; background: var(--surface2); border: 1px solid var(--border); padding: 20px;">
+        <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 15px; font-weight: bold;">Configuration</div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; font-size: 9px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase;">Search Query (Semantic Similarity)</label>
+          <input id="ctxQuery" type="text" placeholder="Enter topic/query to score context semantically..." style="width: 100%; background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 8px; font-family: var(--mono); font-size: 11px; outline: none;" oninput="debouncedPreview()" />
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 9px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase;">Token Budget</label>
+            <input id="ctxBudget" type="number" min="256" max="100000" style="width: 100%; background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 8px; font-family: var(--mono); font-size: 11px; outline: none;" onchange="previewContext()" />
+          </div>
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 9px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase;">Pruning Preset Mode</label>
+            <select id="ctxMode" style="width: 100%; background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 8px; font-family: var(--mono); font-size: 11px; outline: none;" onchange="previewContext()">
+              <option value="default">Default (Balanced)</option>
+              <option value="conversational">Conversational (Recency heavy)</option>
+              <option value="analytical">Analytical (Semantic & Importance)</option>
+              <option value="creative">Creative (Relation & Random)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 5px;">
+          <label style="display: block; font-size: 9px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase;">Active Sections</label>
+          <div id="ctxSections" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="identity" onchange="previewContext()" /> 👤 Identity
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="instructions" onchange="previewContext()" /> 📋 Instructions
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="goals" onchange="previewContext()" /> 🎯 Goals
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="projects" onchange="previewContext()" /> 🚀 Projects
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="loops" onchange="previewContext()" /> 🔓 Loops
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="tasks" onchange="previewContext()" /> ✅ Tasks
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="preferences" onchange="previewContext()" /> 💡 Preferences
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="beliefs" onchange="previewContext()" /> 🧠 Beliefs
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; color: var(--text);">
+              <input type="checkbox" value="people" onchange="previewContext()" /> 👥 People
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel: Token budget statistics, status & primary actions -->
+      <div style="flex: 1; min-width: 320px; background: var(--surface2); border: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 15px; font-weight: bold;">Budget Summary</div>
+          
+          <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase;">
+              <span>Token Utilization</span>
+              <span id="ctxUtilizationLabel">0 / 4096 (0%)</span>
+            </div>
+            <div style="display: flex; background: var(--surface3); border: 1px solid var(--border); height: 24px; width: 100%; border-radius: 2px; overflow: hidden; position: relative; align-items: stretch;">
+              <div id="pb-static" style="background: var(--amber); width: 0%; transition: width 0.3s;" title="Static context (Identity, Instructions)"></div>
+              <div id="pb-dynamic" style="background: var(--blue); width: 0%; transition: width 0.3s;" title="Dynamic context (Projects, Goals, etc)"></div>
+              <div id="pb-text" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text); text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none;">0% used</div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 6px; font-size: 9px; color: var(--muted); flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <div style="width: 8px; height: 8px; background: var(--amber); border-radius: 1px;"></div>
+                <span>Static: <span id="ctxStaticTokens">0</span> t</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <div style="width: 8px; height: 8px; background: var(--blue); border-radius: 1px;"></div>
+                <span>Dynamic: <span id="ctxDynamicTokens">0</span> t</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <div style="width: 8px; height: 8px; background: var(--surface3); border: 1px solid var(--border); border-radius: 1px;"></div>
+                <span>Remaining: <span id="ctxRemainingTokens">4096</span> t</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 8px; margin-top: 15px; font-size: 11px;">
+            <div style="flex: 1; background: var(--surface); border: 1px solid var(--border); padding: 8px; text-align: center;">
+              <div style="font-size: 16px; font-weight: bold; color: var(--green);" id="ctxPackedCount">0</div>
+              <div style="font-size: 8px; text-transform: uppercase; color: var(--muted); margin-top: 2px;">Packed Items</div>
+            </div>
+            <div style="flex: 1; background: var(--surface); border: 1px solid var(--border); padding: 8px; text-align: center;">
+              <div style="font-size: 16px; font-weight: bold; color: var(--coral);" id="ctxDiscardedCount">0</div>
+              <div style="font-size: 8px; text-transform: uppercase; color: var(--muted); margin-top: 2px;">Pruned Items</div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-p" onclick="compileAndCopyCtx()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px;">
+            📋 Compile & Copy
+          </button>
+          <button class="btn" onclick="previewContext()" style="padding: 8px 16px; font-size: 10px;">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs for Preview / Packed / Discarded -->
+    <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; gap: 4px;">
+      <button class="th-btn active" id="btn-tab-preview" onclick="switchSubTab('preview')">👁️ Preview Markdown</button>
+      <button class="th-btn" id="btn-tab-packed" onclick="switchSubTab('packed')">📦 Packed Items (<span id="tab-packed-cnt">0</span>)</button>
+      <button class="th-btn" id="btn-tab-discarded" onclick="switchSubTab('discarded')">🗑️ Pruned Items (<span id="tab-discarded-cnt">0</span>)</button>
+    </div>
+
+    <div id="subtab-preview" class="subtab-content" style="display: block;">
+      <textarea id="ctxCompiledMarkdown" style="width: 100%; height: 400px; background: var(--term-bg); color: var(--text); border: 1px solid var(--border); padding: 12px; font-family: var(--mono); font-size: 11px; resize: vertical; outline: none; white-space: pre; line-height: 1.5;" readonly placeholder="Compiled context markdown will appear here..."></textarea>
+    </div>
+
+    <div id="subtab-packed" class="subtab-content" style="display: none; max-height: 400px; overflow-y: auto; border: 1px solid var(--border);">
+      <table id="tblPackedItems">
+        <thead>
+          <tr>
+            <th style="width: 120px;">Section</th>
+            <th>Primary Item</th>
+            <th style="width: 80px;">Tokens</th>
+            <th style="width: 80px;">Score</th>
+            <th>Score Breakdown</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- filled dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <div id="subtab-discarded" class="subtab-content" style="display: none; max-height: 400px; overflow-y: auto; border: 1px solid var(--border);">
+      <table id="tblDiscardedItems">
+        <thead>
+          <tr>
+            <th style="width: 120px;">Section</th>
+            <th>Primary Item</th>
+            <th style="width: 80px;">Tokens</th>
+            <th style="width: 80px;">Score</th>
+            <th>Score Breakdown</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- filled dynamically -->
+        </tbody>
+      </table>
+    </div>
+  `;
+  
+  // Restore form states
+  document.getElementById('ctxQuery').value = lastCtxQuery;
+  document.getElementById('ctxBudget').value = lastCtxBudget;
+  document.getElementById('ctxMode').value = lastCtxMode;
+  
+  // Set checkboxes
+  const checkboxes = document.querySelectorAll('#ctxSections input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = lastCtxSections.includes(cb.value);
+  });
+  
+  await previewContext();
+}
+
+async function previewContext() {
+  const queryEl = document.getElementById('ctxQuery');
+  const budgetEl = document.getElementById('ctxBudget');
+  const modeEl = document.getElementById('ctxMode');
+  if (!queryEl || !budgetEl || !modeEl) return;
+  
+  lastCtxQuery = queryEl.value.trim();
+  lastCtxBudget = parseInt(budgetEl.value) || 4096;
+  lastCtxMode = modeEl.value;
+  
+  const sections = [];
+  lastCtxSections = [];
+  document.querySelectorAll('#ctxSections input[type="checkbox"]:checked').forEach(cb => {
+    sections.push(cb.value);
+    lastCtxSections.push(cb.value);
+  });
+  
+  const queryParam = lastCtxQuery ? `&query=${encodeURIComponent(lastCtxQuery)}` : '';
+  const url = `/api/context/preview?budget=${lastCtxBudget}&mode=${lastCtxMode}&sections=${encodeURIComponent(sections.join(','))}${queryParam}`;
+  
+  try {
+    const res = await api(url);
+    if (!res || res.error) {
+      toast('Failed to preview context: ' + (res?.error || 'unknown error'), false);
+      return;
+    }
+    
+    // Update markdown preview
+    document.getElementById('ctxCompiledMarkdown').value = res.markdown || '';
+    
+    // Calculate token allocation
+    const dynamicTokens = (res.packed || []).reduce((acc, item) => acc + (item.tokens || 0), 0);
+    const staticTokens = Math.max(0, (res.tokens || 0) - dynamicTokens);
+    const remainingTokens = Math.max(0, lastCtxBudget - (res.tokens || 0));
+    
+    const staticPct = Math.min(100, (staticTokens / lastCtxBudget) * 100);
+    const dynamicPct = Math.min(100 - staticPct, (dynamicTokens / lastCtxBudget) * 100);
+    const usedPct = Math.round(((res.tokens || 0) / lastCtxBudget) * 100);
+    
+    // Update progress bar
+    document.getElementById('pb-static').style.width = `${staticPct}%`;
+    document.getElementById('pb-dynamic').style.width = `${dynamicPct}%`;
+    document.getElementById('pb-text').innerText = `${res.tokens || 0} / ${lastCtxBudget} tokens (${usedPct}%)`;
+    document.getElementById('ctxUtilizationLabel').innerText = `${res.tokens || 0} / ${lastCtxBudget} (${usedPct}%)`;
+    
+    document.getElementById('ctxStaticTokens').innerText = staticTokens;
+    document.getElementById('ctxDynamicTokens').innerText = dynamicTokens;
+    document.getElementById('ctxRemainingTokens').innerText = remainingTokens;
+    
+    // Update counters
+    const packedCount = (res.packed || []).length;
+    const discardedCount = (res.discarded || []).length;
+    document.getElementById('ctxPackedCount').innerText = packedCount;
+    document.getElementById('ctxDiscardedCount').innerText = discardedCount;
+    document.getElementById('tab-packed-cnt').innerText = packedCount;
+    document.getElementById('tab-discarded-cnt').innerText = discardedCount;
+    
+    // Populate tables
+    renderContextItemsTable('tblPackedItems', res.packed || []);
+    renderContextItemsTable('tblDiscardedItems', res.discarded || []);
+  } catch (err) {
+    console.error('Failed to preview context:', err);
+    toast('Error loading context preview', false);
+  }
+}
+
+function switchSubTab(name) {
+  document.querySelectorAll('.subtab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="btn-tab-"]').forEach(el => el.classList.remove('active'));
+  
+  const activeContent = document.getElementById('subtab-' + name);
+  const activeBtn = document.getElementById('btn-tab-' + name);
+  if (activeContent) activeContent.style.display = 'block';
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function renderContextItemsTable(tableId, items) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  if (!tbody) return;
+  
+  if (!items || !items.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty" style="text-align:center; padding: 20px; color: var(--muted);">No items in this category.</td></tr>';
+    return;
+  }
+  
+  let html = '';
+  items.forEach(item => {
+    const sheet = item.sheet_emoji || item.sheet || '';
+    const primary = item.primary_value || '';
+    const tokens = item.tokens || 0;
+    const score = item.scores?.total || 0;
+    
+    const scores = item.scores || {};
+    const breakdown = `Semantic: ${scores.semantic || 0} | Recency: ${scores.recency || 0} | Importance: ${scores.importance || 0} | Relation: ${scores.relation || 0}`;
+    
+    html += `<tr>
+      <td style="font-weight:600; font-size:10px; color:var(--muted);">${sheet}</td>
+      <td title="${primary}" style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${primary}</td>
+      <td>${tokens} t</td>
+      <td><span class="badge ${score >= 0.5 ? 'b-ok' : score >= 0.3 ? 'b-md' : 'b-lo'}">${score}</span></td>
+      <td style="font-size:9px; color:var(--muted); font-family:var(--mono);" title="${breakdown}">${breakdown}</td>
+    </tr>`;
+  });
+  
+  tbody.innerHTML = html;
+}
+
+async function compileAndCopyCtx() {
+  const queryEl = document.getElementById('ctxQuery');
+  const budgetEl = document.getElementById('ctxBudget');
+  const modeEl = document.getElementById('ctxMode');
+  if (!queryEl || !budgetEl || !modeEl) return;
+  
+  const query = queryEl.value.trim();
+  const budget = parseInt(budgetEl.value) || 4096;
+  const mode = modeEl.value;
+  
+  const sections = [];
+  document.querySelectorAll('#ctxSections input[type="checkbox"]:checked').forEach(cb => {
+    sections.push(cb.value);
+  });
+  
+  try {
+    const res = await api('/api/context/compile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, budget, mode, sections })
+    });
+    
+    if (res && res.markdown) {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(res.markdown);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = res.markdown;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      toast('Compiled context copied to clipboard!');
+    } else {
+      toast('Failed to compile context: ' + (res?.error || 'unknown error'), false);
+    }
+  } catch (err) {
+    console.error('Failed to compile and copy context:', err);
+    toast('Error copying context', false);
+  }
 }
 
 /* Auto refresh Today */

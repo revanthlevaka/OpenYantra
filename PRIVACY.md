@@ -1,15 +1,15 @@
-# UAM Privacy & Regional Compliance Guide
+# OpenYantra Privacy & Regional Compliance Guide
 
-> How UAM handles data privacy, compliance, and data sovereignty across regions.  
-> Four official regional profiles: UAM-IN · UAM-EU · UAM-US · UAM-CN
+> How OpenYantra handles data privacy, compliance, and data sovereignty across regions.  
+> Four official regional profiles: OpenYantra-IN · OpenYantra-EU · OpenYantra-US · OpenYantra-CN
 
 ---
 
 ## The Core Privacy Claim
 
-In UAM, **the user is the sole data controller**. The memory file lives on the user's device or in storage they own. No third party has access. No data processing agreements required. No cloud jurisdiction risks.
+In OpenYantra, **the user is the sole data controller**. The memory file lives on the user's device or in storage they own. No third party has access. No data processing agreements required. No cloud jurisdiction risks.
 
-This is structurally different from every other AI memory system -- Mem0, Zep, OpenAI Memory, and AWS AgentCore all store your memory on infrastructure they control. UAM puts the file in your hands.
+This is structurally different from every other AI memory system -- Mem0, Zep, OpenAI Memory, and AWS AgentCore all store your memory on infrastructure they control. OpenYantra puts the file in your hands.
 
 LedgerAgent (Chitragupta) is the sole writer -- every write is signed with SHA-256 and recorded permanently in the Agrasandhanī (Ledger sheet). The record is transparent, auditable, and owned by the user.
 
@@ -17,7 +17,7 @@ LedgerAgent (Chitragupta) is the sole writer -- every write is signed with SHA-2
 
 ## GDPR Alignment (All Profiles)
 
-| GDPR Principle | How UAM addresses it |
+| GDPR Principle | How OpenYantra addresses it |
 |---|---|
 | **Data control** | User owns the `.ods` file -- no third-party access |
 | **Right of access** | Open the file in LibreOffice -- everything is visible |
@@ -29,15 +29,15 @@ LedgerAgent (Chitragupta) is the sole writer -- every write is signed with SHA-2
 
 ---
 
-## UAM-IN -- India Profile
+## OpenYantra-IN -- India Profile
 
 *Applicable law: Digital Personal Data Protection Act 2023 (DPDP Act), IT Act 2000*
 
-India is UAM's home country. The UAM-IN profile is the reference implementation.
+India is OpenYantra's home country. The OpenYantra-IN profile is the reference implementation.
 
 ### DPDP Act 2023 Alignment
 
-| DPDP Principle | UAM-IN implementation |
+| DPDP Principle | OpenYantra-IN implementation |
 |---|---|
 | **Consent** | `Consent_Flag` column on Identity and Beliefs sheets -- explicit user consent before sensitive data is written |
 | **Purpose limitation** | Each sheet scoped to a named purpose -- agents must not read sheets beyond current task |
@@ -47,7 +47,7 @@ India is UAM's home country. The UAM-IN profile is the reference implementation.
 | **Right to erasure** | Delete the `.ods` file or specific rows -- LedgerAgent records the erasure in Agrasandhanī |
 | **Grievance redressal** | `Disputes` tab in Agrasandhanī sheet logs all conflicts for user review |
 
-### Additional columns (UAM-IN)
+### Additional columns (OpenYantra-IN)
 
 | Column | Sheet | Values |
 |---|---|---|
@@ -57,23 +57,23 @@ India is UAM's home country. The UAM-IN profile is the reference implementation.
 
 ### Cultural context
 
-UAM-IN carries the Chitragupta heritage explicitly. The memory file is the **Chitrapat** (चित्रपट -- life scroll). The LedgerAgent is **Chitragupta** (चित्रगुप्त -- the hidden recorder). The Ledger sheet is the **Agrasandhanī** (अग्रसंधानी -- the cosmic register).
+OpenYantra-IN carries the Chitragupta heritage explicitly. The memory file is the **Chitrapat** (चित्रपट -- life scroll). The LedgerAgent is **Chitragupta** (चित्रगुप्त -- the hidden recorder). The Ledger sheet is the **Agrasandhanī** (अग्रसंधानी -- the cosmic register).
 
-India has a 3,000-year tradition of the trusted record keeper -- impartial, incorruptible, serving the subject rather than the judge. UAM-IN carries that tradition into the age of AI.
+India has a 3,000-year tradition of the trusted record keeper -- impartial, incorruptible, serving the subject rather than the judge. OpenYantra-IN carries that tradition into the age of AI.
 
 ### Recommended deployment
 
 ```
-~/uam-in/
+~/openyantra-in/
 ├── chitrapat.ods          ← the life scroll (memory file)
 ├── write_queue.json       ← sanchitta (accumulated pending karma)
 └── archive/
-    └── chitrapat_2025.ods ← archived scrolls
+    └── chitrapat_2026.ods ← archived scrolls
 ```
 
 ---
 
-## UAM-EU -- Europe Profile
+## OpenYantra-EU -- Europe Profile
 
 *Applicable law: GDPR, EU AI Act, Data Act 2023*
 
@@ -83,9 +83,9 @@ The user is the sole data controller under GDPR Article 4. No data processing ag
 
 ### EU AI Act
 
-The EU AI Act requires transparency and auditability. UAM's Agrasandhanī provides a complete timestamped record of every AI write, signed and immutable. This satisfies Article 13 (transparency) for general-purpose AI systems using UAM as their memory backend.
+The EU AI Act requires transparency and auditability. OpenYantra's Agrasandhanī provides a complete timestamped record of every AI write, signed and immutable. This satisfies Article 13 (transparency) for general-purpose AI systems using OpenYantra as their memory backend.
 
-### Additional columns (UAM-EU)
+### Additional columns (OpenYantra-EU)
 
 | Column | Sheet | Values |
 |---|---|---|
@@ -99,38 +99,38 @@ File stays on EU-jurisdiction storage by default. Compatible with Gaia-X, EUCS-c
 
 ---
 
-## UAM-US -- United States Profile
+## OpenYantra-US -- United States Profile
 
 *Applicable law: CCPA/CPRA (California), HIPAA (health data), COPPA (children), FTC Act, state privacy laws*
 
 ### CCPA / CPRA Alignment
 
-| CCPA Right | UAM-US implementation |
+| CCPA Right | OpenYantra-US implementation |
 |---|---|
 | **Right to know** | Open the `.ods` file -- everything the AI knows is visible |
 | **Right to delete** | Delete rows or the entire file -- fully user-controlled |
 | **Right to correct** | Edit any cell -- LedgerAgent respects user edits |
-| **Right to opt-out of sale** | UAM does not sell data -- file is local, not cloud |
+| **Right to opt-out of sale** | OpenYantra does not sell data -- file is local, not cloud |
 | **Right to limit sensitive data use** | `Sensitivity_Tag` column controls which agents read which sheets |
 
 ### Sector-specific compliance
 
 **HIPAA (health data):**
-- Do not write health information to UAM without explicit user consent
+- Do not write health information to OpenYantra without explicit user consent
 - If health data is written: encrypt the `.ods` file at rest using LibreOffice password protection
 - Add `PHI_Flag = "Yes"` to any row containing Protected Health Information
 - Health data rows have `Retention_Policy = 2555` (7 years, HIPAA minimum)
 
 **COPPA (children under 13):**
-- UAM must not be used to store data about users under 13 without verifiable parental consent
+- OpenYantra must not be used to store data about users under 13 without verifiable parental consent
 - Add `Age_Verified = "Yes"` to Identity sheet before writing any data for a user who may be a minor
 
 **State privacy laws:**
-- Virginia (VCDPA), Colorado (CPA), Texas (TDPSA): broadly compatible with UAM's user-control model
-- Illinois (BIPA): do not write biometric identifiers to UAM without consent
-- New York: financial data written to UAM should be tagged `Sensitivity_Tag = "Financial"`
+- Virginia (VCDPA), Colorado (CPA), Texas (TDPSA): broadly compatible with OpenYantra's user-control model
+- Illinois (BIPA): do not write biometric identifiers to OpenYantra without consent
+- New York: financial data written to OpenYantra should be tagged `Sensitivity_Tag = "Financial"`
 
-### Additional columns (UAM-US)
+### Additional columns (OpenYantra-US)
 
 | Column | Sheet | Values |
 |---|---|---|
@@ -140,17 +140,17 @@ File stays on EU-jurisdiction storage by default. Compatible with Gaia-X, EUCS-c
 
 ### Recommended deployment
 
-UAM-US defaults to local file storage. For enterprise deployments, use US-based cloud providers with data residency agreements (AWS us-east-1, Azure eastus, GCP us-central1). Never store UAM files on servers outside US jurisdiction without user consent.
+OpenYantra-US defaults to local file storage. For enterprise deployments, use US-based cloud providers with data residency agreements (AWS us-east-1, Azure eastus, GCP us-central1). Never store OpenYantra files on servers outside US jurisdiction without user consent.
 
 ---
 
-## UAM-CN -- China Profile
+## OpenYantra-CN -- China Profile
 
 *Applicable law: PIPL (Personal Information Protection Law), DSL (Data Security Law), Cybersecurity Law*
 
 ### Three-tier data hierarchy
 
-Chinese enterprise AI deploys across teams and organisations, not just individuals. UAM-CN adds a three-tier ownership model:
+Chinese enterprise AI deploys across teams and organisations, not just individuals. OpenYantra-CN adds a three-tier ownership model:
 
 ```
 User Layer    → Identity, Preferences, Personal Goals   (user-owned, private)
@@ -161,7 +161,7 @@ Audit Layer   → Agrasandhanī, Session Log               (immutable, complianc
 
 ### PIPL / DSL Alignment
 
-| Principle | UAM-CN implementation |
+| Principle | OpenYantra-CN implementation |
 |---|---|
 | **Consent** | Explicit consent required before writing any personal data |
 | **Purpose limitation** | `Domain_Tag` scopes each row to a specific use context |
@@ -169,7 +169,7 @@ Audit Layer   → Agrasandhanī, Session Log               (immutable, complianc
 | **Cross-border transfer** | Requires Security Assessment (PIPL Article 38) -- flagged by `Cross_Border = "Restricted"` |
 | **Sensitive personal data** | `Data_Classification = "Confidential"` triggers additional approval workflow |
 
-### Additional columns (UAM-CN)
+### Additional columns (OpenYantra-CN)
 
 | Column | Sheet | Values |
 |---|---|---|
@@ -181,7 +181,7 @@ Audit Layer   → Agrasandhanī, Session Log               (immutable, complianc
 
 ### Integration with Chinese enterprise platforms
 
-UAM-CN supports integration with DingTalk, Feishu (Lark), and WeCom permission models. Team Layer sheets use role-based access aligned with these platforms' built-in group structures.
+OpenYantra-CN supports integration with DingTalk, Feishu (Lark), and WeCom permission models. Team Layer sheets use role-based access aligned with these platforms' built-in group structures.
 
 ---
 
@@ -200,20 +200,20 @@ UAM-CN supports integration with DingTalk, Feishu (Lark), and WeCom permission m
 
 ## Digital Will
 
-UAM files persist after the user is no longer alive. Until a formal mechanism is implemented, users are advised to:
+OpenYantra files persist after the user is no longer alive. Until a formal mechanism is implemented, users are advised to:
 
-1. Include the UAM file location and decryption key in their password manager
+1. Include the OpenYantra file location and decryption key in their password manager
 2. Add a `Posthumous_Access` row to `⚙️ Agent Config`:
    - `Agent = "ALL"`, `Instruction = "Posthumous access: [name] may access this file after my death"`
 3. Include the file in estate planning documentation
 
-UAM v2.12 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
+OpenYantra v4.1.0 roadmap includes a formal `digital_will.json` specification alongside `chitrapat.ods`.
 
 ---
 
-## Summary -- UAM Is Privacy by Architecture
+## Summary -- OpenYantra Is Privacy by Architecture
 
-| Property | UAM | Cloud memory systems |
+| Property | OpenYantra | Cloud memory systems |
 |---|---|---|
 | Data controller | User | AI provider |
 | Storage location | User's device | Provider's cloud |
@@ -222,5 +222,5 @@ UAM v2.12 roadmap includes a formal `digital_will.json` specification alongside 
 | Format | ISO open standard | Proprietary |
 | Jurisdiction | User's | Provider's |
 
-*In UAM, privacy is not a feature. It is the architecture.*  
+*In OpenYantra, privacy is not a feature. It is the architecture.*  
 *Chitragupta serves the soul. The record belongs to the remembered.*

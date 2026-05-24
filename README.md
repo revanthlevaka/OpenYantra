@@ -7,7 +7,7 @@
 <h4 align="center"><em>यन्त्र -- Inspired by Chitragupta, the Hindu God of Data</em></h4>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-3.0.0-saffron?style=flat-square&color=FF9933" />
+  <img src="https://img.shields.io/badge/Version-5.0.0-saffron?style=flat-square&color=FF9933" />
   <img src="https://img.shields.io/badge/Protocol-CC0%201.0-gold?style=flat-square&color=D4AF37" />
   <img src="https://img.shields.io/badge/Library-MIT-green?style=flat-square" />
   <img src="https://img.shields.io/badge/Format-.ods%20ISO%2FIEC%2026300-blue?style=flat-square" />
@@ -100,7 +100,7 @@ No API keys required. No cloud account. No configuration files.
 When you start an AI session, OpenYantra injects a context block into the system prompt:
 
 ```
-[OPENYANTRA CONTEXT -- v4.1.0]
+[OPENYANTRA CONTEXT -- v5.0.0]
 User: Revanth Levaka | Filmmaker | Hyderabad, IN
 Active Projects: Feature Screenplay -> Write act 2 (High)
 Open Loops: [High] 3-act vs 5-act -- undecided | [Medium] Follow up with Priya
@@ -174,7 +174,7 @@ yantra morning
 
 ```
 ========================================================
-  Good morning, Revanth. OpenYantra v4.1.0  2026-05-20
+  Good morning, Revanth. OpenYantra v5.0.0  2026-05-22
 ========================================================
 
   🔓  Open Loops (12 total):
@@ -466,8 +466,7 @@ Full guides for OpenClaw · LangChain · AutoGen · Raw Anthropic API -> [docs/D
 | v2.13.0 | Token alignment, em dash cleanup, brand asset suite, visual-guide.html, brand-manual.html |
 | v4.0.0 | SQLite WAL backend (2ms writes), SyncEngine, atomic ODS export, write idempotency, portalocker, `yantra sync`, `yantra corrections`, `yantra morning`, `yantra context` |
 | **v4.1.0** | **Dense embeddings (sentence-transformers), date range filter, Google/Apple passkey support** |
-| v4.2.0 *(planned)* | Morning briefing filter (importance>=7), dashboard reads from SQLite |
-| v4.3.0 *(planned)* | pip install openyantra[full], pyproject.toml packaging |
+| **v5.0.0** | **Sutradhar Graph Layer (SQLite edges + recursive CTE traversal), Sutra Context Pruning Engine, Setu Sync Durability, dashboard SQLite migration, graph_traverse MCP tool** |
 
 ---
 
@@ -500,13 +499,14 @@ See [WHITEPAPER.md](WHITEPAPER.md) for the complete five-round synthesis.
 | Agrasandhanī | Cosmic register | `📒` audit trail |
 | Chitrapat | Life scroll | `chitrapat.ods` |
 | Setu | Bridge | SyncEngine -- SQLite to ODS |
+| Sutradhar | Thread-connector | Graph edges -- bidirectional traversal |
 | Anishtha | Unfinished intent (Zeigarnik) | Open Loops -- compaction safety |
 | Mudra | Divine seal | SHA-256 signature |
 | Dharma-Adesh | Righteous command | User edits always win |
 | Raksha | Divine protection | Security engine |
 | VidyaKosha | Knowledge repository | Semantic search index |
 
-See [MYTHOLOGY.md](MYTHOLOGY.md) · [WHITEPAPER.md](WHITEPAPER.md) · [visual-guide.html](visual-guide.html) · [openyantra-brand-manual.html](openyantra-brand-manual.html)
+See [MYTHOLOGY.md](MYTHOLOGY.md) · [WHITEPAPER.md](WHITEPAPER.md) · [visual-guide.html](website/visual-guide.html) · [docs.html](website/docs.html)
 
 ---
 
@@ -527,36 +527,45 @@ See [PRIVACY.md](PRIVACY.md) for full regional specifications.
 
 ```
 openyantra/
-├── openyantra.py             <- Core library v4.1.0
-├── yantra_sqlite.py          <- SyncEngine: SQLite WAL + atomic ODS export (NEW v4.0)
-├── yantra_morning.py         <- Morning Briefing (NEW v4.0)
-├── yantra_context.py         <- Copy Context: paste into any AI chat (NEW v4.0)
-├── vidyakosha.py             <- Semantic search (VidyaKosha)
-├── yantra_ui.py              <- Browser dashboard (12 tabs)
-├── yantra_security.py        <- Raksha security engine
-├── yantra_digest.py          <- Daily proactive digest
-├── telegram_bot.py           <- Telegram -> Inbox
-├── ios_shortcut.py           <- iOS Shortcut -> Inbox (HTTP server)
-├── yantra_mail.py            <- Email -> Inbox (local SMTP)
-├── yantra_migrate.py         <- Schema migration tool
-├── install.sh                <- Mac/Linux self-contained installer
-├── install.ps1               <- Windows self-contained installer
-├── chitrapat_template.ods    <- Blank memory file (open in LibreOffice)
-├── visual-guide.html         <- Interactive architecture guide
-├── openyantra-brand-manual.html <- Brand identity and design system
-├── index.html                <- Public website
-├── WHITEPAPER.md             <- Research document
-├── PROTOCOL.md               <- Open spec (CC0)
-├── SKILL.md                  <- AI skill definition
-├── MYTHOLOGY.md              <- Chitragupta origin + Sanskrit naming
-├── PRIVACY.md                <- Regional profiles (IN, EU, US, CN)
-├── CHANGELOG.md              <- Version history
-├── screenshots/              <- UI screenshots
-├── docs/DEPLOYMENT.md        <- Framework integration guide
-├── openclaw/                 <- OpenClaw plugin + hooks
-├── examples/                 <- Quickstart + LangChain adapter
-├── references/               <- Controlled vocabulary
-└── assets/brand/             <- Brand assets (SVG mark, logos, favicon)
+├── openyantra/                <- Core Python package
+│   ├── core.py                <- Core memory and ODS reading/writing engine
+│   ├── cli.py                 <- Command-line interface parser
+│   ├── yantra_sqlite.py       <- SyncEngine: SQLite WAL + atomic ODS export
+│   ├── yantra_morning.py      <- Proactive morning briefings generator
+│   ├── yantra_context.py      <- Session context assembler
+│   ├── vidyakosha.py          <- Semantic search (VidyaKosha search index)
+│   ├── yantra_ui.py           <- FastAPI-powered local web dashboard
+│   ├── yantra_security.py     <- Raksha security and threat engine
+│   ├── yantra_passkey.py      <- Passkey (WebAuthn) local device verification
+│   ├── yantra_digest.py       <- Proactive daily digest generator
+│   ├── telegram_bot.py        <- Telegram capture adapter
+│   ├── ios_shortcut.py        <- iOS Shortcut HTTP capture receiver
+│   ├── yantra_mail.py         <- Local SMTP capture server
+│   ├── yantra_migrate.py      <- Schema migration tool
+│   ├── yantra_sutra.py        <- Sutra Context Pruning Engine
+│   ├── cognitive_db.py        <- Local SQLite memory cache layer
+│   ├── cognitive_mcp.py       <- Model Context Protocol server implementation
+│   └── chitrapat_template.ods <- Blank life scroll template
+├── website/                   <- Public website & visual documents
+│   ├── index.html             <- Project homepage
+│   ├── docs.html              <- Workflows, installation, & MCP server docs
+│   ├── visual-guide.html      <- Interactive visual guidelines & architecture
+│   └── assets/                <- Site logos, SVG marks, and favicons
+├── install.sh                 <- macOS/Linux self-contained installer script
+├── install.ps1                <- Windows PowerShell installer script
+├── WHITEPAPER.md              <- Architecture and research whitepaper
+├── PROTOCOL.md                <- Standard protocol specification (CC0)
+├── SKILL.md                   <- AI tool/skill integration manifest
+├── MYTHOLOGY.md               <- Sanskrit concepts & Chitragupta origin guide
+├── PRIVACY.md                 <- Regional cyber compliance profiles (IN, EU, US, CN)
+├── CHANGELOG.md               <- Complete version history
+├── LICENSE                    <- License (MIT / CC0)
+├── screenshots/               <- Dashboard UI screenshots
+├── docs/                      <- Deployment & troubleshooting documentation
+├── openclaw/                  <- OpenClaw plugin integration
+├── examples/                  <- Quickstart examples & adapter configs
+├── tests/                     <- Unit and integration test suites
+└── references/                <- Schema vocabulary definitions
 ```
 
 ---

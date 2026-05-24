@@ -1,6 +1,6 @@
-# OpenYantra Deployment Guide -- v2.12
+# OpenYantra Deployment Guide -- v4.1.0
 
-> OpenClaw · LangChain · AutoGen · Raw Anthropic API
+> OpenClaw · LangChain · AutoGen · Raw Anthropic API · SQLite WAL · Passkey Lock
 
 ## Install
 
@@ -16,7 +16,25 @@ pip install odfpy pandas scikit-learn faiss-cpu fastapi uvicorn
 pip install sentence-transformers  # optional
 ```
 
-## Morning Brief and Context Copy (v2.12+)
+## SQLite WAL SyncEngine & Passkey Lock (v4.0.0+)
+
+Starting in v4.0.0, OpenYantra transitions to a SQLite WAL-backed architecture. SQLite handles fast, 2ms writes at scale, while Chitragupta coordinates atomic, concurrent-safe exports to the LibreOffice-compatible `Chitrapat.ods` spreadsheet asynchronously.
+
+Additionally, v4.1.0 adds **Local Passkey (WebAuthn) Lock** security. You can secure your yantra with biometric lock protection using Apple FaceID/TouchID or Windows Hello.
+
+```python
+# Passkey configuration & authentication
+from openyantra.yantra_passkey import PasskeyAuth
+
+# Register a new local passkey
+PasskeyAuth.register(device_name="My Laptop")
+
+# Authenticate session
+if not PasskeyAuth.authenticate():
+    raise PermissionError("Access Denied: Biometric verification failed")
+```
+
+## Morning Brief and Context Copy (v4.1.0+)
 
 ```python
 # Morning brief -- runs automatically on first yantra command of the day
@@ -142,7 +160,7 @@ yantra ui 8080     # custom port
 
 Tabs: Dashboard · Inbox · Projects · Open Loops · Tasks · Corrections · Ledger · Health
 
-## Oracle and Export (v2.12)
+## Oracle and Export (v4.1.0)
 
 ```python
 # Oracle -- cross-reference engine, read-only
@@ -180,4 +198,4 @@ yantra export --since 2026-01-01 --output ~/ctx.md
 | "Sanchitta replayed" | Normal -- crashed writes auto-recovered |
 | "VidyaKosha not available" | Ensure `vidyakosha.py` in same directory |
 | Search returns empty | `oy._vidyakosha.sync(oy.path)` to rebuild index |
-| Slow writes at scale | Expected -- full `.ods` rewrite; SQLite backend planned v3.0 |
+| Slow writes at scale | Resolved in v4.0.0+; SQLite WAL SyncEngine handles writes in 2ms, with ODS export running asynchronously off the hot path |

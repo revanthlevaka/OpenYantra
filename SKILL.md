@@ -238,5 +238,5 @@ openyantra/yantra_ui.py          <- Browser dashboard
 openyantra/yantra_security.py    <- Raksha engine
 install.sh            <- One-command Mac/Linux installer
 website/visual-guide.html     <- Interactive architecture guide
-website/openyantra-brand-manual.html <- Brand design system
+website/docs.html             <- Workflows, Installation, & MCP Docs
 ```

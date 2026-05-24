@@ -1,5 +1,5 @@
 """
-yantra_sqlite.py -- OpenYantra SQLite SyncEngine v3.0
+yantra_sqlite.py -- OpenYantra SQLite SyncEngine v4.1.0
 The Setu (सेतु -- Bridge) between Chitrapat.ods and fast local storage.
 
 Architecture decision (7/7 consensus, Round 5 stress test):
@@ -17,7 +17,7 @@ Key guarantees:
 Performance (measured, Round 5):
   SQLite WAL write: 2ms flat at any row count
   ODS export:       78ms@200rows, 366ms@1000rows, 2012ms@5000rows
-  Combined v3.0:    2ms SQLite + 2ms incremental index = 4ms per write
+  Combined v4.1.0:    2ms SQLite + 2ms incremental index = 4ms per write
                     ODS export triggered async, not on hot path
 
 Usage:
@@ -55,7 +55,7 @@ try:
 except ImportError:
     _PANDAS = False
 
-VERSION = "3.0.0"
+VERSION = "5.0.0"
 
 # Sheet name to SQLite table name mapping
 SHEET_TABLE_MAP = {
@@ -75,6 +75,55 @@ SHEET_TABLE_MAP = {
     "Quarantine":  "quarantine",
     "SecurityLog": "security_log",
 }
+
+
+def validate_ods_headers(ods_path: str | Path) -> list[str]:
+    """
+    Validate that the sheets in the ODS file have the expected column headers.
+    Returns a list of error/warning strings. Empty list means validation passed.
+    """
+    if not _PANDAS:
+        return ["pandas not available"]
+
+    path = Path(ods_path).expanduser()
+    if not path.exists():
+        return [f"File not found: {path}"]
+
+    errors = []
+    try:
+        xl = pd.ExcelFile(str(path), engine="odf")
+        sheet_names = xl.sheet_names
+
+        canonical_headers = {
+            "👤 Identity": ["Attribute", "Value", "Last Updated", "Notes", "Confidence", "Source", "Importance"],
+            "🎯 Goals": ["Goal", "Type", "Priority", "Deadline", "Status", "Last Updated", "Notes", "Confidence", "Source", "Importance"],
+            "🚀 Projects": ["Project", "Domain", "Status", "Priority", "Key Decision Made", "Next Step", "Last Updated", "Notes", "Confidence", "Source", "Importance"],
+            "👥 People": ["Name", "Relationship", "Context", "Sentiment", "Last Mentioned", "Notes", "Confidence", "Source", "Importance"],
+            "💡 Preferences": ["Category", "Preference", "Strength", "Source", "Notes", "Confidence", "Last Updated", "Importance"],
+            "🧠 Beliefs": ["Topic", "Position", "Confidence", "Domain", "Last Updated", "Notes", "Source", "Importance", "Contradiction_Flag"],
+            "✅ Tasks": ["Task", "Project", "Priority", "Deadline", "Status", "Added By", "Notes", "Confidence", "Source", "Importance"],
+            "🔓 Open Loops": ["Topic", "Context / What's Unresolved", "Opened", "Priority", "Related Project", "Resolved?", "Resolution", "TTL_Days", "Confidence", "Source", "Importance"],
+            "📅 Session Log": ["Date", "Topics Discussed", "Decisions Made", "New Memory Added", "Open Loops Created", "Agent", "Notes"],
+            "⚙️ Agent Config": ["Agent", "Instruction", "Priority", "Active", "Notes"],
+            "📒 Agrasandhanī": ["Timestamp", "Request ID", "Agent", "Sheet", "Operation", "Row Identifier", "Status", "Confidence", "Source", "Importance", "Signature", "Reason / Notes"],
+            "📥 Inbox": ["Content", "Captured", "Routed?", "Target Sheet", "Notes", "Confidence", "Source", "Importance"],
+            "✏️ Corrections": ["Target Sheet", "Row Identifier", "Field", "Proposed Value", "Reason", "Status", "Proposed By", "Proposed At", "Reviewed By", "Reviewed At", "Notes"],
+            "🔒 Quarantine": ["Request ID", "Timestamp", "Agent", "Target Sheet", "Operation", "Fields JSON", "Threat Level", "Threat Type", "Threats Found", "Status", "Reviewed By", "Reviewed At"],
+            "🛡️ Security Log": ["Timestamp", "Agent", "Sheet", "Threat Level", "Threat Type", "Threats", "Status"],
+        }
+
+        for sheet, expected_cols in canonical_headers.items():
+            if sheet in sheet_names:
+                df = pd.read_excel(str(path), sheet_name=sheet, engine="odf", nrows=0)
+                actual_cols = [str(c).strip() for c in df.columns]
+                missing = [col for col in expected_cols if col not in actual_cols]
+                if missing:
+                    errors.append(f"Sheet '{sheet}' is missing columns: {', '.join(missing)}")
+    except Exception as e:
+        errors.append(f"Error reading ODS file: {e}")
+
+    return errors
+
 
 SCHEMA_SQL = """
 PRAGMA journal_mode=WAL;
@@ -300,6 +349,24 @@ CREATE TABLE IF NOT EXISTS security_log (
     last_updated TEXT
 );
 
+CREATE TABLE IF NOT EXISTS _sync_state (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    sequence_id INTEGER NOT NULL,
+    timestamp   TEXT NOT NULL,
+    status      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS edges (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_type TEXT NOT NULL,
+    source_id   TEXT NOT NULL,
+    target_type TEXT NOT NULL,
+    target_id   TEXT NOT NULL,
+    edge_type   TEXT NOT NULL,
+    created_at  TEXT,
+    UNIQUE(source_type, source_id, target_type, target_id, edge_type)
+);
+
 CREATE INDEX IF NOT EXISTS idx_open_loops_resolved ON open_loops(resolved);
 CREATE INDEX IF NOT EXISTS idx_open_loops_importance ON open_loops(importance DESC);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
@@ -308,12 +375,14 @@ CREATE INDEX IF NOT EXISTS idx_inbox_routed ON inbox(routed);
 CREATE INDEX IF NOT EXISTS idx_ledger_timestamp ON ledger(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_ledger_request_id ON ledger(request_id);
 CREATE INDEX IF NOT EXISTS idx_corrections_status ON corrections(status);
+CREATE INDEX IF NOT EXISTS idx_edges_source ON edges(source_type, source_id);
+CREATE INDEX IF NOT EXISTS idx_edges_target ON edges(target_type, target_id);
 """
 
 
 class SyncEngine:
     """
-    Setu (सेतु -- Bridge) -- SQLite operational backend for OpenYantra v3.0.
+    Setu (सेतु -- Bridge) -- SQLite operational backend for OpenYantra v4.1.0.
 
     The SyncEngine sits beneath Chitragupta (LedgerAgent).
     Chitragupta still enforces all write rules, admission gates,
@@ -333,6 +402,7 @@ class SyncEngine:
 
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
+        self.reconcile()
 
     # ── Initialisation ─────────────────────────────────────────────────────────
 
@@ -345,6 +415,30 @@ class SyncEngine:
                 "INSERT OR IGNORE INTO _meta VALUES ('created_at', ?)",
                 (datetime.utcnow().isoformat(),))
             conn.commit()
+
+    def reconcile(self):
+        """
+        Reconcile SQLite with ODS on startup.
+        Compares MAX(id) from ledger with MAX(sequence_id) from _sync_state where status = 'success'.
+        If there are unsynced ledger entries, triggers export_ods().
+        """
+        if not self.ods_path:
+            return
+        try:
+            with self._connect() as conn:
+                row = conn.execute("SELECT MAX(id) FROM ledger").fetchone()
+                max_ledger_id = row[0] if row and row[0] is not None else 0
+
+                row = conn.execute(
+                    "SELECT MAX(sequence_id) FROM _sync_state WHERE status = 'success'"
+                ).fetchone()
+                max_sync_id = row[0] if row and row[0] is not None else 0
+
+            if max_ledger_id > max_sync_id:
+                print(f"[SyncEngine] Reconciling: ledger max ID {max_ledger_id} > last sync ID {max_sync_id}. Exporting ODS.")
+                self.export_ods()
+        except Exception as e:
+            print(f"[SyncEngine] Reconciliation warning: {e}")
 
     @contextmanager
     def _connect(self):
@@ -395,7 +489,9 @@ class SyncEngine:
                   operation: str, row_id: Optional[int]) -> int:
         """Route write to correct table."""
         now = datetime.utcnow().isoformat(timespec="seconds")
-        fields = {**fields, "last_updated": now}
+        if table not in ("ledger", "_sync_state"):
+            fields = {**fields, "last_updated": now}
+
 
         if operation in ("add", "inbox"):
             cols   = ", ".join(fields.keys())
@@ -507,8 +603,31 @@ class SyncEngine:
 
         target = Path(ods_path or self.ods_path or "chitrapat.ods").expanduser()
         tmp    = target.with_suffix(".tmp.ods")
-
         lock_path = target.with_suffix(".lock")
+
+        # Get max ledger ID before export starts
+        max_ledger_id = 0
+        try:
+            with self._connect() as conn:
+                row = conn.execute("SELECT MAX(id) FROM ledger").fetchone()
+                max_ledger_id = row[0] if row and row[0] is not None else 0
+        except Exception:
+            pass
+
+        # Check for LibreOffice lockfiles
+        lo_lockfile = target.parent / f".~lock.{target.name}#"
+        if lo_lockfile.exists():
+            print(f"[SyncEngine] Warning: ODS file is locked by LibreOffice: {lo_lockfile}")
+            try:
+                with self._connect() as conn:
+                    conn.execute(
+                        "INSERT INTO _sync_state (sequence_id, timestamp, status) VALUES (?, ?, ?)",
+                        (max_ledger_id, datetime.utcnow().isoformat(), "failed")
+                    )
+            except Exception:
+                pass
+            return False
+
         try:
             if _PORTALOCKER:
                 lock_file = open(lock_path, "w")
@@ -553,13 +672,34 @@ class SyncEngine:
                 os.replace(str(tmp), str(target))
                 # Checkpoint WAL after successful export
                 with self._connect() as conn:
+                    conn.execute(
+                        "INSERT INTO _sync_state (sequence_id, timestamp, status) VALUES (?, ?, ?)",
+                        (max_ledger_id, datetime.utcnow().isoformat(), "success")
+                    )
                     conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                 return True
             else:
+                try:
+                    with self._connect() as conn:
+                        conn.execute(
+                            "INSERT INTO _sync_state (sequence_id, timestamp, status) VALUES (?, ?, ?)",
+                            (max_ledger_id, datetime.utcnow().isoformat(), "failed")
+                        )
+                except Exception:
+                    pass
                 tmp.unlink(missing_ok=True)
                 return False
 
         except Exception as e:
+            print(f"[SyncEngine] ODS export error: {e}")
+            try:
+                with self._connect() as conn:
+                    conn.execute(
+                        "INSERT INTO _sync_state (sequence_id, timestamp, status) VALUES (?, ?, ?)",
+                        (max_ledger_id, datetime.utcnow().isoformat(), "failed")
+                    )
+            except Exception:
+                pass
             tmp.unlink(missing_ok=True)
             return False
         finally:
@@ -585,6 +725,17 @@ class SyncEngine:
         source = Path(ods_path or self.ods_path or "chitrapat.ods").expanduser()
         if not source.exists():
             return {"error": f"ODS not found: {source}"}
+
+        # Header Validation
+        validation_errors = validate_ods_headers(source)
+        if validation_errors:
+            return {
+                "error": "ODS header validation failed",
+                "details": validation_errors,
+                "imported": 0,
+                "conflicts": 0,
+                "errors": len(validation_errors)
+            }
 
         stats = {"imported": 0, "conflicts": 0, "errors": 0}
 
@@ -702,3 +853,145 @@ class SyncEngine:
             "closed_loops_total":  len(closed_loops),
             "loop_resolution_rate": resolution_rate,
         }
+
+    # ── Graph (Sutradhar) ────────────────────────────────────────────────────────
+
+    def add_edge(self, source_type: str, source_id: str,
+                 target_type: str, target_id: str, edge_type: str) -> dict:
+        """Add a relationship edge. Returns {status, edge_id}."""
+        now = datetime.utcnow().isoformat(timespec="seconds")
+        try:
+            with self._connect() as conn:
+                cursor = conn.execute(
+                    "INSERT OR IGNORE INTO edges "
+                    "(source_type, source_id, target_type, target_id, edge_type, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (source_type, source_id, target_type, target_id, edge_type, now))
+                if cursor.rowcount == 0:
+                    # Already exists
+                    row = conn.execute(
+                        "SELECT id FROM edges WHERE source_type=? AND source_id=? "
+                        "AND target_type=? AND target_id=? AND edge_type=?",
+                        (source_type, source_id, target_type, target_id, edge_type)
+                    ).fetchone()
+                    return {"status": "exists", "edge_id": row["id"] if row else None}
+                return {"status": "created", "edge_id": cursor.lastrowid}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+    def delete_edge(self, edge_id: int) -> bool:
+        """Delete an edge by ID. Returns True if deleted."""
+        try:
+            with self._connect() as conn:
+                cursor = conn.execute("DELETE FROM edges WHERE id=?", (edge_id,))
+                return cursor.rowcount > 0
+        except Exception:
+            return False
+
+    def get_edges(self, source_type: Optional[str] = None,
+                  source_id: Optional[str] = None,
+                  target_type: Optional[str] = None) -> list[dict]:
+        """List edges with optional filters."""
+        sql = "SELECT * FROM edges"
+        conditions = []
+        params = []
+        if source_type:
+            conditions.append("source_type=?")
+            params.append(source_type)
+        if source_id:
+            conditions.append("source_id=?")
+            params.append(source_id)
+        if target_type:
+            conditions.append("target_type=?")
+            params.append(target_type)
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+        sql += " ORDER BY id DESC LIMIT 500"
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(sql, params).fetchall()
+                return [dict(r) for r in rows]
+        except Exception:
+            return []
+
+    def traverse(self, source_type: str, source_id: str,
+                 max_hops: int = 3) -> list[dict]:
+        """
+        Bidirectional BFS using a recursive CTE with cycle guard.
+        Returns list of {node_type, node_id, hop, edge_type, path}.
+        """
+        max_hops = min(max_hops, 6)  # safety cap
+        sql = """
+        WITH RECURSIVE bfs(node_type, node_id, hop, edge_type, path) AS (
+            -- seed
+            SELECT ?, ?, 0, 'start', ? || ':' || ?
+            UNION ALL
+            -- forward edges
+            SELECT
+                e.target_type, e.target_id, b.hop + 1, e.edge_type,
+                b.path || ',' || e.target_type || ':' || e.target_id
+            FROM edges e
+            JOIN bfs b ON e.source_type = b.node_type AND e.source_id = b.node_id
+            WHERE b.hop < ?
+              AND instr(b.path, e.target_type || ':' || e.target_id) = 0
+            UNION ALL
+            -- reverse edges
+            SELECT
+                e.source_type, e.source_id, b.hop + 1, e.edge_type,
+                b.path || ',' || e.source_type || ':' || e.source_id
+            FROM edges e
+            JOIN bfs b ON e.target_type = b.node_type AND e.target_id = b.node_id
+            WHERE b.hop < ?
+              AND instr(b.path, e.source_type || ':' || e.source_id) = 0
+        )
+        SELECT DISTINCT node_type, node_id, hop, edge_type, path
+        FROM bfs
+        WHERE hop > 0
+        ORDER BY hop, node_type, node_id
+        """
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    sql,
+                    (source_type, source_id, source_type, source_id,
+                     max_hops, max_hops)
+                ).fetchall()
+                return [dict(r) for r in rows]
+        except Exception as e:
+            return [{"error": str(e)}]
+
+    def infer_edges(self, table: str, fields: dict):
+        """
+        Auto-edge inference on writes.
+        - Tasks/loops with a project field -> edge to that project
+        - Notes containing @Name -> edge to person
+        """
+        import re
+        now = datetime.utcnow().isoformat(timespec="seconds")
+
+        if table == "tasks":
+            project = fields.get("project", "")
+            task_name = fields.get("task", "")
+            if project and task_name:
+                self.add_edge("tasks", task_name, "projects", project, "belongs_to")
+
+        elif table == "open_loops":
+            project = fields.get("related_project", "")
+            topic = fields.get("topic", "")
+            if project and topic:
+                self.add_edge("open_loops", topic, "projects", project, "related_to")
+
+        # Scan all text fields for @Name mentions -> link to people
+        all_text = " ".join(str(v) for v in fields.values() if v)
+        mentions = re.findall(r'@(\w+)', all_text)
+        if mentions:
+            # Get known people from DB
+            known_people = {r["name"].lower(): r["name"] for r in self.read("people")}
+            primary_key = (fields.get("task") or fields.get("topic")
+                          or fields.get("goal") or fields.get("project")
+                          or fields.get("content", "")[:50])
+            if primary_key:
+                for mention in mentions:
+                    canonical = known_people.get(mention.lower())
+                    if canonical:
+                        self.add_edge(table, primary_key, "people", canonical, "mentions")

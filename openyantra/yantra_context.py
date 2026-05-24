@@ -1,5 +1,5 @@
 """
-yantra_context.py -- OpenYantra Copy Context v3.0
+yantra_context.py -- OpenYantra Copy Context v4.1.0
 
 Formats your full memory as a clean Markdown block.
 Copies to clipboard automatically.
@@ -34,7 +34,7 @@ try:
 except ImportError:
     _OY_AVAILABLE = False
 
-VERSION = "3.0.0"
+VERSION = "5.0.0"
 
 ALL_SECTIONS = [
     "identity", "goals", "projects", "people",
@@ -230,9 +230,13 @@ def copy_to_clipboard(text: str) -> bool:
 
 
 def run_context(oy_path: str, output_file: str = None,
-                sections: list[str] = None) -> str:
+                sections: list[str] = None,
+                budget: int = 4096,
+                mode: str = "default",
+                query: Optional[str] = None) -> str:
     """
-    Run the context command. Copies to clipboard and prints preview.
+    Run the context command. Compiles context using SutraCompiler,
+    copies to clipboard and prints preview.
     Optionally saves to file.
     Returns the markdown string.
     """
@@ -247,20 +251,43 @@ def run_context(oy_path: str, output_file: str = None,
         return ""
 
     oy       = OpenYantra(str(path), agent_name="Context")
-    markdown = build_context_markdown(oy, sections)
+    compile_res = oy.compile_context(
+        query_text=query,
+        budget=budget,
+        mode=mode,
+        sections=sections
+    )
+    markdown = compile_res["markdown"]
+
+    is_over_limit = len(markdown.encode("utf-8")) > 1024 * 1024
 
     if output_file:
         out = Path(output_file).expanduser()
         out.write_text(markdown, encoding="utf-8")
         print(f"[yantra context] Saved to {out}")
     else:
-        copied = copy_to_clipboard(markdown)
-        if copied:
-            print("[yantra context] Context copied to clipboard.")
-            print("[yantra context] Paste into Claude.ai, ChatGPT, or any AI chat.\n")
+        if is_over_limit:
+            fallback_dir = Path("~/.openyantra").expanduser()
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            fallback_file = fallback_dir / "active_context.md"
+            fallback_file.write_text(markdown, encoding="utf-8")
+            path_str = str(fallback_file)
+            copied = copy_to_clipboard(path_str)
+            if copied:
+                print(f"[yantra context] WARNING: Context size exceeds 1MB. Saved full context to {path_str}")
+                print("[yantra context] Copied file path to clipboard instead.\n")
+            else:
+                print(f"[yantra context] WARNING: Context size exceeds 1MB. Saved full context to {path_str}")
+                print("[yantra context] Could not copy path to clipboard automatically.\n")
         else:
-            print("[yantra context] Could not copy automatically.\n")
-            print(markdown)
+            copied = copy_to_clipboard(markdown)
+            if copied:
+                print("[yantra context] Context compiled and copied to clipboard.")
+                print(f"[yantra context] Mode: {mode} | Tokens: {compile_res.get('tokens', 0)} / {budget}")
+                print("[yantra context] Paste into Claude.ai, ChatGPT, or any AI chat.\n")
+            else:
+                print("[yantra context] Could not copy automatically.\n")
+                print(markdown)
 
     # Print a short preview
     lines  = markdown.split("\n")
@@ -274,17 +301,25 @@ def run_context(oy_path: str, output_file: str = None,
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="OpenYantra Copy Context v3.0")
+        description="OpenYantra Copy Context v5.0.0 (Sutra Pruning Engine)")
     parser.add_argument("--file", "-f",
                         default=str(Path.home() / "openyantra" / "chitrapat.ods"))
     parser.add_argument("--output", "-o", default=None,
                         help="Save to file instead of clipboard")
     parser.add_argument("--sections", "-s", default=None,
                         help=f"Comma-separated sections: {','.join(ALL_SECTIONS)}")
+    parser.add_argument("--budget", "-b", type=int, default=4096,
+                        help="Token budget for context (default: 4096)")
+    parser.add_argument("--mode", "-m", default="default",
+                        choices=["default", "conversational", "analytical", "creative"],
+                        help="Preset weight mode (default: default)")
+    parser.add_argument("--query", "-q", default=None,
+                        help="Search query for semantic similarity weight")
     args = parser.parse_args()
 
     sections = args.sections.split(",") if args.sections else None
-    run_context(args.file, output_file=args.output, sections=sections)
+    run_context(args.file, output_file=args.output, sections=sections,
+                budget=args.budget, mode=args.mode, query=args.query)
 
 
 if __name__ == "__main__":

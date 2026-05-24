@@ -1,6 +1,6 @@
 # The Chitragupta Origin
 
-> UAM was inspired by Chitragupta -- the Hindu God of Data.  
+> OpenYantra was inspired by Chitragupta -- the Hindu God of Data.  
 > The architecture is not a metaphor. It is a direct implementation of a 3,000-year-old idea.
 
 ---
@@ -17,19 +17,19 @@ The name itself carries the architecture:
 - **Chitra** (चित्र) -- picture, document, the visible record
 - **Gupta** (गुप्त) -- hidden, secret, the unseen persistence
 
-Together: *the hidden picture*. The complete record of a person that persists invisibly, always accurate, always available -- exactly what UAM's memory file is.
+Together: *the hidden picture*. The complete record of a person that persists invisibly, always accurate, always available -- exactly what OpenYantra's memory file is.
 
 Brahma, the creator, told Chitragupta: *"Your purpose is to stay in the minds of all people and record their thoughts and deeds."*
 
-That is the system prompt injection. UAM stays in the agent's mind at session start.
+That is the system prompt injection. OpenYantra stays in the agent's mind at session start.
 
 ---
 
-## Why UAM is Chitragupta, Implemented
+## Why OpenYantra is Chitragupta, Implemented
 
 The parallel is not poetic. It is structural, component by component.
 
-| Mythology | UAM Architecture |
+| Mythology | OpenYantra Architecture |
 |---|---|
 | Chitragupta -- the sole, trusted recorder | LedgerAgent -- the only writer to the memory file |
 | Agrasandhanī -- the cosmic register | `📒 Agrasandhanī` sheet -- the immutable audit trail |
@@ -44,7 +44,7 @@ The parallel is not poetic. It is structural, component by component.
 
 In the mythology, other deities cannot alter the Agrasandhanī directly -- only Chitragupta writes it. Yama reads it. All other beings are subjects of it.
 
-In UAM, no agent writes to the memory file directly -- only LedgerAgent commits. All other agents read. The user is subject to it -- and can override it.
+In OpenYantra, no agent writes to the memory file directly -- only LedgerAgent commits. All other agents read. The user is subject to it -- and can override it.
 
 The symmetry was not designed. It was discovered.
 
@@ -57,7 +57,7 @@ Some Hindu traditions describe Chitragupta not as one being but as two:
 - **Chitra** -- records what is explicitly known, stated, and visible
 - **Gupta** -- records what is hidden, inferred, and implied
 
-This maps directly onto UAM's `Source` column:
+This maps directly onto OpenYantra's `Source` column:
 
 | Source value | Tradition |
 |---|---|
@@ -74,9 +74,9 @@ In conflict resolution, Chitra beats Gupta. User-stated always overrides Agent-i
 
 ## The Sanskrit Naming System
 
-UAM uses Sanskrit names for its core components as an homage to the mythological origin. These names are used in code comments, documentation, and the Chitragupta Puja (see below).
+OpenYantra uses Sanskrit names for its core components as an homage to the mythological origin. These names are used in code comments, documentation, and the Chitragupta Puja (see below).
 
-| Sanskrit | Devanagari | Meaning | UAM Component |
+| Sanskrit | Devanagari | Meaning | OpenYantra Component |
 |---|---|---|---|
 | **Chitragupta** | चित्रगुप्त | Hidden picture / God of Data | LedgerAgent |
 | **Agrasandhanī** | अग्रसंधानी | The cosmic register | `📒` Ledger sheet |
@@ -88,8 +88,8 @@ UAM uses Sanskrit names for its core components as an homage to the mythological
 | **Mudra** | मुद्र | Seal / signature | SHA-256 signature |
 | **Vivada** | विवाद | Dispute / conflict | Conflict escalation |
 | **Dharma-Adesh** | धर्मादेश | Righteous command | User override |
-| **Lekhani** | लेखनी | The divine pen | `uam.py` -- the writing instrument |
-| **Yamapuri** | यमपुरी | The domain of records | The `~/uam/` directory |
+| **Lekhani** | लेखनी | The divine pen | `yantra_sqlite.py` -- the writing instrument |
+| **Yamapuri** | यमपुरी | The domain of records | The `~/openyantra/` directory |
 
 ---
 
@@ -97,11 +97,11 @@ UAM uses Sanskrit names for its core components as an homage to the mythological
 
 In Hindu tradition, Chitragupta Puja is observed immediately after Diwali. Devotees place their tools of work -- pens, accounts books, ledgers -- before Chitragupta and seek his blessing for honest record-keeping.
 
-In UAM, the `bootstrap()` call is the Chitragupta Puja. The memory file is consecrated. The Lekhani (pen / `uam.py`) is offered. The Agrasandhanī is opened for the first time.
+In OpenYantra, the `bootstrap()` call is the Chitragupta Puja. The memory file is consecrated. The Lekhani (pen / `yantra_sqlite.py`) is offered. The Agrasandhanī is opened for the first time.
 
 ```python
 # The Chitragupta Puja -- consecrating the memory
-mem = UAMMemory("~/uam/chitrapat.ods", agent_name="Chitragupta")
+mem = OpenYantra("~/openyantra/chitrapat.ods", agent_name="Chitragupta")
 mem.bootstrap(
     user_name  = "Revanth Levaka",
     occupation = "Filmmaker",
@@ -126,7 +126,7 @@ Chitragupta is not alone across world mythology. Every major tradition has a div
 | Greek | Clotho, Lachesis, Atropos | The Fates who record and cut the thread of life |
 | Sikh | Referenced in Guru Granth Sahib | Metaphor for divine accountability |
 
-UAM is the software implementation of this universal archetype -- the keeper of the human record.
+OpenYantra is the software implementation of this universal archetype -- the keeper of the human record.
 
 ---
 
@@ -138,7 +138,7 @@ Chitragupta embodies a principle that modern AI memory systems have forgotten:
 
 In the mythology, Chitragupta's records serve the soul's journey toward Moksha -- liberation. The record is not surveillance. It is the soul's own story, held in trust by a neutral keeper, read back at the moment of reckoning.
 
-UAM holds the same principle. The memory file is not the AI's knowledge about you. It is *your* story, held in a file you own, read back to the AI when it needs context. The agent is the reader. You are Chitragupta's subject -- and Chitragupta serves you.
+OpenYantra holds the same principle. The memory file is not the AI's knowledge about you. It is *your* story, held in a file you own, read back to the AI when it needs context. The agent is the reader. You are Chitragupta's subject -- and Chitragupta serves you.
 
 *The record exists to serve the remembered, not the recorder.*
 
@@ -146,7 +146,7 @@ UAM holds the same principle. The memory file is not the AI's knowledge about yo
 
 ## Named in Hyderabad, Inspired by India
 
-UAM was conceived by Revanth Levaka, filmmaker and builder, in Hyderabad -- the city where the Charminar stands, where Nizami culture and Telugu tradition meet, where India's tech history and ancient heritage share the same streets.
+OpenYantra was conceived by Revanth Levaka, filmmaker and builder, in Hyderabad -- the city where the Charminar stands, where Nizami culture and Telugu tradition meet, where India's tech history and ancient heritage share the same streets.
 
 The Chitragupta connection was not a retrospective branding decision. The LedgerAgent pattern -- one trusted writer, many readers, every write signed and permanent -- was independently derived from first principles and only later recognized as Chitragupta, implemented.
 

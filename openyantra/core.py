@@ -27,7 +27,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-__version__ = "4.1.0"
+__version__ = "5.0.0"
 
 
 try:
@@ -451,7 +451,7 @@ class OpenYantra:
         oy.health_check()        -- system status + stats
     """
 
-    VERSION = "4.1.0"
+    VERSION = "5.0.0"
 
     def __init__(self, path: str | Path, agent_name: str = "Agent",
                  dead_switch_minutes: int = 30):
@@ -482,6 +482,15 @@ class OpenYantra:
 
         # Raksha -- security engine (v2.4)
         self._raksha = get_raksha() if _RAKSHA_AVAILABLE else None
+
+        # Sutradhar -- SQLite graph engine (v5.0.0)
+        self.db_engine = None
+        try:
+            from openyantra.yantra_sqlite import SyncEngine
+            db_p = self.path.with_suffix(".db")
+            self.db_engine = SyncEngine(db_p, self.path)
+        except Exception:
+            pass
 
     # ── Bootstrap ──────────────────────────────────────────────────────────────
 
@@ -545,6 +554,17 @@ class OpenYantra:
                 else:
                     self._vidyakosha.sync(self.path)
             except Exception: pass
+
+        # v5.0.0: Sutradhar auto-edge inference
+        if receipt.get("status") == "written" and self.db_engine is not None:
+            try:
+                from openyantra.yantra_sqlite import SHEET_TABLE_MAP
+                table = SHEET_TABLE_MAP.get(req.sheet)
+                if table:
+                    self.db_engine.infer_edges(table, req.fields)
+            except Exception:
+                pass
+
         return receipt
 
     # ── v2.1 new methods ───────────────────────────────────────────────────────
@@ -1779,6 +1799,28 @@ class OpenYantra:
             print(md)
 
         return md
+
+
+    def compile_context(self,
+                        query_text: Optional[str] = None,
+                        budget: int = 4096,
+                        mode: str = "default",
+                        sections: Optional[list[str]] = None) -> dict:
+        """
+        v5.0.0 -- Intelligent context pruning using SutraCompiler.
+        """
+        from openyantra.yantra_sutra import SutraCompiler
+        settings_path = self.path.parent / "settings.json"
+        settings = {}
+        if settings_path.exists():
+            try:
+                import json
+                with open(settings_path, "r", encoding="utf-8") as f:
+                    settings = json.load(f)
+            except Exception:
+                pass
+        compiler = SutraCompiler(self, settings)
+        return compiler.compile(query_text, budget, mode, sections)
 
 
     # ── Oracle -- v2.12 ───────────────────────────────────────────────────────────

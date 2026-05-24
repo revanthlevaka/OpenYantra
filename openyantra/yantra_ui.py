@@ -44,7 +44,7 @@ from openyantra.yantra_passkey import (
     check_authentication_response
 )
 
-app = FastAPI(title="OpenYantra", version="4.1.0", docs_url=None, redoc_url=None)
+app = FastAPI(title="OpenYantra", version="5.0.0", docs_url=None, redoc_url=None)
 _oy = None
 _cog_store = None
 
@@ -71,7 +71,13 @@ DEFAULT_SETTINGS = {
     "oauthClientSecret": "",
     "passkeyEnabled": False,
     "passkeys": [],
-    "embedder": "auto"
+    "embedder": "auto",
+    "sutra_weights": {
+        "semantic": 0.4,
+        "recency": 0.3,
+        "importance": 0.2,
+        "relation": 0.1
+    }
 }
 
 def get_settings_data() -> dict:
@@ -134,7 +140,32 @@ async def api_sheet(name: str):
          "quarantine":SHEET_QUARANTINE,"security_log":SHEET_SECURITY_LOG}
     sheet = m.get(name)
     if not sheet: raise HTTPException(404, f"Unknown: {name}")
-    rows = get_oy()._read_sheet(sheet)
+    oy = get_oy()
+    # v5.0.0: prefer SQLite via db_engine for 2ms reads
+    if getattr(oy, 'db_engine', None):
+        from openyantra.yantra_sqlite import SHEET_TABLE_MAP
+        table = SHEET_TABLE_MAP.get(sheet)
+        if table:
+            db_rows = oy.db_engine.read(table)
+            # Convert to Title Case keys and boolean fields for frontend compat
+            title_rows = []
+            for r in db_rows:
+                tr = {}
+                for k, v in r.items():
+                    if k in ('id', 'last_updated', 'added_by'):
+                        continue
+                    tk = k.replace('_', ' ').title()
+                    # Boolean field conversions
+                    if k == 'resolved':
+                        v = 'Yes' if v else 'No'
+                    elif k == 'routed':
+                        v = 'Yes' if v else 'No'
+                    elif k == 'active':
+                        v = 'Yes' if v else 'No'
+                    tr[tk] = v
+                title_rows.append(tr)
+            return {"sheet": sheet, "rows": title_rows, "count": len(title_rows)}
+    rows = oy._read_sheet(sheet)
     return {"sheet": sheet, "rows": rows, "count": len(rows)}
 
 @app.post("/api/inbox")
@@ -549,6 +580,44 @@ async def api_context_copy():
     return {"markdown": md, "status": "ready"}
 
 
+@app.post("/api/context/compile")
+async def api_context_compile(req: Request):
+    d = await req.json()
+    query = d.get("query")
+    budget = int(d.get("budget", 4096))
+    mode = d.get("mode", "default")
+    sections = d.get("sections")
+    
+    oy = get_oy()
+    res = oy.compile_context(
+        query_text=query,
+        budget=budget,
+        mode=mode,
+        sections=sections
+    )
+    return res
+
+
+@app.get("/api/context/preview")
+async def api_context_preview(
+    query: str | None = None,
+    budget: int = 4096,
+    mode: str = "default",
+    sections: str | None = None
+):
+    oy = get_oy()
+    sections_list = None
+    if sections:
+        sections_list = [s.strip() for s in sections.split(",") if s.strip()]
+    res = oy.compile_context(
+        query_text=query,
+        budget=budget,
+        mode=mode,
+        sections=sections_list
+    )
+    return res
+
+
 @app.get("/api/security/trust/{agent_name}")
 async def api_trust(agent_name: str):
     return {"agent":agent_name,"trust_tier":get_oy().get_trust_tier(agent_name)}
@@ -592,8 +661,48 @@ async def api_mcp_config():
     }
 
 
+# ── Graph API (Sutradhar) ─────────────────────────────────────────────────────
+
+@app.get("/api/graph/edges")
+async def api_graph_edges(source_type: str = None, source_id: str = None, target_type: str = None):
+    oy = get_oy()
+    if not getattr(oy, 'db_engine', None):
+        return {"edges": [], "error": "db_engine not available"}
+    edges = oy.db_engine.get_edges(source_type=source_type, source_id=source_id, target_type=target_type)
+    return {"edges": edges, "count": len(edges)}
+
+@app.post("/api/graph/edge")
+async def api_graph_add_edge(req: Request):
+    d = await req.json()
+    oy = get_oy()
+    if not getattr(oy, 'db_engine', None):
+        raise HTTPException(500, "db_engine not available")
+    result = oy.db_engine.add_edge(
+        d.get("source_type", ""), d.get("source_id", ""),
+        d.get("target_type", ""), d.get("target_id", ""),
+        d.get("edge_type", "related_to")
+    )
+    return result
+
+@app.delete("/api/graph/edge/{edge_id}")
+async def api_graph_delete_edge(edge_id: int):
+    oy = get_oy()
+    if not getattr(oy, 'db_engine', None):
+        raise HTTPException(500, "db_engine not available")
+    success = oy.db_engine.delete_edge(edge_id)
+    return {"deleted": success}
+
+@app.get("/api/graph/traverse")
+async def api_graph_traverse(source_type: str, source_id: str, max_hops: int = 3):
+    oy = get_oy()
+    if not getattr(oy, 'db_engine', None):
+        return {"nodes": [], "error": "db_engine not available"}
+    nodes = oy.db_engine.traverse(source_type, source_id, max_hops)
+    return {"nodes": nodes, "source_type": source_type, "source_id": source_id}
+
+
 def main():
-    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v4.1.0")
+    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v5.0.0")
     parser.add_argument("--file","-f",default=str(Path.home()/"openyantra"/"chitrapat.ods"))
     parser.add_argument("--port","-p",type=int,default=7331)
     parser.add_argument("--host",default="127.0.0.1")
@@ -605,7 +714,7 @@ def main():
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     _cog_store = CognitiveMemoryStore(path.parent / "cognitive_memories.json")
     h = _oy.health_check()
-    print(f"\n{'='*50}\n  OpenYantra Dashboard v4.1.0\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
+    print(f"\n{'='*50}\n  OpenYantra Dashboard v5.0.0\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 
 if __name__ == "__main__":

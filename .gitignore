@@ -38,3 +38,12 @@ settings.json
 
 # Logs
 *.log
+
+# VidyaKosha local database files
+vidyakosha.faiss
+vidyakosha_bm25.pkl
+vidyakosha_manifest.json
+vidyakosha_registry.json
+
+# Scratch files
+scratch/

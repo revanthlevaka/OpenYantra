@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OpenYantra -- Workflows, Installation, & MCP Server Documentation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+/* ================================================================
+   DESIGN TOKENS (Shared from OpenYantra Brand Specs)
+   ================================================================ */
+:root {
+  --ink:       #0a0a0b;
+  --surface:   #111113;
+  --surface2:  #161618;
+  --surface3:  #1c1b1f;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.13);
+  --dim:       #242228;
+  --muted:     #524f58;
+  --subtle:    #7a7682;
+  --text:      #e8e5de;
+  --text-dim:  rgba(232,229,222,0.52);
+
+  --blue:      #1c6fff;
+  --indigo:    #5535e0;
+  --coral:     #e84520;
+  --amber:     #f5a000;
+  --green:     #1aa167;
+
+  --grad:      linear-gradient(135deg, #1c6fff 0%, #5535e0 32%, #e84520 66%, #f5a000 100%);
+  --grad-h:    linear-gradient(90deg,  #1c6fff 0%, #5535e0 32%, #e84520 66%, #f5a000 100%);
+  --grad-text: linear-gradient(135deg, #1c6fff, #5535e0 40%, #e84520 70%, #f5a000);
+
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --sidebar-w: 260px;
+  --grid-line:   rgba(255,255,255,0.017);
+  --sidebar-bg:  rgba(10,10,11,0.95);
+  --terminal-bg: #060607;
+  --transition-theme: background 0.28s, color 0.28s, border-color 0.28s;
+}
+
+/* Light mode tokens */
+[data-theme="light"] {
+  --ink:       #f4f2ee;
+  --surface:   #ffffff;
+  --surface2:  #ece9e2;
+  --surface3:  #e4e0d8;
+  --border:    rgba(0,0,0,0.09);
+  --border2:   rgba(0,0,0,0.16);
+  --dim:       #d0ccc4;
+  --muted:     #888380;
+  --subtle:    #555250;
+  --text:      #1a1820;
+  --text-dim:  rgba(26,24,32,0.56);
+  --grid-line:   rgba(0,0,0,0.04);
+  --sidebar-bg:  rgba(244,242,238,0.97);
+  --terminal-bg: #1a1820;
+}
+
+/* ================================================================
+   RESET & BASE STYLES
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: var(--transition-theme);
+}
+a { color: inherit; text-decoration: none; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+
+/* Grid Texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transition: var(--transition-theme);
+}
+
+.grad-text {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.z1 { position: relative; z-index: 1; }
+.sans { font-family: var(--sans); }
+
+/* ================================================================
+   SIDEBAR LAYOUT
+   ================================================================ */
+#sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
+  z-index: 100;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  transition: var(--transition-theme);
+}
+
+.sidebar-logo {
+  display: flex; align-items: center; gap: 12px;
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-logo-mark { width: 28px; height: 28px; flex-shrink: 0; }
+.sidebar-logo-name { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; }
+.sidebar-logo-sub  { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+.sidebar-nav { flex: 1; padding: 20px 0; }
+.nav-group { margin-bottom: 16px; }
+.nav-group-label {
+  font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--muted); padding: 0 20px 8px;
+  opacity: 0.7;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 20px;
+  font-size: 11px; letter-spacing: 0.04em;
+  color: var(--subtle); cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--amber);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item .ni-num {
+  font-size: 8px; color: var(--muted); letter-spacing: 0.1em;
+  min-width: 18px;
+}
+.nav-item.active .ni-num { color: var(--amber); }
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 9px; color: var(--muted); letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: flex; align-items: center;
+  background: var(--ink); border: 1px solid var(--border);
+  padding: 3px; gap: 2px; margin-bottom: 12px;
+}
+.theme-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 8px; background: transparent; border: none;
+  color: var(--muted); cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center;
+}
+.theme-btn:hover { color: var(--text); }
+.theme-btn.active {
+  background: var(--dim); color: var(--text);
+}
+
+/* ================================================================
+   MAIN CONTENT & SECTIONS
+   ================================================================ */
+#main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+.chapter {
+  min-height: 100vh;
+  position: relative; z-index: 1;
+  border-bottom: 1px solid var(--border);
+}
+.chapter-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--grad-h);
+}
+
+.chapter-inner {
+  max-width: 1000px;
+  padding: 80px 60px 120px;
+}
+
+.chapter-eyebrow {
+  font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.chapter-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 60px; }
+
+.chapter-title {
+  font-size: clamp(32px, 4vw, 48px); font-weight: 300;
+  line-height: 1.1; letter-spacing: -0.025em;
+  margin-bottom: 24px;
+}
+.chapter-desc {
+  font-family: var(--sans); font-size: 15px; font-weight: 300;
+  color: var(--text-dim); line-height: 1.8; max-width: 720px;
+  margin-bottom: 60px;
+}
+
+.section-label {
+  font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--subtle); display: flex; align-items: center; gap: 12px;
+  margin-bottom: 32px; margin-top: 56px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ================================================================
+   CARDS & GRIDS
+   ================================================================ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 4px;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+}
+.card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+}
+
+.card-num {
+  font-size: 9px; color: var(--muted); letter-spacing: 0.1em;
+  position: absolute; top: 20px; right: 24px;
+}
+
+.card-title {
+  font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+  margin-bottom: 8px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.card-desc {
+  font-family: var(--sans); font-size: 12px; line-height: 1.6;
+  color: var(--text-dim); margin-bottom: 16px;
+}
+
+/* ================================================================
+   CODE BLOCKS
+   ================================================================ */
+.terminal {
+  background: var(--terminal-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 20px 0 32px;
+  overflow: hidden;
+}
+.terminal-header {
+  background: var(--surface2);
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.th-dots { display: flex; gap: 6px; }
+.th-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.th-dot.red { background: var(--coral); }
+.th-dot.yellow { background: var(--amber); }
+.th-dot.green { background: var(--green); }
+.th-title { font-size: 10px; color: var(--subtle); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.terminal-body {
+  padding: 16px;
+  overflow-x: auto;
+}
+.terminal-body pre {
+  margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.6;
+}
+
+.cmd-comment { color: var(--subtle); }
+.cmd-prompt { color: var(--coral); }
+.cmd-bin { color: var(--amber); }
+.cmd-arg { color: var(--blue); }
+.cmd-val { color: var(--green); }
+
+.copy-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: var(--mono); font-size: 8px;
+  padding: 2px 6px; cursor: pointer; text-transform: uppercase;
+  transition: all 0.15s;
+}
+.copy-btn:hover {
+  color: var(--text); border-color: var(--subtle);
+}
+
+/* Alert box */
+.alert-box {
+  background: rgba(245, 160, 0, 0.05);
+  border-left: 3px solid var(--amber);
+  padding: 20px; margin: 24px 0; border-radius: 0 4px 4px 0;
+}
+.alert-box-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 8px;
+}
+.alert-box-desc {
+  font-family: var(--sans); font-size: 13px; line-height: 1.6;
+  color: var(--text-dim);
+}
+
+/* Table styling */
+.docs-table {
+  width: 100%; border-collapse: collapse; margin: 24px 0;
+}
+.docs-table th, .docs-table td {
+  padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.docs-table th {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted); background: var(--surface);
+}
+.docs-table td {
+  font-size: 12px; color: var(--text-dim);
+}
+.docs-table td strong { color: var(--text); }
+
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     SIDEBAR
+     ================================================================ -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <svg class="sidebar-logo-mark" viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="logoG" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1c6fff"/>
+          <stop offset="50%" stop-color="#5535e0"/>
+          <stop offset="100%" stop-color="#f5a000"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46" stroke="url(#logoG)" stroke-width="3" fill="none"/>
+      <circle cx="50" cy="50" r="28" stroke="url(#logoG)" stroke-width="1.5" fill="none" opacity="0.3"/>
+      <circle cx="50" cy="50" r="6" fill="url(#logoG)"/>
+      <circle cx="50" cy="4" r="3.5" fill="#1c6fff"/>
+      <circle cx="96" cy="50" r="3.5" fill="#5535e0"/>
+      <circle cx="50" cy="96" r="3.5" fill="#e84520"/>
+      <circle cx="4" cy="50" r="3.5" fill="#f5a000"/>
+    </svg>
+    <div>
+      <div class="sidebar-logo-name">OpenYantra</div>
+      <div class="sidebar-logo-sub">docs // v4.1.0</div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-group">
+      <div class="nav-group-label">01 / Foundation</div>
+      <a class="nav-item active" href="#arch" onclick="setActive(this)">
+        <span class="ni-num">01</span> Architecture
+      </a>
+      <a class="nav-item" href="#install" onclick="setActive(this)">
+        <span class="ni-num">02</span> Installation
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">02 / CLI & Flows</div>
+      <a class="nav-item" href="#cli" onclick="setActive(this)">
+        <span class="ni-num">03</span> Command Guide
+      </a>
+      <a class="nav-item" href="#mcp" onclick="setActive(this)">
+        <span class="ni-num">04</span> MCP Server
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">03 / Advanced</div>
+      <a class="nav-item" href="#api" onclick="setActive(this)">
+        <span class="ni-num">05</span> API Adapters
+      </a>
+      <a class="nav-item" href="#security" onclick="setActive(this)">
+        <span class="ni-num">06</span> Security & Locks
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="theme-toggle">
+      <button class="theme-btn" data-mode="light" title="Light Theme">Light</button>
+      <button class="theme-btn" data-mode="dark" title="Dark Theme">Dark</button>
+      <button class="theme-btn" data-mode="auto" title="Auto Theme">Auto</button>
+    </div>
+    <div style="font-size: 8px; line-height: 1.5; opacity: 0.6;">
+      <a href="index.html">← Return Home</a><br>
+      © 2026 OpenYantra.
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     MAIN CONTENT
+     ================================================================ -->
+<main id="main">
+
+  <!-- ================================================================
+       CHAPTER 01: ARCHITECTURE
+       ================================================================ -->
+  <section class="chapter" id="arch">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 01</div>
+      <h1 class="chapter-title grad-text">Core Architecture & Concepts</h1>
+      <div class="chapter-desc">
+        OpenYantra bridges local storage and active AI agent memory. It uses Sanskrit terminology to define structural concepts designed for 100% data ownership, cryptographic tracking, and seamless cross-session recall.
+      </div>
+
+      <div class="section-label">Sanskrit Terminology & Definitions</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-num">01</div>
+          <div class="card-title">यन्त्र (Yantra)</div>
+          <div class="card-desc">The physical system container and state runtime coordinating fast local memory pipelines.</div>
+        </div>
+        <div class="card">
+          <div class="card-num">02</div>
+          <div class="card-title">चित्रपट (Chitrapat)</div>
+          <div class="card-desc">The canonical open-standard ODS file representing the entire relational ledger structure.</div>
+        </div>
+        <div class="card">
+          <div class="card-num">03</div>
+          <div class="card-title">चित्रगुप्त (Chitragupta)</div>
+          <div class="card-desc">The secure Ledger Agent who enforces read/write schemas, validates parameters, and signs transactions.</div>
+        </div>
+        <div class="card">
+          <div class="card-num">04</div>
+          <div class="card-title">सञ्चित (Sanchitta)</div>
+          <div class="card-desc">The local SQLite database storing the Write-Ahead Log (WAL) operational source of truth.</div>
+        </div>
+        <div class="card">
+          <div class="card-num">05</div>
+          <div class="card-title">प्रतिबिम्ब (Pratibimba)</div>
+          <div class="card-desc">The contextual prompt reflection dynamically injected into active agent session systems.</div>
+        </div>
+        <div class="card">
+          <div class="card-num">06</div>
+          <div class="card-title">विद्याकोश (VidyaKosha)</div>
+          <div class="card-desc">The dense embeddings engine supplying fast semantic memory searches without cloud APIs.</div>
+        </div>
+      </div>
+
+      <div class="section-label">The 14-Sheet Canonical Schema</div>
+      <div class="chapter-desc">
+        Every Chitrapat contains 14 standardized relational sheets. This structure enforces semantic separation between goals, current tasks, preferences, and security logging.
+      </div>
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Sheet Name</th>
+            <th>Sanskrit Context</th>
+            <th>Primary Functionality</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>👤 Identity</strong></td>
+            <td>Pratyabhijñā (प्रत्यभिज्ञा)</td>
+            <td>Contains core attributes, occupations, and location contexts of the user.</td>
+          </tr>
+          <tr>
+            <td><strong>🎯 Goals</strong></td>
+            <td>Sankalpa (सङ्कल्प)</td>
+            <td>Tracks active high-level targets, deadlines, and deadlines.</td>
+          </tr>
+          <tr>
+            <td><strong>🚀 Projects</strong></td>
+            <td>Kārya (कार्य)</td>
+            <td>Monitors active domains, key steps, status state, and update history.</td>
+          </tr>
+          <tr>
+            <td><strong>🧠 Beliefs</strong></td>
+            <td>Siddhānta (सिद्धान्त)</td>
+            <td>Stores core principles, positions, and automatically flagged contradictions.</td>
+          </tr>
+          <tr>
+            <td><strong>🔓 Open Loops</strong></td>
+            <td>Apūrva (अपूर्व)</td>
+            <td>Tracks unresolved issues, topic scopes, and Time-To-Live (TTL) durations.</td>
+          </tr>
+          <tr>
+            <td><strong>📒 Ledger</strong></td>
+            <td>Agrasandhanī (अग्रसन्धानी)</td>
+            <td>The cryptographically signed transaction history logs.</td>
+          </tr>
+          <tr>
+            <td><strong>🛡️ Security Log</strong></td>
+            <td>Rakshana (रक्षण)</td>
+            <td>Logs active agent access, system state checks, and threat mitigation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CHAPTER 02: INSTALLATION
+       ================================================================ -->
+  <section class="chapter" id="install">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 02</div>
+      <h1 class="chapter-title grad-text">Quick Start & Installation</h1>
+      <div class="chapter-desc">
+        Deploy OpenYantra to your local development workspace in seconds using the automated one-command script or a manual python pip setup.
+      </div>
+
+      <div class="section-label">Automated Installation</div>
+      
+      <div class="card-desc" style="margin-bottom:0;">For macOS and Linux systems (Bash):</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">macOS / Linux install</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-prompt">$</span> <span class="cmd-bin">curl</span> <span class="cmd-arg">-sSL</span> https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.sh | <span class="cmd-bin">bash</span></pre>
+        </div>
+      </div>
+
+      <div class="card-desc" style="margin-bottom:0;">For Windows systems (PowerShell):</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">Windows install</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-prompt">PS></span> <span class="cmd-bin">irm</span> https://raw.githubusercontent.com/revanthlevaka/OpenYantra/main/install.ps1 | <span class="cmd-bin">iex</span></pre>
+        </div>
+      </div>
+
+      <div class="section-label">Manual Python Installation</div>
+      <div class="chapter-desc">
+        If you prefer managing dependencies manually, ensure you have Python 3.9+ installed and run:
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">Manual Pip Install</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-prompt">$</span> <span class="cmd-bin">pip</span> install openyantra
+<span class="cmd-prompt">$</span> <span class="cmd-bin">pip</span> install odfpy pandas scikit-learn faiss-cpu fastapi uvicorn portalocker</pre>
+        </div>
+      </div>
+
+      <div class="alert-box">
+        <div class="alert-box-title">Initial Bootstrapping</div>
+        <div class="alert-box-desc">
+          After installing OpenYantra, initialize your sacred memory files and build the default relational spreadsheet configuration by running:<br>
+          <strong style="color:var(--text); font-family:var(--mono);">yantra bootstrap</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CHAPTER 03: COMMAND GUIDE
+       ================================================================ -->
+  <section class="chapter" id="cli">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 03</div>
+      <h1 class="chapter-title grad-text">CLI Reference & Workflows</h1>
+      <div class="chapter-desc">
+        Command-line tools are the direct channel to read, write, sync, and check the health of your local cognitive space.
+      </div>
+
+      <div class="section-label">Interactive CLI Workflow Commands</div>
+      <div id="cliCommands"></div>
+
+      <div class="section-label">The Daily Briefing Workflow</div>
+      <div class="chapter-desc">
+        Start each development day by triggering your morning dashboard preview. This loads active goals, checks for stale projects (no edits in 7 days), and summarizes unrouted inbox items:
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">yantra morning</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-prompt">$</span> <span class="cmd-bin">yantra</span> morning
+
+========================================================
+  Good morning, User. OpenYantra v4.1.0
+  2026-05-21
+========================================================
+  🔓  Open Loops (3 total):
+     [High    ] finalize Passkey authentication workflow
+     [Medium  ] resolve UI transition stutter on docs page
+  
+  🚀  Stale Projects:
+     openyantra-core -- no update in 9 days
+       -> audit yantra_migrate schema constraints
+  
+  📥  Inbox: 5 items unrouted
+  
+  🔥  Streak: 12 days
+--------------------------------------------------------
+  yantra ui -> http://localhost:7331
+========================================================</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CHAPTER 04: MCP SERVER SETUP
+       ================================================================ -->
+  <section class="chapter" id="mcp">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 04</div>
+      <h1 class="chapter-title grad-text">Model Context Protocol (MCP) Server</h1>
+      <div class="chapter-desc">
+        Hook OpenYantra directly into your IDE (Cursor, Claude Desktop, Cline, and more) as a standard MCP Server. This allows models to autonomously retrieve context and log new loops.
+      </div>
+
+      <div class="section-label">MCP Core Tools Exposed</div>
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Tool Name</th>
+            <th>Arguments</th>
+            <th>Usage Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>get_identity</strong></td>
+            <td>None</td>
+            <td>Returns user profile characteristics, occupation, and name preferences.</td>
+          </tr>
+          <tr>
+            <td><strong>get_active_projects</strong></td>
+            <td>None</td>
+            <td>Lists all current high-level project targets with next steps.</td>
+          </tr>
+          <tr>
+            <td><strong>get_open_loops</strong></td>
+            <td><code>top_k: int</code> (default 15)</td>
+            <td>Fetches unresolved topics categorized by priority and deadline.</td>
+          </tr>
+          <tr>
+            <td><strong>add_inbox_item</strong></td>
+            <td><code>content: str</code>, <code>importance: int</code></td>
+            <td>Injects a quick thought or item for automated routing.</td>
+          </tr>
+          <tr>
+            <td><strong>add_open_loop</strong></td>
+            <td><code>topic: str</code>, <code>context: str</code>, <code>priority: str</code></td>
+            <td>Registers a new unresolved loop directly to the database.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-label">Client Configurations</div>
+
+      <div class="card-desc"><strong>1. Claude Desktop:</strong> Add this block to your local configuration file (<code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on macOS or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows):</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">claude_desktop_config.json</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre>{
+  <span class="cmd-comment">"mcpServers"</span>: {
+    <span class="cmd-comment">"openyantra"</span>: {
+      <span class="cmd-comment">"command"</span>: <span class="cmd-val">"yantra"</span>,
+      <span class="cmd-comment">"args"</span>: [<span class="cmd-val">"mcp"</span>]
+    }
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="card-desc"><strong>2. Cursor IDE:</strong> Navigate to Settings > Models > MCP > Add New MCP. Select <code>command</code> as Type, and configure as follows:</div>
+      <table class="docs-table">
+        <tbody>
+          <tr>
+            <td><strong>Name</strong></td>
+            <td><code>openyantra</code></td>
+          </tr>
+          <tr>
+            <td><strong>Type</strong></td>
+            <td><code>command</code></td>
+          </tr>
+          <tr>
+            <td><strong>Command</strong></td>
+            <td><code>yantra mcp</code> (or <code>npx -y openyantra@latest mcp</code>)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card-desc"><strong>3. Cline & Continue:</strong> Typical config blocks for system environments:</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">cline_mcp_settings.json</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre>{
+  <span class="cmd-comment">"mcpServers"</span>: {
+    <span class="cmd-comment">"openyantra"</span>: {
+      <span class="cmd-comment">"command"</span>: <span class="cmd-val">"uvx"</span>,
+      <span class="cmd-comment">"args"</span>: [<span class="cmd-val">"openyantra"</span>, <span class="cmd-val">"mcp"</span>],
+      <span class="cmd-comment">"disabled"</span>: <span class="cmd-blue">false</span>
+    }
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CHAPTER 05: API ADAPTERS
+       ================================================================ -->
+  <section class="chapter" id="api">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 05</div>
+      <h1 class="chapter-title grad-text">API & Framework Integration</h1>
+      <div class="chapter-desc">
+        Integrate OpenYantra inside your custom Python agents, pipelines, and frameworks. This maintains persistent long-term memory sessions.
+      </div>
+
+      <div class="section-label">Raw Anthropic/OpenAI SDK hookups</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">python message injection</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-comment"># Ingest memory reflections directly into messages context</span>
+<span class="cmd-blue">from</span> openyantra <span class="cmd-blue">import</span> OpenYantra
+
+oy = OpenYantra(<span class="cmd-val">"~/openyantra/chitrapat.ods"</span>, agent_name=<span class="cmd-val">"CoreAssistant"</span>)
+oy.take_pratibimba()
+
+<span class="cmd-comment"># Build system instructions from Chitrapat config and preferences</span>
+system_prompt = oy.build_system_prompt_block()
+
+<span class="cmd-comment"># Perform semantic search on memory</span>
+results = oy.search(<span class="cmd-val">"user preference on design colors"</span>)
+<span class="cmd-comment"># ... send system_prompt + results to LLM API ...</span>
+
+<span class="cmd-comment"># Finalize session and write log</span>
+oy.log_session(topics=[<span class="cmd-val">"docs-update"</span>])
+oy.release_pratibimba()</pre>
+        </div>
+      </div>
+
+      <div class="section-label">LangChain Adapters</div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">langchain_adapter.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-blue">from</span> openyantra.examples.langchain_adapter <span class="cmd-blue">import</span> OpenYantraChatMemory
+<span class="cmd-blue">from</span> langchain.agents <span class="cmd-blue">import</span> initialize_agent
+
+memory = OpenYantraChatMemory(path=<span class="cmd-val">"~/openyantra/chitrapat.ods"</span>, agent_name=<span class="cmd-val">"LangAgent"</span>)
+agent  = initialize_agent(tools=[], llm=llm, memory=memory)</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CHAPTER 06: SECURITY
+       ================================================================ -->
+  <section class="chapter" id="security">
+    <div class="chapter-bar"></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Chapter 06</div>
+      <h1 class="chapter-title grad-text">Security & Local Encryption</h1>
+      <div class="chapter-desc">
+        OpenYantra takes a zero-compromise approach to lock authorization, security logging, and concurrent write safety.
+      </div>
+
+      <div class="section-label">Local Biometric Passkey (v4.1.0+)</div>
+      <div class="chapter-desc">
+        v4.1.0 introduces WebAuthn local biometric verification. Using Windows Hello or Apple TouchID/FaceID, developers can secure local SQLite datastores and configuration ledgers against unauthorized terminal execution.
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="th-dots"><div class="th-dot red"></div><div class="th-dot yellow"></div><div class="th-dot green"></div></div>
+          <span class="th-title">Apple/Windows Biometrics</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <pre><span class="cmd-comment"># Local biometric verification flow</span>
+<span class="cmd-blue">from</span> openyantra.yantra_passkey <span class="cmd-blue">import</span> PasskeyAuth
+
+<span class="cmd-comment"># Trigger biometric prompt window</span>
+auth_ok = PasskeyAuth.authenticate()
+<span class="cmd-blue">if</span> <span class="cmd-blue">not</span> auth_ok:
+    <span class="cmd-bin">print</span>(<span class="cmd-val">"Biometric verification failed. Aborting write."</span>)
+    sys.exit(<span class="cmd-blue">1</span>)</pre>
+        </div>
+      </div>
+
+      <div class="section-label">Concurrent Lock Control</div>
+      <div class="chapter-desc">
+        Writing to spreadsheets from multiple parallel agent execution blocks frequently corrupts indices. OpenYantra employs a portalocker system block that intercepts writes, locks targets, processes transactional updates to SQLite WAL first, and then releases resources atomically.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+/* Active nav highlighting */
+function setActive(el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* Scroll-based active nav tracking */
+const chapters = document.querySelectorAll('.chapter');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > 0.25) {
+      const id = e.target.id;
+      navItems.forEach(n => {
+        n.classList.remove('active');
+        if (n.getAttribute('href') === '#' + id) n.classList.add('active');
+      });
+    }
+  });
+}, { threshold: 0.25 });
+chapters.forEach(c => observer.observe(c));
+
+/* CLI Commands List Renderer */
+const cmds = [
+  ['yantra morning', 'Trigger daily Briefing cards & stale check', 'Saffron', '#f5a000'],
+  ['yantra context', 'Build & Copy context block markdown to clipboard', 'Blue', '#1c6fff'],
+  ['yantra inbox "text"', 'Ingest a quick thought or task into Inbox sheet', 'Saffron', '#f5a000'],
+  ['yantra sync', 'Flush SQLite WAL updates and export Chitrapat ODS', 'Indigo', '#5535e0'],
+  ['yantra corrections', 'Check and process pending corrected rows', 'Green', '#1aa167'],
+  ['yantra stats', 'Output row count increases and memory metrics', 'Green', '#1aa167'],
+  ['yantra ui', 'Spin up browser dashboard at http://localhost:7331', 'Blue', '#1c6fff'],
+  ['yantra stop', 'Terminate background engines and locks', 'Coral', '#e84520'],
+];
+
+const container = document.getElementById('cliCommands');
+cmds.forEach(([cmd, desc, colorName, color]) => {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.cssText = 'margin-bottom:12px; display:flex; flex-direction:column; gap:8px;';
+  div.innerHTML = `
+    <div style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--text);">
+      <span style="color:var(--coral);">$</span> ${cmd}
+    </div>
+    <div style="font-family:var(--sans); font-size:12px; color:var(--text-dim);">${desc}</div>
+    <div style="align-self:flex-start; font-size:9px; border:1px solid ${color}40; padding:2px 8px; color:${color}; text-transform:uppercase; font-weight:500;">
+      ${colorName}
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+/* Copy to Clipboard utility */
+function copyCode(btn) {
+  const code = btn.parentElement.nextElementSibling.querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const orig = btn.innerText;
+    btn.innerText = 'Copied!';
+    setTimeout(() => btn.innerText = orig, 1500);
+  });
+}
+
+/* Theme Manager */
+(function() {
+  const root = document.documentElement;
+  const mq = window.matchMedia('(prefers-color-scheme: light)');
+
+  function applyTheme(mode) {
+    if (mode === 'auto') {
+      root.setAttribute('data-theme', mq.matches ? 'light' : 'dark');
+    } else {
+      root.setAttribute('data-theme', mode);
+    }
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.innerText.toLowerCase() === mode);
+    });
+    localStorage.setItem('oy-theme', mode);
+  }
+
+  const stored = localStorage.getItem('oy-theme') || 'auto';
+  applyTheme(stored);
+
+  mq.addEventListener('change', () => {
+    if ((localStorage.getItem('oy-theme') || 'auto') === 'auto') applyTheme('auto');
+  });
+
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyTheme(btn.innerText.toLowerCase());
+    });
+  });
+})();
+</script>
+</body>
+</html>

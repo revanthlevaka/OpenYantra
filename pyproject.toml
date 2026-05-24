@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openyantra"
-version = "4.1.0"
+version = "5.0.0"
 description = "The Sacred Memory Machine -- persistent memory for personal agentic AI"
 authors = [
   { name = "Revanth Levaka", email = "revanth@revanthlevaka.com" }
@@ -108,3 +108,7 @@ ignore = ["E501"]
 [tool.mypy]
 python_version = "3.9"
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["openyantra"]
+
