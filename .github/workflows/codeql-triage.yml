@@ -1,0 +1,33 @@
+name: CodeQL triage (temporary)
+on:
+  push:
+    branches: [ "tmp/triage5" ]
+permissions:
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-and-quality
+      - uses: github/codeql-action/analyze@v3
+        with:
+          upload: never
+          output: sarif-out
+      - name: Summarise
+        run: |
+          python3 - <<'PY'
+          import json,glob,collections
+          d=json.load(open(glob.glob('sarif-out/*.sarif')[0]))
+          rows=[]
+          for run in d['runs']:
+              for res in run['results']:
+                  loc=res['locations'][0]['physicalLocation']
+                  rows.append((res['ruleId'],loc['artifactLocation']['uri'],loc['region'].get('startLine')))
+          print("TOTAL",len(rows))
+          for k,v in collections.Counter(r[0] for r in rows).most_common(): print("RULE",v,k)
+          for r in rows: print("ROW",*r)
+          PY
