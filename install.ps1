@@ -136,7 +136,7 @@ function Install-Deps {
     Write-Step "Installing Python dependencies"
 
     $deps = @(
-        "odfpy", "pandas", "scikit-learn", "faiss-cpu",
+        "odfpy", "pandas", "portalocker", "scikit-learn", "faiss-cpu",
         "fastapi", "uvicorn[standard]", "python-telegram-bot",
         "requests", "schedule", "webauthn", "aiosmtpd"
     )

@@ -32,6 +32,8 @@ chitrapat.ods
 cognitive_memories.json
 sanchitta.json
 settings.json
+*.lock
+.*.lock
 *.db
 *.db-wal
 *.db-shm

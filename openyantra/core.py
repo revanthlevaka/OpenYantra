@@ -81,7 +81,7 @@ STRENGTH       = {"Strong", "Mild", "Uncertain"}
 CONFIDENCE_V   = {"High", "Medium", "Low", "Inferred"}
 SENTIMENT      = {"Positive", "Neutral", "Negative", "Complex"}
 SOURCE         = {"User-stated", "Agent-observed", "Agent-inferred", "System"}
-OPERATIONS     = {"add", "update", "resolve", "archive", "delete", "inbox"}
+OPERATIONS     = {"add", "update", "resolve", "archive", "delete", "inbox", "supersede"}
 
 # ── Canonical sheet names ──────────────────────────────────────────────────────
 
@@ -329,6 +329,28 @@ class LedgerAgent:
         elapsed = (time.time() - self._last_write_time) / 60
         return elapsed < self._dead_switch_mins
 
+    def _workbook_lock(self):
+        class _WLock:
+            def __init__(self, lock_path):
+                self.lock_path = lock_path
+                self.f = None
+            def __enter__(self):
+                if _PORTALOCKER_AVAIL:
+                    try:
+                        self.f = open(str(self.lock_path), "w")
+                        portalocker.lock(self.f, portalocker.LOCK_EX)
+                    except Exception:
+                        pass
+                return self
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                if self.f:
+                    try:
+                        portalocker.unlock(self.f)
+                        self.f.close()
+                    except Exception:
+                        pass
+        return _WLock(self.path.with_name(f".{self.path.name}.lock"))
+
     def _is_already_committed(self, request_id: str) -> bool:
         """Check if request_id has already been recorded in Agrasandhanī ledger."""
         try:
@@ -344,7 +366,7 @@ class LedgerAgent:
         return False
 
     def _process(self, req: WriteRequest) -> dict:
-        with self._lock:
+        with self._lock, self._workbook_lock():
             # Idempotency guard: skip if already committed to the ledger
             if self._is_already_committed(req.request_id):
                 return {"status": "already_committed", "request_id": req.request_id,
@@ -375,8 +397,7 @@ class LedgerAgent:
                 }
 
             mudra = self._seal(req)
-            self._commit(req, mudra)
-            self._log_audit(req, "written", signature=mudra)
+            self._commit_and_audit(req, mudra, status="written")
             self._last_write_time = time.time()
 
             return {
@@ -427,82 +448,150 @@ class LedgerAgent:
         return "sha256:" + hashlib.sha256(payload.encode()).hexdigest()[:32]
 
     def _commit(self, req: WriteRequest, mudra: str):
+        self._commit_and_audit(req, mudra, status="written")
+
+    def _commit_and_audit(self, req: WriteRequest, mudra: str, status: str = "written", reason: str = ""):
+        """
+        Atomically commit req to req.sheet and audit row to SHEET_LEDGER in a single workbook write.
+        Prevents replay duplicate writes caused by mid-flight crashes or interleaving processes.
+        """
         try:
-            try:
-                df = pd.read_excel(str(self.path), sheet_name=req.sheet,
-                                   engine="odf", header=0, dtype=str)
-            except Exception:
-                df = pd.DataFrame()
+            existing = {}
+            if self.path.exists():
+                try:
+                    with pd.ExcelFile(str(self.path), engine="odf") as xl:
+                        for name in xl.sheet_names:
+                            if name not in (req.sheet, SHEET_LEDGER):
+                                try:
+                                    existing[name] = xl.parse(name, header=None)
+                                except Exception:
+                                    existing[name] = pd.DataFrame()
+                except Exception:
+                    existing = {}
 
             now = datetime.utcnow().isoformat(timespec="seconds")
+
+            # 1. Prepare target sheet df
+            try:
+                target_df = pd.read_excel(str(self.path), sheet_name=req.sheet,
+                                          engine="odf", header=0, dtype=str)
+            except Exception:
+                target_df = pd.DataFrame()
 
             if req.operation in ("add", "inbox"):
                 new_row = {**req.fields, "Confidence": req.confidence,
                            "Source": req.source, "Added By": req.requesting_agent,
                            "Last Updated": now}
-                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                target_df = pd.concat([target_df, pd.DataFrame([new_row])], ignore_index=True)
 
             elif req.operation == "update" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
+                mask = (target_df.iloc[:, 0].astype(str) == req.row_identifier
+                        if not target_df.empty and len(target_df.columns) > 0
                         else pd.Series([], dtype=bool))
                 if mask.any():
                     for f, v in req.fields.items():
-                        if f in df.columns: df.loc[mask, f] = v
-                    if "Last Updated" in df.columns:
-                        df.loc[mask, "Last Updated"] = now
-                    if "Confidence" in df.columns:
-                        df.loc[mask, "Confidence"] = req.confidence
+                        if f in target_df.columns: target_df.loc[mask, f] = v
+                    if "Last Updated" in target_df.columns:
+                        target_df.loc[mask, "Last Updated"] = now
+                    if "Confidence" in target_df.columns:
+                        target_df.loc[mask, "Confidence"] = req.confidence
                 else:
                     new_row = {**req.fields, "Confidence": req.confidence,
                                "Source": req.source, "Last Updated": now}
-                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                    target_df = pd.concat([target_df, pd.DataFrame([new_row])], ignore_index=True)
 
             elif req.operation == "resolve" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
+                mask = (target_df.iloc[:, 0].astype(str) == req.row_identifier
+                        if not target_df.empty and len(target_df.columns) > 0
                         else pd.Series([], dtype=bool))
-                if "Resolved?" in df.columns: df.loc[mask, "Resolved?"] = "Yes"
-                if "Resolution" in df.columns:
-                    df.loc[mask, "Resolution"] = req.fields.get("Resolution", "")
-                if "Last Updated" in df.columns:
-                    df.loc[mask, "Last Updated"] = now
+                if "Resolved?" in target_df.columns: target_df.loc[mask, "Resolved?"] = "Yes"
+                if "Resolution" in target_df.columns:
+                    target_df.loc[mask, "Resolution"] = req.fields.get("Resolution", "")
+                if "Last Updated" in target_df.columns:
+                    target_df.loc[mask, "Last Updated"] = now
 
             elif req.operation == "archive" and req.row_identifier:
-                mask = (df.iloc[:, 0].astype(str) == req.row_identifier
-                        if not df.empty and len(df.columns) > 0
+                mask = (target_df.iloc[:, 0].astype(str) == req.row_identifier
+                        if not target_df.empty and len(target_df.columns) > 0
                         else pd.Series([], dtype=bool))
-                if "Status" in df.columns: df.loc[mask, "Status"] = "Archived"
-                if "Last Updated" in df.columns:
-                    df.loc[mask, "Last Updated"] = now
+                if "Status" in target_df.columns: target_df.loc[mask, "Status"] = "Archived"
+                if "Last Updated" in target_df.columns:
+                    target_df.loc[mask, "Last Updated"] = now
 
-            self._write_sheet(req.sheet, df)
+            elif req.operation == "supersede" and req.row_identifier:
+                mask = (target_df.iloc[:, 0].astype(str) == req.row_identifier
+                        if not target_df.empty and len(target_df.columns) > 0
+                        else pd.Series([], dtype=bool))
+                if mask.any():
+                    if "Superseded_By" not in target_df.columns:
+                        target_df["Superseded_By"] = ""
+                    successor = req.fields.get("Superseded_By", "Yes")
+                    target_df.loc[mask, "Superseded_By"] = successor
+                    if "Contradiction_Flag" in target_df.columns:
+                        target_df.loc[mask, "Contradiction_Flag"] = f"Superseded by {successor}"
+                    for f, v in req.fields.items():
+                        if f in target_df.columns:
+                            target_df.loc[mask, f] = v
+                    if "Last Updated" in target_df.columns:
+                        target_df.loc[mask, "Last Updated"] = now
+
+            # 2. Prepare ledger df
+            audit_entry = {
+                "Timestamp": req.timestamp, "Request ID": req.request_id,
+                "Agent": req.requesting_agent, "Sheet": req.sheet,
+                "Operation": req.operation, "Row Identifier": req.row_identifier or "",
+                "Status": status, "Confidence": req.confidence,
+                "Source": req.source, "Importance": req.importance,
+                "Signature": mudra, "Reason / Notes": reason,
+            }
+            try:
+                ledger_df = pd.read_excel(str(self.path), sheet_name=SHEET_LEDGER,
+                                          engine="odf", header=0, dtype=str)
+            except Exception:
+                ledger_df = pd.DataFrame(columns=list(audit_entry.keys()))
+            ledger_df = pd.concat([ledger_df, pd.DataFrame([audit_entry])], ignore_index=True)
+
+            # 3. Write ALL sheets in one single atomic write to .tmp.ods and replace
+            import os
+            tmp = self.path.with_suffix(".tmp.ods")
+            try:
+                with pd.ExcelWriter(str(tmp), engine="odf") as writer:
+                    for name, sdf in existing.items():
+                        sdf.to_excel(writer, sheet_name=name, index=False, header=False)
+                    target_df.to_excel(writer, sheet_name=req.sheet, index=False, header=True)
+                    if req.sheet != SHEET_LEDGER:
+                        ledger_df.to_excel(writer, sheet_name=SHEET_LEDGER, index=False, header=True)
+                os.replace(str(tmp), str(self.path))
+            except Exception:
+                tmp.unlink(missing_ok=True)
+                raise
         except Exception as e:
             raise RuntimeError(f"Chitragupta commit failed: {e}") from e
 
     def _write_sheet(self, sheet_name: str, df: pd.DataFrame):
-        existing = {}
-        try:
-            with pd.ExcelFile(str(self.path), engine="odf") as xl:
-                for name in xl.sheet_names:
-                    if name != sheet_name:
-                        try:
-                            existing[name] = xl.parse(name, header=None)
-                        except Exception:
-                            existing[name] = pd.DataFrame()
-        except Exception: _oy_log.debug("ignored error", exc_info=True)
+        with self._workbook_lock():
+            existing = {}
+            try:
+                with pd.ExcelFile(str(self.path), engine="odf") as xl:
+                    for name in xl.sheet_names:
+                        if name != sheet_name:
+                            try:
+                                existing[name] = xl.parse(name, header=None)
+                            except Exception:
+                                existing[name] = pd.DataFrame()
+            except Exception: _oy_log.debug("ignored error", exc_info=True)
 
-        import os
-        tmp = self.path.with_suffix(".tmp.ods")
-        try:
-            with pd.ExcelWriter(str(tmp), engine="odf") as writer:
-                for name, sdf in existing.items():
-                    sdf.to_excel(writer, sheet_name=name, index=False, header=False)
-                df.to_excel(writer, sheet_name=sheet_name, index=False)
-            os.replace(str(tmp), str(self.path))
-        except Exception:
-            tmp.unlink(missing_ok=True)
-            raise
+            import os
+            tmp = self.path.with_suffix(".tmp.ods")
+            try:
+                with pd.ExcelWriter(str(tmp), engine="odf") as writer:
+                    for name, sdf in existing.items():
+                        sdf.to_excel(writer, sheet_name=name, index=False, header=False)
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+                os.replace(str(tmp), str(self.path))
+            except Exception:
+                tmp.unlink(missing_ok=True)
+                raise
 
     def _log_audit(self, req: WriteRequest, status: str,
                    reason: str = "", signature: str = ""):
@@ -1087,11 +1176,19 @@ class OpenYantra:
         inbox_count = len([r for r in self._read_sheet(SHEET_INBOX)
                            if r.get("Routed?") == "No"])
 
+        # Core beliefs & principles (Dhāraṇā) -- active only (exclude superseded)
+        beliefs = [
+            r for r in self._read_sheet(SHEET_BELIEFS)
+            if not r.get("Superseded_By")
+            and not str(r.get("Contradiction_Flag", "")).lower().startswith("superseded")
+        ]
+
         return {
             "identity": id_map, "agent_instructions": instructions,
             "active_projects": projects, "open_loops": open_loops,
             "active_goals": goals, "pending_tasks": tasks, "tasks": tasks,
             "pending_corrections": corrections, "inbox_pending": inbox_count,
+            "beliefs": beliefs,
         }
 
     def build_system_prompt_block(self,
@@ -2684,7 +2781,7 @@ def _build_ods_template(path: str):
         ],
         SHEET_BELIEFS: [
             ["Topic","Position","Confidence","Domain","Last Updated",
-             "Notes","Source","Importance","Contradiction_Flag"],
+             "Notes","Source","Importance","Contradiction_Flag","Superseded_By"],
         ],
         SHEET_TASKS: [
             ["Task","Project","Priority","Deadline","Status","Added By",

@@ -124,23 +124,21 @@ class NidraConsolidator:
 
         candidates: List[Dict[str, str]] = []
         preference_regex = re.compile(
-            r"(?:user\s+(?:prefers|always|never|likes|wants)|preference:\s*|rule:\s*|always\s+use\s+|never\s+use\s+)([^.\n;]+)",
+            r"(?:user\s+(?:prefers?|always|never|likes|wants)|preference:\s*|rule:\s*|always\s+(?:use|prefer)\s+|never\s+(?:use|prefer)\s+)([^.\n;]+)",
             re.IGNORECASE
         )
 
         # Collect reverted / superseded decisions across all recent sessions to exclude undone choices
         reverted_phrases = set()
-        for s in sessions[-30:]:
+        for s in sessions[-50:]:
             dec_text = str(s.get("Decisions Made") or s.get("Decisions") or s.get("Decisions / Outputs") or "")
             notes = str(s.get("Notes") or "")
             if "reverted" in dec_text.lower() or "superseded" in dec_text.lower() or "reverted" in notes.lower():
-                clean_rev = re.sub(r'(?:reverted\s*(?:/\s*superseded)?\s*decision:?|status:\s*reverted)', '', dec_text, flags=re.IGNORECASE).strip().lower()
-                if clean_rev:
-                    reverted_phrases.add(clean_rev)
                 for part in dec_text.split(";"):
                     if "reverted" in part.lower():
-                        p_clean = re.sub(r'reverted\s*(?:/\s*superseded)?\s*decision:?', '', part, flags=re.IGNORECASE).strip().lower()
-                        if p_clean:
+                        p_clean = re.sub(r'reverted\s*(?:/\s*superseded)?\s*decision\s*(?:\[[^\]]+\])?\s*:?', '', part, flags=re.IGNORECASE).strip().lower()
+                        p_clean = re.sub(r'^revert\s*\"?', '', p_clean).strip().rstrip('\"').strip()
+                        if p_clean and len(p_clean) >= 4:
                             reverted_phrases.add(p_clean)
 
         texts_to_scan = []
@@ -150,8 +148,8 @@ class NidraConsolidator:
             # Skip session if marked reverted
             if "reverted" in dec_text.lower() or "superseded" in dec_text.lower() or "reverted" in notes.lower():
                 continue
-            dec_lower = dec_text.lower()
-            if any(rev and (rev in dec_lower or dec_lower in rev) for rev in reverted_phrases):
+            dec_lower = dec_text.lower().strip()
+            if dec_lower and any(rev and (rev in dec_lower or (len(dec_lower) >= 3 and dec_lower in rev)) for rev in reverted_phrases):
                 continue
             texts_to_scan.append(dec_text)
             texts_to_scan.append(str(s.get("Topics Discussed") or s.get("Topic") or ""))
@@ -167,7 +165,7 @@ class NidraConsolidator:
                 clean_pref = m.strip()
                 clean_lower = clean_pref.lower()
                 # Skip if preference was part of an undone / reverted decision
-                if any(rev and (rev in clean_lower or clean_lower in rev) for rev in reverted_phrases):
+                if clean_lower and any(rev and (rev in clean_lower or (len(clean_lower) >= 3 and clean_lower in rev)) for rev in reverted_phrases):
                     continue
 
                 if (len(clean_pref) > 8 and
@@ -286,6 +284,44 @@ class NidraConsolidator:
                 res = self.oy.request_write(req)
                 if res.get("status") in ("written", "committed", "queued"):
                     promoted_applied.append(p)
+
+        # 3.1. Revert check for existing beliefs -- supersede previously promoted beliefs if origin was reverted
+        if not dry_run:
+            from openyantra.core import WriteRequest, SHEET_BELIEFS, SHEET_SESSION_LOG
+            sessions = self.oy._read_sheet(SHEET_SESSION_LOG)
+            reverted_phrases = set()
+            for s in sessions[-50:]:
+                dec_text = str(s.get("Decisions Made") or s.get("Decisions") or "")
+                for part in dec_text.split(";"):
+                    if "reverted" in part.lower():
+                        p_clean = re.sub(r'reverted\s*(?:/\s*superseded)?\s*decision\s*(?:\[[^\]]+\])?\s*:?', '', part, flags=re.IGNORECASE).strip().lower()
+                        p_clean = re.sub(r'^revert\s*\"?', '', p_clean).strip().rstrip('\"').strip()
+                        if p_clean and len(p_clean) >= 4:
+                            reverted_phrases.add(p_clean)
+            if reverted_phrases:
+                existing_beliefs = self.oy._read_sheet(SHEET_BELIEFS)
+                for b in existing_beliefs:
+                    pos = str(b.get("Position") or b.get("Belief / Principle") or "").lower()
+                    clean_pos = pos.replace("user preference:", "").strip()
+                    topic = b.get("Topic")
+                    if not b.get("Superseded_By") and clean_pos:
+                        is_undone = False
+                        for rev in reverted_phrases:
+                            clean_rev = re.sub(r'^(?:always|never)\s+(?:use|prefer)\s+', '', rev).strip()
+                            if (clean_rev and clean_rev in pos) or (clean_pos and len(clean_pos) >= 4 and clean_pos in rev):
+                                is_undone = True
+                                break
+                        if is_undone:
+                            req = WriteRequest(
+                                requesting_agent="NidraConsolidator",
+                                sheet=SHEET_BELIEFS,
+                                operation="supersede",
+                                row_identifier=topic,
+                                fields={"Superseded_By": "Reverted in session log"},
+                                confidence="High",
+                                source="System"
+                            )
+                            self.oy.request_write(req)
 
         # 4. Synthesize Narrative
         provider_used = "heuristic"

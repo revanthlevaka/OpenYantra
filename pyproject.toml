@@ -33,6 +33,7 @@ classifiers = [
 dependencies = [
   "odfpy>=1.4",
   "pandas>=1.5",
+  "portalocker>=2.7",
 ]
 
 [project.optional-dependencies]

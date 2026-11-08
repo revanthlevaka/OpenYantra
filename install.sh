@@ -190,6 +190,7 @@ install_deps() {
   CORE_DEPS=(
     "odfpy"
     "pandas"
+    "portalocker"
     "scikit-learn"
     "faiss-cpu"
     "fastapi"

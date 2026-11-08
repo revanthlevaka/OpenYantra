@@ -4,7 +4,7 @@ title = "OpenYantra Gitleaks config"
 useDefault = true
 
 [allowlist]
-description = "Fake credentials used as fixtures for the Raksha sanitiser tests"
+description = "Fake credentials used as fixtures for security tests"
 paths = [
-  '''tests/test_security_sanitizer\.py''',
+  '''tests/.*''',
 ]

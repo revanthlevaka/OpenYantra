@@ -57,28 +57,43 @@ class CognitiveMemoryStore:
         # Ensure tags are a clean list of strings
         tags = [str(t).strip() for t in tags if str(t).strip()]
 
+        # Store-level secret redaction & security guard (fail-safe)
+        try:
+            from openyantra.yantra_security import Raksha, ThreatLevel, ThreatType
+            _raksha = Raksha()
+            content, _ = _raksha.redact_secrets(str(content or ""))
+            key, _ = _raksha.redact_secrets(str(key or ""))
+            scan = _raksha.scan_write({"content": content}, agent_name=agent, sheet="CognitiveDB")
+            if scan.threat_level in (ThreatLevel.CONFIRMED, ThreatLevel.CRITICAL) and scan.threat_type == ThreatType.PROMPT_INJECTION:
+                raise ValueError(f"Content blocked by security scan: {scan.threats_found}")
+        except ValueError:
+            raise
+        except Exception:
+            # Fallback regex redaction ensuring we NEVER fail open
+            import re
+            for pat in [
+                r'(?i)(?:api[_-]?key|token|secret|password|bearer)\s*[:=]\s*["\']?([a-zA-Z0-9_\-\.]{16,})["\']?',
+                r'(sk-[A-Za-z0-9_-]{20,})',
+                r'(ghp_[A-Za-z0-9]{20,})',
+                r'(AKIA[0-9A-Z]{16})'
+            ]:
+                content = re.sub(pat, '[REDACTED_SECRET]', content)
+                key = re.sub(pat, '[REDACTED_SECRET]', key)
+
         memories = self._load()
         now_iso = datetime.utcnow().isoformat() + "Z"
         
-        # Search case-insensitively for key
-        key_lower = key.strip().lower()
+        # Search case-insensitively for key AFTER redaction
+        key_clean = key.strip()
+        key_lower = key_clean.lower()
         found_idx = -1
         for idx, m in enumerate(memories):
             if m.get("key", "").strip().lower() == key_lower:
                 found_idx = idx
                 break
 
-        # Store-level secret redaction via Raksha guard
-        try:
-            from openyantra.yantra_security import Raksha
-            _raksha = Raksha()
-            content, _ = _raksha.redact_secrets(str(content or ""))
-            key, _ = _raksha.redact_secrets(str(key or ""))
-        except Exception:
-            pass
-
         new_memory = {
-            "key": key.strip(), # Keep original casing of first insert/latest update
+            "key": key_clean, # Keep original casing of first insert/latest update
             "type": type_val,
             "agent": agent.strip(),
             "content": content,
