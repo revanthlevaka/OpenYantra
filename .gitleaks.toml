@@ -5,6 +5,10 @@ useDefault = true
 
 [allowlist]
 description = "Fake credentials used as fixtures for security tests"
+commits = [
+  "50786c78200b64fd95463e91ca9f12a46f24bf04",
+]
 paths = [
-  '''tests/.*''',
+  '''(?i)tests/.*''',
+  '''tests/.*\.py''',
 ]
