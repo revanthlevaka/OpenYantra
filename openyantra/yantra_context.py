@@ -42,15 +42,17 @@ ALL_SECTIONS = [
 
 
 def build_context_markdown(oy: "OpenYantra",
-                            sections: list[str] = None) -> str:
+                            sections: list[str] = None,
+                            project_scope: Optional[str] = None) -> str:
     """
     Build a Markdown context block from the Chitrapat.
     Suitable for pasting into any AI chat interface.
+    Supports project_scope to isolate context to active workspace.
     """
     if sections is None:
         sections = ALL_SECTIONS
 
-    ctx   = oy.load_session_context()
+    ctx   = oy.load_session_context(project_scope=project_scope)
     lines = [
         f"<!-- OpenYantra Context Block v{VERSION} | {datetime.utcnow().isoformat()[:10]} -->",
         "",
@@ -232,7 +234,8 @@ def run_context(oy_path: str, output_file: str = None,
                 sections: list[str] = None,
                 budget: int = 4096,
                 mode: str = "default",
-                query: Optional[str] = None) -> str:
+                query: Optional[str] = None,
+                project: Optional[str] = None) -> str:
     """
     Run the context command. Compiles context using SutraCompiler,
     copies to clipboard and prints preview.
@@ -254,7 +257,8 @@ def run_context(oy_path: str, output_file: str = None,
         query_text=query,
         budget=budget,
         mode=mode,
-        sections=sections
+        sections=sections,
+        project_scope=project
     )
     markdown = compile_res["markdown"]
 
@@ -314,11 +318,13 @@ def main():
                         help="Preset weight mode (default: default)")
     parser.add_argument("--query", "-q", default=None,
                         help="Search query for semantic similarity weight")
+    parser.add_argument("--project", "-p", default=None,
+                        help="Scope tasks and loops to specific project")
     args = parser.parse_args()
 
     sections = args.sections.split(",") if args.sections else None
     run_context(args.file, output_file=args.output, sections=sections,
-                budget=args.budget, mode=args.mode, query=args.query)
+                budget=args.budget, mode=args.mode, query=args.query, project=args.project)
 
 
 if __name__ == "__main__":

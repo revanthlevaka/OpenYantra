@@ -77,9 +77,15 @@ class SutraCompiler:
                 query_text: Optional[str] = None,
                 budget: int = 4096,
                 mode: str = "default",
-                sections: Optional[list[str]] = None) -> dict:
+                sections: Optional[list[str]] = None,
+                auto_route: bool = False,
+                top_k_routes: int = 2,
+                project_scope: Optional[str] = None) -> dict:
         """
         Compile context to fit within the token budget using weighted scoring.
+        If auto_route=True, uses the sub-millisecond zero-retention routing layer
+        to restrict dynamic sections to top matching memory centroids.
+        Supports project_scope to isolate context to active workspace.
         Returns:
             dict containing:
                 "markdown": The compiled markdown string.
@@ -87,6 +93,17 @@ class SutraCompiler:
                 "packed": List of items that were included.
                 "discarded": List of items that were pruned.
         """
+        if auto_route and query_text and hasattr(self.oy, "route_sheets"):
+            routed_sheets = self.oy.route_sheets(query_text, top_k=top_k_routes)
+            if routed_sheets:
+                routed_sections = {"identity", "instructions"} | {
+                    EMOJI_TO_SECTION[s] for s in routed_sheets if s in EMOJI_TO_SECTION
+                }
+                if sections is None:
+                    sections = list(routed_sections)
+                else:
+                    sections = [s for s in sections if s in routed_sections]
+
         if sections is None:
             sections = ["identity", "goals", "projects", "people", "preferences", "beliefs", "tasks", "loops", "instructions"]
 
@@ -96,7 +113,7 @@ class SutraCompiler:
             weights.update(self.settings["sutra_weights"])
 
         # 2. Extract static/non-pruned elements (Identity & Instructions)
-        ctx = self.oy.load_session_context()
+        ctx = self.oy.load_session_context(project_scope=project_scope)
         identity_lines = []
         if "identity" in sections and ctx.get("identity"):
             id_map = ctx["identity"]
@@ -245,6 +262,16 @@ class SutraCompiler:
                 rows = [r for r in rows if r.get("Status") not in ("Done", None)]
             elif sec_name == "beliefs":
                 rows = [r for r in rows if not is_superseded(r)]
+
+            # Filter rows based on project scope if specified
+            if project_scope and project_scope.strip().lower() != "all":
+                p_filter = project_scope.strip().lower()
+                if sec_name == "projects":
+                    rows = [r for r in rows if p_filter in str(r.get("Project", "")).lower()]
+                elif sec_name == "loops":
+                    rows = [r for r in rows if not r.get("Related Project") or p_filter in str(r.get("Related Project", "")).lower()]
+                elif sec_name == "tasks":
+                    rows = [r for r in rows if not r.get("Project") or p_filter in str(r.get("Project", "")).lower()]
 
             for row in rows:
                 if not any(v for v in row.values() if v and str(v).strip()):

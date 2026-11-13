@@ -169,6 +169,26 @@ def _is_worth_remembering(fields: dict, sheet: str) -> tuple[bool, str]:
     return True, "admitted"
 
 
+def detect_active_project(start_path: Optional[Path] = None) -> Optional[str]:
+    """
+    Detect the active project name from OPENYANTRA_PROJECT env var
+    or the enclosing Git repository directory.
+    """
+    import os
+    env_proj = os.environ.get("OPENYANTRA_PROJECT")
+    if env_proj and env_proj.strip():
+        return env_proj.strip()
+
+    try:
+        curr = (start_path or Path.cwd()).resolve()
+        for parent in [curr] + list(curr.parents):
+            if (parent / ".git").exists():
+                return parent.name
+    except Exception:
+        pass  # File system permission or path traversal exception; fall back to None
+    return None
+
+
 def is_superseded(row: dict) -> bool:
     """
     Check if a belief, principle, or memory record has been superseded or invalidated.
@@ -430,6 +450,11 @@ class LedgerAgent:
                 self._log_audit(req, "rejected", validation["reason"])
                 return validation
 
+            tombstone = self._check_tombstone(req)
+            if tombstone:
+                self._log_audit(req, "rejected", tombstone["reason"])
+                return tombstone
+
             conflict = self._check_conflict(req)
             if conflict:
                 self._log_audit(req, "conflict", str(conflict))
@@ -467,6 +492,53 @@ class LedgerAgent:
                 return {"status": "rejected",
                         "reason": f"Invalid {field}: '{req.fields[field]}'"}
         return {"status": "valid"}
+
+    def _check_tombstone(self, req: WriteRequest) -> Optional[dict]:
+        """
+        Tombstone Guard: If a record keyed on a value was superseded or tombstoned,
+        refuse later writes for that same value unless explicit override is provided.
+        Addresses Agent Memory Atlas 'tombstone' evaluation criteria.
+        """
+        if req.sheet != SHEET_BELIEFS or req.operation not in ("add", "update"):
+            return None
+
+        override = (
+            req.fields.get("allow_override") or 
+            req.fields.get("override_tombstone") or 
+            req.fields.get("Override_Tombstone") or 
+            req.fields.get("allow_superseded_override")
+        )
+        if override and str(override).lower() in ("true", "yes", "1"):
+            return None
+
+        req_pos = str(req.fields.get("Position") or "").strip().lower()
+        req_topic = str(req.fields.get("Topic") or req.row_identifier or "").strip().lower()
+        if not req_pos and not req_topic:
+            return None
+
+        try:
+            if not self.path.exists():
+                return None
+            df = pd.read_excel(str(self.path), sheet_name=SHEET_BELIEFS, engine="odf", dtype=str)
+            if df.empty:
+                return None
+            for _, r in df.iterrows():
+                row_dict = r.to_dict()
+                if is_superseded(row_dict):
+                    pos = str(row_dict.get("Position") or "").strip().lower()
+                    topic = str(row_dict.get("Topic") or "").strip().lower()
+                    match_pos = bool(req_pos and pos and req_pos == pos)
+                    match_topic = bool(req_topic and topic and req_topic == topic)
+                    if match_pos or match_topic:
+                        sup_by = row_dict.get("Superseded_By") or "Prior Decision / Revert"
+                        target_val = req.fields.get("Position") or req.row_identifier or req.fields.get("Topic")
+                        return {
+                            "status": "rejected",
+                            "reason": f"Tombstone conflict: Position/Topic '{target_val}' has been superseded by '{sup_by}'. Write refused without explicit override."
+                        }
+        except Exception:
+            _oy_log.debug("ignored error in _check_tombstone", exc_info=True)
+        return None
 
     def _check_conflict(self, req: WriteRequest) -> Optional[dict]:
         if req.operation != "update" or not req.row_identifier:
@@ -740,6 +812,7 @@ class OpenYantra:
                          [f"Identity: {user_name}" if user_name else "Identity stub"])
         print(f"[OpenYantra] Chitrapat created at {self.path}")
         print("[OpenYantra] Run `yantra ui` to open the browser dashboard.")
+        self._ensure_vidyakosha()
 
     # ── Write interface ────────────────────────────────────────────────────────
 
@@ -1187,7 +1260,8 @@ class OpenYantra:
         """Archive old session log entries. Alias for archive_session_log."""
         return self.archive_session_log(keep_days=keep_days)
 
-    def load_session_context(self, agent_name: Optional[str] = None) -> dict:
+    def load_session_context(self, agent_name: Optional[str] = None,
+                             project_scope: Optional[str] = None) -> dict:
         agent = agent_name or self.agent_name
         id_map = {r.get("Attribute"): r.get("Value")
                   for r in self._read_sheet(SHEET_IDENTITY) if r.get("Value")}
@@ -1196,12 +1270,26 @@ class OpenYantra:
             if r.get("Active") == "Yes"
             and r.get("Agent") in (agent, "ALL") and r.get("Instruction")
         ]
-        projects   = [r for r in self._read_sheet(SHEET_PROJECTS)
-                      if r.get("Status") == "Active"]
+        
+        # Workspace project scoping (prevents cross-project context bleed)
+        p_filter = (project_scope.strip().lower() if project_scope and project_scope.strip().lower() != "all" else None)
+
+        all_projects = [r for r in self._read_sheet(SHEET_PROJECTS)
+                        if r.get("Status") == "Active"]
+        if p_filter:
+            projects = [r for r in all_projects if p_filter in str(r.get("Project", "")).lower()]
+        else:
+            projects = all_projects
 
         # v2.1: filter open loops by importance + recency
         all_loops  = [r for r in self._read_sheet(SHEET_OPEN_LOOPS)
                       if r.get("Resolved?") == "No"]
+        if p_filter:
+            all_loops = [
+                r for r in all_loops
+                if not r.get("Related Project") or p_filter in str(r.get("Related Project", "")).lower()
+            ]
+
         open_loops = sorted(
             all_loops,
             key=lambda r: (
@@ -1212,8 +1300,16 @@ class OpenYantra:
 
         goals  = [r for r in self._read_sheet(SHEET_GOALS)
                   if r.get("Status") in ("Active", "In Progress")]
-        tasks  = [r for r in self._read_sheet(SHEET_TASKS)
-                  if r.get("Status") not in ("Done", None)]
+        
+        all_tasks  = [r for r in self._read_sheet(SHEET_TASKS)
+                      if r.get("Status") not in ("Done", None)]
+        if p_filter:
+            tasks = [
+                r for r in all_tasks
+                if not r.get("Project") or p_filter in str(r.get("Project", "")).lower()
+            ]
+        else:
+            tasks = all_tasks
 
         # v2.1: surface pending corrections and inbox
         corrections = [r for r in self._read_sheet(SHEET_CORRECTIONS)
@@ -1233,6 +1329,7 @@ class OpenYantra:
             "active_goals": goals, "pending_tasks": tasks, "tasks": tasks,
             "pending_corrections": corrections, "inbox_pending": inbox_count,
             "beliefs": beliefs,
+            "project_scope": project_scope,
         }
 
     def build_system_prompt_block(self,
@@ -1290,6 +1387,23 @@ class OpenYantra:
 
     # ── VidyaKosha search ──────────────────────────────────────────────────────
 
+    def _ensure_vidyakosha(self):
+        if not _VIDYAKOSHA_AVAILABLE or not self.path.exists():
+            return None
+        if self._vidyakosha is None:
+            embedder_pref = "auto"
+            settings_path = self.path.parent / "settings.json"
+            if settings_path.exists():
+                try:
+                    with open(settings_path, "r", encoding="utf-8") as f:
+                        s_data = json.load(f)
+                    embedder_pref = s_data.get("embedder", "auto")
+                except Exception:
+                    _oy_log.debug("ignored error", exc_info=True)
+            self._vidyakosha = _VK(str(self.path.parent), embedder_pref=embedder_pref)
+            self._vidyakosha.sync(self.path)
+        return self._vidyakosha
+
     def search(self, query: str, top_k: int = 5, sheets: list = None,
                snapshot_mode: str = None, hybrid_alpha: float = 0.7,
                importance_weight: float = 0.3,
@@ -1304,18 +1418,9 @@ class OpenYantra:
         if not _VIDYAKOSHA_AVAILABLE:
             print("[OpenYantra] VidyaKosha not available.")
             return []
-        if self._vidyakosha is None:
-            embedder_pref = "auto"
-            settings_path = self.path.parent / "settings.json"
-            if settings_path.exists():
-                try:
-                    with open(settings_path, "r", encoding="utf-8") as f:
-                        s_data = json.load(f)
-                    embedder_pref = s_data.get("embedder", "auto")
-                except Exception:
-                    _oy_log.debug("ignored error", exc_info=True)
-            self._vidyakosha = _VK(str(self.path.parent), embedder_pref=embedder_pref)
-            self._vidyakosha.sync(self.path)
+        vk = self._ensure_vidyakosha()
+        if vk is None:
+            return []
         if snapshot_mode is None and _get_snap_mode:
             snapshot_mode = _get_snap_mode(self.agent_name, self.path)
 
@@ -1366,6 +1471,22 @@ class OpenYantra:
 
     def search_people(self, query: str, top_k: int = 5) -> list[dict]:
         return self.search(query, top_k=top_k, sheets=[SHEET_PEOPLE])
+
+    def route(self, prompt: str, top_k: int = 2) -> list[dict]:
+        """
+        Sub-millisecond, zero-retention routing layer (Apical Arbor pattern).
+        Projects prompt embedding against precomputed sheet centroids to identify
+        the minimal active memory subspaces needed for the turn.
+        Retains zero prompt state or conversational turns.
+        """
+        vk = self._ensure_vidyakosha()
+        if vk is not None and hasattr(vk, "route_prompt"):
+            return vk.route_prompt(prompt, top_k=top_k)
+        return []
+
+    def route_sheets(self, prompt: str, top_k: int = 2) -> list[str]:
+        """Returns the list of top routed sheet names."""
+        return [r["sheet"] for r in self.route(prompt, top_k=top_k)]
 
     def take_pratibimba(self):
         if self._vidyakosha: self._vidyakosha.take_snapshot(self.agent_name)
@@ -1918,14 +2039,16 @@ class OpenYantra:
 
     def build_context_markdown(self, top_k: int = 10,
                                 include_beliefs: bool = True,
-                                include_people: bool = True) -> str:
+                                include_people: bool = True,
+                                project_scope: Optional[str] = None) -> str:
         """
         v2.10 -- Copy Context button.
         Formats top memories as a clean Markdown block ready to paste
         into Claude.ai, ChatGPT, or any web-based AI tool.
+        Supports project_scope to isolate context to active workspace.
 
         Usage:
-            md = oy.build_context_markdown()
+            md = oy.build_context_markdown(project_scope="MyProject")
             # Copy and paste into any AI chat
 
         CLI: yantra context
@@ -1933,7 +2056,7 @@ class OpenYantra:
         """
         from datetime import date as _date
 
-        ctx    = self.load_session_context()
+        ctx    = self.load_session_context(project_scope=project_scope)
         id_map = ctx.get("identity", {})
         today  = _date.today().isoformat()
 
@@ -2120,7 +2243,10 @@ class OpenYantra:
                         query_text: Optional[str] = None,
                         budget: int = 4096,
                         mode: str = "default",
-                        sections: Optional[list[str]] = None) -> dict:
+                        sections: Optional[list[str]] = None,
+                        auto_route: bool = False,
+                        top_k_routes: int = 2,
+                        project_scope: Optional[str] = None) -> dict:
         """
         v5.0.0 -- Intelligent context pruning using SutraCompiler.
         """
@@ -2134,7 +2260,9 @@ class OpenYantra:
             except Exception:
                 _oy_log.debug("ignored error", exc_info=True)
         compiler = SutraCompiler(self, settings)
-        return compiler.compile(query_text, budget, mode, sections)
+        return compiler.compile(query_text=query_text, budget=budget, mode=mode,
+                                sections=sections, auto_route=auto_route,
+                                top_k_routes=top_k_routes, project_scope=project_scope)
 
 
     # ── Oracle -- v2.12 ───────────────────────────────────────────────────────────

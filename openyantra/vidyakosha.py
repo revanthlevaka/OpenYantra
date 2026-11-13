@@ -282,6 +282,7 @@ class VidyaKosha:
         self._index:    Optional[faiss.IndexFlatIP] = None
         self._bm25:     Optional[BM25Index]          = None
         self._registry: list[dict]                   = []  # row metadata
+        self._centroids: dict[str, np.ndarray]       = {}  # per-sheet centroid vectors for zero-retention routing
 
         self._load()
 
@@ -344,6 +345,18 @@ class VidyaKosha:
             # Build BM25
             self._bm25 = BM25Index()
             self._bm25.fit(texts)
+
+            # Build per-sheet centroids for sub-millisecond zero-retention routing
+            self._centroids = {}
+            for sheet in INDEXABLE_SHEETS:
+                sheet_indices = [i for i, r in enumerate(registry) if r["sheet"] == sheet]
+                if sheet_indices:
+                    sheet_vecs = vecs[sheet_indices]
+                    centroid = np.mean(sheet_vecs, axis=0)
+                    norm = np.linalg.norm(centroid)
+                    if norm > 0:
+                        centroid = centroid / norm
+                    self._centroids[sheet] = centroid
 
             self._registry = registry
             self._save()
@@ -485,6 +498,42 @@ class VidyaKosha:
         ]
         return "\n".join(lines)
 
+    def route_prompt(
+        self,
+        prompt: str,
+        top_k: int = 2,
+        min_score: float = -1.0,
+    ) -> list[dict]:
+        """
+        Sub-millisecond, zero-retention routing layer (Apical Arbor pattern).
+        Projects prompt embedding against precomputed sheet centroids to identify
+        the minimal active memory subspaces needed for the turn.
+        Retains zero prompt state or conversational turns.
+
+        Returns list of dicts: [{"sheet": sheet_name, "score": float}, ...]
+        """
+        if not prompt or not self._centroids:
+            return []
+
+        # Zero-retention encode single turn
+        query_vec = self._embedder.encode([prompt])[0]
+        q_norm = np.linalg.norm(query_vec)
+        if q_norm > 0:
+            query_vec = query_vec / q_norm
+
+        scores = []
+        for sheet, c_vec in self._centroids.items():
+            sim = float(np.dot(query_vec, c_vec))
+            if sim >= min_score:
+                scores.append({"sheet": sheet, "score": sim})
+
+        scores.sort(key=lambda x: x["score"], reverse=True)
+        return scores[:top_k]
+
+    def route_sheets(self, prompt: str, top_k: int = 2) -> list[str]:
+        """Convenience method returning sheet names from route_prompt."""
+        return [r["sheet"] for r in self.route_prompt(prompt, top_k=top_k)]
+
     def stats(self) -> dict:
         """Return index statistics."""
         return {
@@ -526,6 +575,12 @@ class VidyaKosha:
         # Save registry separately (large)
         reg_path = self.dir / "vidyakosha_registry.json"
         reg_path.write_text(json.dumps(self._registry, indent=2, default=str))
+        if self._centroids:
+            centroid_data = {
+                sheet: vec.tolist() for sheet, vec in self._centroids.items()
+            }
+            c_path = self.dir / "vidyakosha_centroids.json"
+            c_path.write_text(json.dumps(centroid_data, indent=2))
 
     def _load(self):
         """Load existing index from disk if available."""
@@ -540,6 +595,10 @@ class VidyaKosha:
                 self._registry = json.loads(reg_path.read_text())
                 print(f"[VidyaKosha] Loaded existing index -- "
                       f"{len(self._registry)} rows")
+            c_path = self.dir / "vidyakosha_centroids.json"
+            if c_path.exists():
+                raw = json.loads(c_path.read_text())
+                self._centroids = {k: np.array(v, dtype=np.float32) for k, v in raw.items()}
         except Exception as e:
             print(f"[VidyaKosha] Could not load existing index: {e}")
 

@@ -17,8 +17,25 @@ class CognitiveMemoryStore:
             
         # Ensure parent directory exists
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
+        self.tombstone_path = self.file_path.with_name(self.file_path.stem + "_tombstones.json")
         if not self.file_path.exists():
             self._save([])
+
+    def _load_tombstones(self) -> Dict[str, Any]:
+        try:
+            if self.tombstone_path.exists():
+                content = self.tombstone_path.read_text(encoding="utf-8").strip()
+                if content:
+                    return json.loads(content)
+            return {}
+        except Exception:
+            return {}
+
+    def _save_tombstones(self, tombstones: Dict[str, Any]):
+        try:
+            self.tombstone_path.write_text(json.dumps(tombstones, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass  # Fail-safe: persistence failure for tombstone cache does not block operations
 
     def _load(self) -> List[Dict[str, Any]]:
         try:
@@ -37,9 +54,10 @@ class CognitiveMemoryStore:
         except Exception as e:
             print(f"[CognitiveMemoryStore] Error saving database: {e}")
 
-    def write(self, key: str, type_val: str, agent: str, content: str, tags: Optional[List[str]] = None) -> Dict[str, Any]:
+    def write(self, key: str, type_val: str, agent: str, content: str, tags: Optional[List[str]] = None, override_tombstone: bool = False) -> Dict[str, Any]:
         """
         Creates or updates a memory key (case-insensitive).
+        If key has an active tombstone, refuses write unless override_tombstone=True.
         """
         # Schema validation
         valid_types = {"decision", "fact", "context", "observation"}
@@ -80,12 +98,23 @@ class CognitiveMemoryStore:
                 content = re.sub(pat, '[REDACTED_SECRET]', content)
                 key = re.sub(pat, '[REDACTED_SECRET]', key)
 
+        key_clean = key.strip()
+        key_lower = key_clean.lower()
+
+        # Tombstone guard: refuse write to tombstoned key unless explicitly overridden
+        tombstones = self._load_tombstones()
+        if key_lower in tombstones:
+            if not override_tombstone:
+                t_info = tombstones[key_lower]
+                raise ValueError(f"Tombstone exists: memory key '{key_clean}' was deleted with tombstone at {t_info.get('deleted_at')}. Write refused without override_tombstone=True.")
+            else:
+                del tombstones[key_lower]
+                self._save_tombstones(tombstones)
+
         memories = self._load()
         now_iso = datetime.utcnow().isoformat() + "Z"
         
         # Search case-insensitively for key AFTER redaction
-        key_clean = key.strip()
-        key_lower = key_clean.lower()
         found_idx = -1
         for idx, m in enumerate(memories):
             if m.get("key", "").strip().lower() == key_lower:
@@ -120,9 +149,11 @@ class CognitiveMemoryStore:
                 return m
         return None
 
-    def delete(self, key: str) -> bool:
+    def delete(self, key: str, tombstone: bool = True) -> bool:
         """
-        Removes a memory key (case-insensitive). Returns True if deleted, False otherwise.
+        Removes a memory key (case-insensitive). If tombstone=True (default),
+        leaves a tombstone record that refuses subsequent writes without override_tombstone=True.
+        Returns True if deleted, False otherwise.
         """
         memories = self._load()
         key_lower = key.strip().lower()
@@ -131,8 +162,19 @@ class CognitiveMemoryStore:
         
         if len(memories) < initial_len:
             self._save(memories)
+            if tombstone:
+                tombstones = self._load_tombstones()
+                tombstones[key_lower] = {
+                    "key": key.strip(),
+                    "deleted_at": datetime.utcnow().isoformat() + "Z"
+                }
+                self._save_tombstones(tombstones)
             return True
         return False
+
+    def is_tombstoned(self, key: str) -> bool:
+        """Checks if a memory key has an active tombstone."""
+        return key.strip().lower() in self._load_tombstones()
 
     def search(self, query: Optional[str] = None, type_val: Optional[str] = None, tags: Optional[List[str]] = None, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List[Dict[str, Any]]:
         """

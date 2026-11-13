@@ -145,7 +145,8 @@ def main():
     subparsers.add_parser("morning", help="Daily brief")
     ui_parser = subparsers.add_parser("ui", help="Browser dashboard")
     ui_parser.add_argument("--port", type=int, default=7331, help="Port to run UI on")
-    subparsers.add_parser("context", help="Copy full context to clipboard")
+    context_parser = subparsers.add_parser("context", help="Copy full context to clipboard")
+    context_parser.add_argument("--project", "-p", default=None, help="Scope context to specific workspace/project")
     inbox_parser = subparsers.add_parser("inbox", help="Quick capture to Inbox")
     inbox_parser.add_argument("text", nargs="+", help="Text to save to inbox")
     subparsers.add_parser("digest", help="Daily summary")
@@ -153,7 +154,9 @@ def main():
     
     # Memory management
     subparsers.add_parser("health", help="Stats overview")
-    subparsers.add_parser("route", help="Auto-route all unprocessed Inbox items")
+    route_parser = subparsers.add_parser("route", help="Auto-route Inbox items or zero-retention prompt routing")
+    route_parser.add_argument("prompt", nargs="?", default=None, help="Optional natural-language prompt to route to memory subspace centroids")
+    route_parser.add_argument("--top-k", "-k", type=int, default=2, help="Number of top sheet subspaces to return")
     subparsers.add_parser("loops", help="List all unresolved Open Loops")
     subparsers.add_parser("diff", help="Belief contradiction check")
     subparsers.add_parser("ttl", help="Check expired Open Loops")
@@ -288,13 +291,28 @@ def main():
                 print(f"  - {sheet}: {count}")
         print()
     elif args.command == "route":
-        decisions = oy.route_inbox()
-        if not decisions:
-            print("\n[+] No unrouted inbox items found.")
+        if getattr(args, "prompt", None):
+            import time
+            t0 = time.perf_counter()
+            routes = oy.route(args.prompt, top_k=getattr(args, "top_k", 2))
+            elapsed_ms = (time.perf_counter() - t0) * 1000.0
+            print(f"\n--- Zero-Retention Memory Routing ({elapsed_ms:.2f}ms) ---")
+            print(f"Prompt: \"{args.prompt}\"")
+            if not routes:
+                print("No active centroids matched (run `yantra health` or sync index).")
+            else:
+                print("Active Subspaces:")
+                for i, r in enumerate(routes, 1):
+                    print(f"  {i}. {r['sheet']} (similarity: {r['score']:.4f})")
+            print()
         else:
-            print(f"\n--- Routed {len(decisions)} Inbox Items ---")
-            for d in decisions:
-                print(f"- '{d.get('content')}' -> {d.get('target', 'Unclassified')}")
+            decisions = oy.route_inbox()
+            if not decisions:
+                print("\n[+] No unrouted inbox items found.")
+            else:
+                print(f"\n--- Routed {len(decisions)} Inbox Items ---")
+                for d in decisions:
+                    print(f"- '{d.get('content')}' -> {d.get('target', 'Unclassified')}")
     elif args.command == "loops":
         loops = oy.get_sheet("open_loops")
         open_loops = [r for r in loops if r.get("Resolved?") != "Yes"]
@@ -361,7 +379,10 @@ def main():
         subprocess.run([sys.executable, str(script), "--file", oy_file])
     elif args.command == "context":
         script = script_dir / "yantra_context.py"
-        subprocess.run([sys.executable, str(script), "--file", oy_file])
+        cmd = [sys.executable, str(script), "--file", oy_file]
+        if getattr(args, "project", None):
+            cmd.extend(["--project", args.project])
+        subprocess.run(cmd)
     elif args.command == "digest":
         script = script_dir / "yantra_digest.py"
         subprocess.run([sys.executable, str(script), "--file", oy_file])

@@ -333,6 +333,7 @@ def handle_call_tool(req_id, params, store=None):
             agent = arguments.get("agent")
             content = arguments.get("content")
             tags = arguments.get("tags")
+            override_tombstone = bool(arguments.get("override_tombstone", False))
             
             # Redact secrets through Raksha guard before saving
             from openyantra.yantra_security import Raksha
@@ -340,8 +341,11 @@ def handle_call_tool(req_id, params, store=None):
             redacted_content, _ = _raksha.redact_secrets(str(content or ""))
             redacted_key, _ = _raksha.redact_secrets(str(key or ""))
 
-            res = active_db.write(redacted_key, type_val, agent, redacted_content, tags)
-            return make_text_response(req_id, json.dumps(res, indent=2))
+            try:
+                res = active_db.write(redacted_key, type_val, agent, redacted_content, tags, override_tombstone=override_tombstone)
+                return make_text_response(req_id, json.dumps(res, indent=2))
+            except ValueError as ve:
+                return make_error_response(req_id, str(ve))
 
         elif name == "memory_read":
             key = arguments.get("key")
@@ -362,8 +366,9 @@ def handle_call_tool(req_id, params, store=None):
 
         elif name == "memory_delete":
             key = arguments.get("key")
-            success = active_db.delete(key)
-            return make_text_response(req_id, f"Delete successful: {success}")
+            tombstone = arguments.get("tombstone", True)
+            success = active_db.delete(key, tombstone=tombstone)
+            return make_text_response(req_id, f"Delete successful: {success} (tombstone: {tombstone})")
 
         elif name == "memory_stats":
             res = active_db.stats()
@@ -373,7 +378,9 @@ def handle_call_tool(req_id, params, store=None):
         elif name == "get_system_context":
             if not oy:
                 return make_error_response(req_id, "OpenYantra sheet engine not initialized.")
-            res = oy.build_context_markdown()
+            project = arguments.get("project")
+            top_k = arguments.get("top_k", 10)
+            res = oy.build_context_markdown(top_k=top_k, project_scope=project)
             return make_text_response(req_id, res)
 
         elif name == "health_check":
