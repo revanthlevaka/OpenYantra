@@ -185,7 +185,7 @@ def detect_active_project(start_path: Optional[Path] = None) -> Optional[str]:
             if (parent / ".git").exists():
                 return parent.name
     except Exception:
-        pass
+        pass  # File system permission or path traversal exception; fall back to None
     return None
 
 

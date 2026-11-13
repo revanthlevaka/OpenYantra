@@ -35,7 +35,7 @@ class CognitiveMemoryStore:
         try:
             self.tombstone_path.write_text(json.dumps(tombstones, indent=2, ensure_ascii=False), encoding="utf-8")
         except Exception:
-            pass
+            pass  # Fail-safe: persistence failure for tombstone cache does not block operations
 
     def _load(self) -> List[Dict[str, Any]]:
         try:

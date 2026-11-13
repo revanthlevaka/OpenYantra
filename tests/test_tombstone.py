@@ -1,8 +1,7 @@
 import pytest
-from pathlib import Path
 from openyantra.core import OpenYantra, WriteRequest, SHEET_BELIEFS, SHEET_LEDGER
 from openyantra.cognitive_db import CognitiveMemoryStore
-from openyantra.cognitive_mcp import handle_call_tool
+from openyantra import cognitive_mcp as mcp_mod
 
 
 @pytest.fixture
@@ -18,7 +17,8 @@ def test_cognitive_db_tombstone(temp_cognitive_db):
     assert store.read("database_arch") is not None
 
     # 2. Delete with tombstone
-    assert store.delete("database_arch", tombstone=True) is True
+    deleted = store.delete("database_arch", tombstone=True)
+    assert deleted is True
     assert store.read("database_arch") is None
     assert store.is_tombstoned("database_arch") is True
 
@@ -111,13 +111,10 @@ def test_workbook_belief_tombstone(tmp_path):
 
 
 def test_cognitive_mcp_tombstone(temp_cognitive_db, monkeypatch):
-    import json
-    import openyantra.cognitive_mcp as mcp_mod
-
     monkeypatch.setattr(mcp_mod, "db", temp_cognitive_db)
 
     # 1. memory_write
-    res = handle_call_tool(1, {
+    res = mcp_mod.handle_call_tool(1, {
         "name": "memory_write",
         "arguments": {
             "key": "cloud_provider",
@@ -129,14 +126,14 @@ def test_cognitive_mcp_tombstone(temp_cognitive_db, monkeypatch):
     assert "content" in res["result"]["content"][0]["text"]
 
     # 2. memory_delete (tombstone)
-    res_del = handle_call_tool(2, {
+    res_del = mcp_mod.handle_call_tool(2, {
         "name": "memory_delete",
         "arguments": {"key": "cloud_provider"}
     })
     assert "Delete successful: True" in res_del["result"]["content"][0]["text"]
 
     # 3. memory_write again -> returns error response due to tombstone
-    res_fail = handle_call_tool(3, {
+    res_fail = mcp_mod.handle_call_tool(3, {
         "name": "memory_write",
         "arguments": {
             "key": "cloud_provider",
@@ -149,7 +146,7 @@ def test_cognitive_mcp_tombstone(temp_cognitive_db, monkeypatch):
     assert "Tombstone exists" in res_fail["result"]["content"][0]["text"]
 
     # 4. memory_write with override_tombstone -> succeeds
-    res_override = handle_call_tool(4, {
+    res_override = mcp_mod.handle_call_tool(4, {
         "name": "memory_write",
         "arguments": {
             "key": "cloud_provider",

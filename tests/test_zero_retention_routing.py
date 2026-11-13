@@ -1,6 +1,4 @@
 import time
-import pytest
-from pathlib import Path
 from openyantra.core import OpenYantra, WriteRequest, SHEET_TASKS, SHEET_BELIEFS, SHEET_OPEN_LOOPS
 from openyantra.yantra_sutra import SutraCompiler
 

@@ -1,11 +1,8 @@
-import os
-import pytest
-from pathlib import Path
 from openyantra.core import (
     OpenYantra, WriteRequest, detect_active_project,
     SHEET_TASKS, SHEET_OPEN_LOOPS, SHEET_PROJECTS, SHEET_BELIEFS
 )
-from openyantra.cognitive_mcp import handle_call_tool
+from openyantra import cognitive_mcp as mcp_mod
 
 
 def test_detect_active_project(tmp_path, monkeypatch):
@@ -132,8 +129,6 @@ def test_workspace_isolation_context_markdown(tmp_path):
 
 
 def test_workspace_isolation_mcp(tmp_path, monkeypatch):
-    import openyantra.cognitive_mcp as mcp_mod
-
     ods_path = tmp_path / "chitrapat.ods"
     oy = OpenYantra(path=ods_path)
     oy.bootstrap("MCPUser")
@@ -152,7 +147,7 @@ def test_workspace_isolation_mcp(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_mod, "oy", oy)
 
     # Scoped request for SecretAlpha
-    res = handle_call_tool(1, {
+    res = mcp_mod.handle_call_tool(1, {
         "name": "get_system_context",
         "arguments": {"project": "SecretAlpha"}
     })
