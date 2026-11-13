@@ -57,7 +57,7 @@ except ImportError:
 
 VERSION = "6.2.0"
 
-# Sheet name to SQLite table name mapping
+# Sheet name to SQLite table name mapping (plain and emoji names)
 SHEET_TABLE_MAP = {
     "Identity":    "identity",
     "Goals":       "goals",
@@ -74,7 +74,37 @@ SHEET_TABLE_MAP = {
     "Corrections": "corrections",
     "Quarantine":  "quarantine",
     "SecurityLog": "security_log",
+    # Emoji canonical sheet names from core
+    "👤 Identity":     "identity",
+    "🎯 Goals":        "goals",
+    "🚀 Projects":     "projects",
+    "👥 People":       "people",
+    "💡 Preferences":  "preferences",
+    "🧠 Beliefs":      "beliefs",
+    "✅ Tasks":        "tasks",
+    "🔓 Open Loops":   "open_loops",
+    "📅 Session Log":  "session_log",
+    "⚙️ Agent Config": "agent_config",
+    "📒 Agrasandhanī": "ledger",
+    "📥 Inbox":        "inbox",
+    "✏️ Corrections":  "corrections",
+    "🔒 Quarantine":   "quarantine",
+    "🛡️ Security Log": "security_log",
 }
+
+
+def get_table_for_sheet(sheet_name: str) -> Optional[str]:
+    """Resolve a sheet name (plain or emoji) to its SQLite table name."""
+    if not sheet_name:
+        return None
+    if sheet_name in SHEET_TABLE_MAP:
+        return SHEET_TABLE_MAP[sheet_name]
+    import re
+    clean = re.sub(r"[^a-zA-Z0-9]", "", sheet_name).lower()
+    for k, v in SHEET_TABLE_MAP.items():
+        if re.sub(r"[^a-zA-Z0-9]", "", k).lower() == clean:
+            return v
+    return None
 
 
 def validate_ods_headers(ods_path: str | Path) -> list[str]:
@@ -754,12 +784,114 @@ class SyncEngine:
             "See SORT_CATASTROPHE.md for recovery steps."
         )
 
+        sheet_table_mapping = [
+            ("👤 Identity",    "identity",    "attribute"),
+            ("Identity",       "identity",    "attribute"),
+            ("🎯 Goals",       "goals",       "goal"),
+            ("Goals",          "goals",       "goal"),
+            ("🚀 Projects",    "projects",    "project"),
+            ("Projects",       "projects",    "project"),
+            ("👥 People",      "people",      "name"),
+            ("People",         "people",      "name"),
+            ("💡 Preferences", "preferences", "category"),
+            ("Preferences",    "preferences", "category"),
+            ("🧠 Beliefs",     "beliefs",     "topic"),
+            ("Beliefs",        "beliefs",     "topic"),
+            ("✅ Tasks",        "tasks",       "task"),
+            ("Tasks",          "tasks",       "task"),
+            ("🔓 Open Loops",   "open_loops",  "topic"),
+            ("Open Loops",     "open_loops",  "topic"),
+            ("⚙️ Agent Config", "agent_config", "instruction"),
+            ("Agent Config",   "agent_config", "instruction"),
+            ("📥 Inbox",        "inbox",       "content"),
+            ("Inbox",          "inbox",       "content"),
+        ]
+
         try:
             with pd.ExcelFile(str(source), engine="odf") as xl:
-                pass
-            # Import is handled sheet by sheet, merging user changes
-            # with SQLite state using request_id deduplication.
-            # Full implementation in v3.0.1 -- stub returns OK for now.
+                processed_tables = set()
+                with self._connect() as conn:
+                    for sheet_name, table, pk_col in sheet_table_mapping:
+                        if table in processed_tables or sheet_name not in xl.sheet_names:
+                            continue
+                        processed_tables.add(table)
+
+                        try:
+                            df = xl.parse(sheet_name, header=0, dtype=str)
+                        except Exception:
+                            continue
+
+                        if df.empty:
+                            continue
+
+                        # Check sort catastrophe (monotonicity check if id column present)
+                        if "id" in [str(c).lower() for c in df.columns]:
+                            id_col = [c for c in df.columns if str(c).lower() == "id"][0]
+                            ids = [int(v) for v in df[id_col].dropna() if str(v).isdigit()]
+                            if ids and ids != sorted(ids):
+                                stats["conflicts"] += 1
+                                stats["note"] = f"Aborted: Non-monotonic ID column detected in sheet {sheet_name}. {VIVADA_NOTE}"
+                                return stats
+
+                        cols_info = conn.execute(f"PRAGMA table_info({table})").fetchall()
+                        valid_cols = {c["name"] for c in cols_info if c["name"] != "id"}
+
+                        for _, row in df.iterrows():
+                            try:
+                                row_dict = {}
+                                for raw_k, raw_v in row.items():
+                                    if pd.isna(raw_v) or str(raw_v).strip() in ("", "nan", "None"):
+                                        continue
+                                    k_clean = str(raw_k).strip().lower().replace(" ", "_")
+                                    # Normalize common variations
+                                    if k_clean in ("due_date", "deadline"):
+                                        k_clean = "deadline"
+                                    elif k_clean == "key_decision_made":
+                                        k_clean = "key_decision"
+                                    elif k_clean == "context_/_what's_unresolved":
+                                        k_clean = "context"
+                                    elif k_clean == "resolved?":
+                                        k_clean = "resolved"
+                                        raw_v = 1 if str(raw_v).strip().lower() in ("yes", "true", "1") else 0
+                                    elif k_clean == "ttl_days":
+                                        try:
+                                            raw_v = int(raw_v)
+                                        except (ValueError, TypeError):
+                                            raw_v = 90
+
+                                    if k_clean in valid_cols:
+                                        row_dict[k_clean] = raw_v
+
+                                pk_val = row_dict.get(pk_col)
+                                if not pk_val or str(pk_val).strip() == "":
+                                    continue
+
+                                existing = conn.execute(
+                                    f"SELECT id FROM {table} WHERE LOWER(TRIM({pk_col})) = LOWER(TRIM(?))",
+                                    (str(pk_val),)
+                                ).fetchone()
+
+                                if existing:
+                                    update_cols = [k for k in row_dict.keys() if k != pk_col]
+                                    if update_cols:
+                                        set_clause = ", ".join(f"{k}=?" for k in update_cols)
+                                        conn.execute(
+                                            f"UPDATE {table} SET {set_clause} WHERE id=?",
+                                            [*[row_dict[k] for k in update_cols], existing["id"]]
+                                        )
+                                else:
+                                    cols = list(row_dict.keys())
+                                    placeholders = ", ".join("?" * len(cols))
+                                    conn.execute(
+                                        f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({placeholders})",
+                                        [row_dict[k] for k in cols]
+                                    )
+                                    stats["imported"] += 1
+
+                                self.infer_edges(table, row_dict)
+                            except Exception:
+                                stats["errors"] += 1
+
             stats["note"] = VIVADA_NOTE
             return stats
         except Exception as e:
@@ -894,6 +1026,30 @@ class SyncEngine:
         except Exception:
             return False
 
+    def delete_node_edges(self, node_type: str, node_id: str) -> int:
+        """Delete all edges where node is either source or target."""
+        try:
+            with self._connect() as conn:
+                cursor = conn.execute(
+                    "DELETE FROM edges WHERE (source_type=? AND source_id=?) OR (target_type=? AND target_id=?)",
+                    (node_type, str(node_id), node_type, str(node_id))
+                )
+                return cursor.rowcount
+        except Exception:
+            return 0
+
+    def delete_record(self, table: str, key_field: str, key_value: str) -> bool:
+        """Delete a record by a primary key column value (e.g. task name, topic)."""
+        try:
+            with self._connect() as conn:
+                cursor = conn.execute(
+                    f"DELETE FROM {table} WHERE LOWER(TRIM({key_field})) = LOWER(TRIM(?))",
+                    (str(key_value),)
+                )
+                return cursor.rowcount > 0
+        except Exception:
+            return False
+
     def get_edges(self, source_type: Optional[str] = None,
                   source_id: Optional[str] = None,
                   target_type: Optional[str] = None) -> list[dict]:
@@ -969,23 +1125,34 @@ class SyncEngine:
     def infer_edges(self, table: str, fields: dict):
         """
         Auto-edge inference on writes.
-        - Tasks/loops with a project field -> edge to that project
+        - Tasks/loops/goals with a project field -> edge to that project
         - Notes containing @Name -> edge to person
         """
         import re
-        datetime.utcnow().isoformat(timespec="seconds")
+
+        if not fields:
+            return
+
+        # Normalize field keys for case/spacing insensitivity
+        f_map = {str(k).strip().lower().replace(" ", "_"): str(v) for k, v in fields.items() if v is not None}
 
         if table == "tasks":
-            project = fields.get("project", "")
-            task_name = fields.get("task", "")
+            project = f_map.get("project", "").strip()
+            task_name = (f_map.get("task") or f_map.get("task_name", "")).strip()
             if project and task_name:
                 self.add_edge("tasks", task_name, "projects", project, "belongs_to")
 
         elif table == "open_loops":
-            project = fields.get("related_project", "")
-            topic = fields.get("topic", "")
+            project = (f_map.get("related_project") or f_map.get("project", "")).strip()
+            topic = f_map.get("topic", "").strip()
             if project and topic:
                 self.add_edge("open_loops", topic, "projects", project, "related_to")
+
+        elif table == "goals":
+            project = f_map.get("project", "").strip()
+            goal_name = f_map.get("goal", "").strip()
+            if project and goal_name:
+                self.add_edge("goals", goal_name, "projects", project, "belongs_to")
 
         # Scan all text fields for @Name mentions -> link to people
         all_text = " ".join(str(v) for v in fields.values() if v)
@@ -993,9 +1160,9 @@ class SyncEngine:
         if mentions:
             # Get known people from DB
             known_people = {r["name"].lower(): r["name"] for r in self.read("people")}
-            primary_key = (fields.get("task") or fields.get("topic")
-                          or fields.get("goal") or fields.get("project")
-                          or fields.get("content", "")[:50])
+            primary_key = (f_map.get("task") or f_map.get("topic")
+                          or f_map.get("goal") or f_map.get("project")
+                          or f_map.get("attribute") or str(f_map.get("content", ""))[:50])
             if primary_key:
                 for mention in mentions:
                     canonical = known_people.get(mention.lower())

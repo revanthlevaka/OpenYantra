@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Desktop%20App-v1.0.0-blueviolet?style=flat-square" />
   <img src="https://img.shields.io/badge/MCP-Claude%20%26%20Cursor-success?style=flat-square&color=10b981" />
   <img src="https://img.shields.io/badge/Obsidian-Bi--Directional%20Sync-purple?style=flat-square" />
-  <img src="https://img.shields.io/badge/Tests-104%2F104%20Passing-brightgreen?style=flat-square" />
+  <img src="https://img.shields.io/badge/Tests-110%2F110%20Passing-brightgreen?style=flat-square" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" />
 </p>
 

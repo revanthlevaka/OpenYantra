@@ -45,7 +45,7 @@ import pickle
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Callable, Optional
 
 import faiss
 import numpy as np
@@ -498,6 +498,13 @@ class VidyaKosha:
         ]
         return "\n".join(lines)
 
+    def set_external_router(self, router_fn: Optional[Any] = None):
+        """
+        Plug in an external routing engine (e.g. Plexus / Apical Arbor).
+        router_fn signature: (prompt: str, top_k: int) -> list[dict]
+        """
+        self._external_router = router_fn
+
     def route_prompt(
         self,
         prompt: str,
@@ -512,6 +519,14 @@ class VidyaKosha:
 
         Returns list of dicts: [{"sheet": sheet_name, "score": float}, ...]
         """
+        if getattr(self, "_external_router", None) is not None:
+            try:
+                res = self._external_router(prompt, top_k=top_k)
+                if res is not None:
+                    return res
+            except Exception:
+                _oy_log.debug("external router error, falling back to centroid router", exc_info=True)
+
         if not prompt or not self._centroids:
             return []
 

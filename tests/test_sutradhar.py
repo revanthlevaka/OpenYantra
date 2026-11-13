@@ -140,3 +140,74 @@ class TestInferEdges:
         engine.infer_edges("tasks", {"task": "Random task"})
         edges = engine.get_edges()
         assert len(edges) == 0
+
+    def test_infer_capitalized_fields(self, engine):
+        """ODS field names (capitalized and spaced) should be mapped properly."""
+        engine.infer_edges("tasks", {"Task": "Deploy cluster", "Project": "CloudOps"})
+        edges = engine.get_edges(source_type="tasks")
+        assert len(edges) == 1
+        assert edges[0]["source_id"] == "Deploy cluster"
+        assert edges[0]["target_id"] == "CloudOps"
+
+        engine.infer_edges("open_loops", {"Topic": "Database failover", "Related Project": "CloudOps"})
+        loop_edges = engine.get_edges(source_type="open_loops")
+        assert len(loop_edges) == 1
+        assert loop_edges[0]["source_id"] == "Database failover"
+        assert loop_edges[0]["target_id"] == "CloudOps"
+
+    def test_delete_node_edges(self, engine):
+        """Deleting node edges cleans up both incoming and outgoing edges."""
+        engine.add_edge("tasks", "T1", "projects", "P1", "belongs_to")
+        engine.add_edge("projects", "P1", "tasks", "T2", "contains")
+        assert len(engine.get_edges()) == 2
+
+        deleted = engine.delete_node_edges("tasks", "T1")
+        assert deleted == 1
+        assert engine.get_edges(source_id="T1") == []
+
+
+class TestSutradharEndToEnd:
+    """Test full integration with OpenYantra workbook writes and edge inference."""
+
+    def test_workbook_write_automatically_infers_edges(self, tmp_path):
+        from openyantra.core import OpenYantra
+        chitrapat = tmp_path / "chitrapat.ods"
+        oy = OpenYantra(chitrapat)
+        oy.bootstrap(user_name="Graph Tester", occupation="Engineer")
+
+        # 1. Add a task with project
+        res_task = oy.add_task(task="Ship Sutradhar v6.2", project="OpenYantra", priority="High")
+        assert res_task["status"] == "written"
+
+        edges = oy.db_engine.get_edges(source_type="tasks")
+        assert len(edges) == 1
+        assert edges[0]["source_id"] == "Ship Sutradhar v6.2"
+        assert edges[0]["target_id"] == "OpenYantra"
+        assert edges[0]["edge_type"] == "belongs_to"
+
+        # 2. Add open loop with related project
+        res_loop = oy.add_open_loop(topic="Security Audit Mudra", context="Check SHA256", related_project="OpenYantra")
+        assert res_loop["status"] == "written"
+
+        loop_edges = oy.db_engine.get_edges(source_type="open_loops")
+        assert len(loop_edges) == 1
+        assert loop_edges[0]["source_id"] == "Security Audit Mudra"
+        assert loop_edges[0]["target_id"] == "OpenYantra"
+
+        # 3. Delete task and verify edge cleanup and row removal
+        res_del = oy.delete_row("tasks", "Ship Sutradhar v6.2", reason="Task completed and archived")
+        assert res_del["status"] == "written"
+
+        # Verify row removed from sheet
+        active_tasks = oy.get_sheet("tasks")
+        assert not any(t.get("Task") == "Ship Sutradhar v6.2" for t in active_tasks)
+
+        # Verify edge removed
+        remaining_edges = oy.db_engine.get_edges(source_id="Ship Sutradhar v6.2")
+        assert len(remaining_edges) == 0
+
+        # Verify deletion logged in Agrasandhanī ledger
+        ledger = oy.get_sheet("ledger")
+        delete_entries = [l for l in ledger if l.get("Operation") == "delete" and l.get("Row Identifier") == "Ship Sutradhar v6.2"]
+        assert len(delete_entries) == 1
+        assert delete_entries[0]["Status"] == "written"

@@ -27,7 +27,7 @@ import threading
 import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Any, Callable, Optional
 import logging as _oy_logging
 _oy_log = _oy_logging.getLogger("openyantra")
 
@@ -227,7 +227,8 @@ class WriteRequest:
     def __init__(self, requesting_agent: str, sheet: str, operation: str,
                  fields: dict, row_identifier: Optional[str] = None,
                  confidence: str = "High", source: str = "Agent-observed",
-                 session_id: Optional[str] = None, importance: int = 5):
+                 session_id: Optional[str] = None, importance: int = 5,
+                 request_id: Optional[str] = None, timestamp: Optional[str] = None):
         assert operation  in OPERATIONS,   f"operation must be one of {OPERATIONS}"
         assert confidence in CONFIDENCE_V, f"confidence must be one of {CONFIDENCE_V}"
         assert source     in SOURCE,       f"source must be one of {SOURCE}"
@@ -242,8 +243,8 @@ class WriteRequest:
         self.source           = source
         self.session_id       = session_id or TODAY
         self.importance       = importance
-        self.timestamp        = datetime.utcnow().isoformat()
-        self.request_id       = self._make_id()
+        self.timestamp        = timestamp or datetime.utcnow().isoformat()
+        self.request_id       = request_id or self._make_id()
 
     def _make_id(self) -> str:
         payload = f"{self.requesting_agent}{self.sheet}{self.timestamp}"
@@ -437,9 +438,10 @@ class LedgerAgent:
                 return {"status": "already_committed", "request_id": req.request_id,
                         "sheet": req.sheet}
 
-            # Admission gate (v2.1)
-            if req.sheet not in (SHEET_SESSION_LOG, SHEET_LEDGER,
-                                  SHEET_INBOX, SHEET_CORRECTIONS):
+            # Admission gate (v2.1) -- filter low-value new memories. State mutations and deletions are exempt.
+            if req.operation not in ("resolve", "archive", "delete", "supersede") and req.sheet not in (
+                SHEET_SESSION_LOG, SHEET_LEDGER, SHEET_INBOX, SHEET_CORRECTIONS
+            ):
                 admit, reason = _is_worth_remembering(req.fields, req.sheet)
                 if not admit:
                     return {"status": "filtered", "request_id": req.request_id,
@@ -564,6 +566,10 @@ class LedgerAgent:
         payload = json.dumps(req.to_dict(), sort_keys=True)
         return "sha256:" + hashlib.sha256(payload.encode()).hexdigest()[:32]
 
+    def verify_mudra(self, req: WriteRequest, signature: str) -> bool:
+        """Verify if signature matches cryptographic seal of req."""
+        return bool(signature and self._seal(req) == signature)
+
     def _commit(self, req: WriteRequest, mudra: str):
         self._commit_and_audit(req, mudra, status="written")
 
@@ -651,6 +657,11 @@ class LedgerAgent:
                             target_df.loc[mask, f] = v
                     if "Last Updated" in target_df.columns:
                         target_df.loc[mask, "Last Updated"] = now
+
+            elif req.operation == "delete" and req.row_identifier:
+                if not target_df.empty and len(target_df.columns) > 0:
+                    mask = (target_df.iloc[:, 0].astype(str).str.strip().str.lower() == str(req.row_identifier).strip().lower())
+                    target_df = target_df[~mask].reset_index(drop=True)
 
             # 2. Prepare ledger df
             audit_entry = {
@@ -858,13 +869,28 @@ class OpenYantra:
                     self._vidyakosha.sync(self.path)
             except Exception: _oy_log.debug("ignored error", exc_info=True)
 
-        # v5.0.0: Sutradhar auto-edge inference
+        # v5.0.0: Sutradhar auto-edge inference & edge cleanup
         if receipt.get("status") == "written" and self.db_engine is not None:
             try:
-                from openyantra.yantra_sqlite import SHEET_TABLE_MAP
-                table = SHEET_TABLE_MAP.get(req.sheet)
+                from openyantra.yantra_sqlite import SHEET_TABLE_MAP, get_table_for_sheet
+                table = SHEET_TABLE_MAP.get(req.sheet) or get_table_for_sheet(req.sheet)
                 if table:
-                    self.db_engine.infer_edges(table, req.fields)
+                    if req.operation == "delete" and req.row_identifier:
+                        if hasattr(self.db_engine, "delete_node_edges"):
+                            self.db_engine.delete_node_edges(table, req.row_identifier)
+                        pk_cols = {
+                            "tasks": "task",
+                            "open_loops": "topic",
+                            "goals": "goal",
+                            "projects": "project",
+                            "people": "name",
+                            "beliefs": "topic",
+                            "identity": "attribute",
+                        }
+                        if table in pk_cols and hasattr(self.db_engine, "delete_record"):
+                            self.db_engine.delete_record(table, pk_cols[table], req.row_identifier)
+                    else:
+                        self.db_engine.infer_edges(table, req.fields)
             except Exception:
                 _oy_log.debug("ignored error", exc_info=True)
 
@@ -1249,6 +1275,48 @@ class OpenYantra:
     def get_table(self, sheet_name: str) -> list[dict]:
         """Alias for get_sheet."""
         return self.get_sheet(sheet_name)
+
+    def delete_row(self, sheet: str, row_identifier: str, reason: str = "") -> dict:
+        """
+        Delete a row from a sheet by its primary identifier (first column value).
+        Logs deletion in Agrasandhanī ledger and cleans up corresponding graph edges.
+        """
+        sheet_map = {
+            "index": SHEET_INDEX, "identity": SHEET_IDENTITY, "goals": SHEET_GOALS,
+            "projects": SHEET_PROJECTS, "people": SHEET_PEOPLE,
+            "preferences": SHEET_PREFERENCES, "beliefs": SHEET_BELIEFS,
+            "tasks": SHEET_TASKS, "open_loops": SHEET_OPEN_LOOPS, "loops": SHEET_OPEN_LOOPS,
+            "session_log": SHEET_SESSION_LOG, "agent_config": SHEET_AGENT_CONFIG,
+            "ledger": SHEET_LEDGER, "inbox": SHEET_INBOX, "corrections": SHEET_CORRECTIONS,
+            "quarantine": SHEET_QUARANTINE, "security_log": SHEET_SECURITY_LOG,
+        }
+        key = sheet.lower().replace(" ", "_")
+        actual_sheet = sheet_map.get(key, sheet)
+        if actual_sheet not in ALL_SHEETS and actual_sheet not in [SHEET_QUARANTINE, SHEET_SECURITY_LOG]:
+            for s in ALL_SHEETS:
+                if sheet.lower() in s.lower():
+                    actual_sheet = s
+                    break
+
+        return self.request_write(WriteRequest(
+            requesting_agent=self.agent_name,
+            sheet=actual_sheet,
+            operation="delete",
+            fields={"Reason": reason} if reason else {},
+            row_identifier=row_identifier,
+            confidence="High",
+            source="User-stated",
+            importance=5,
+        ))
+
+    def verify_request_signature(self, req: WriteRequest, signature: str) -> bool:
+        """Verify the cryptographic seal (Mudra) of a write request."""
+        return self._ledger.verify_mudra(req, signature)
+
+    def set_external_router(self, router_fn: Optional[Any] = None):
+        """Plug in an external router (e.g. Plexus / Apical Arbor) into VidyaKosha."""
+        if hasattr(self, "_vidyakosha") and self._vidyakosha:
+            self._vidyakosha.set_external_router(router_fn)
 
     def sync_from_ods(self) -> dict:
         """Import ODS edits back into SQLite WAL database."""

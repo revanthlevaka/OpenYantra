@@ -343,13 +343,22 @@ class Raksha:
         return sanitised, all_redactions
 
     def verify_mudra(self, fields: dict, agent: str, sheet: str,
-                     operation: str, stored_signature: str) -> bool:
+                     operation: str, stored_signature: str,
+                     request_dict: Optional[dict] = None) -> bool:
         """
         Mudra verification -- verify a write's SHA-256 signature.
         Returns True if signature matches (untampered).
+        Supports full WriteRequest dictionary verification and legacy 4-field verification.
         """
         if not stored_signature or not stored_signature.startswith("sha256:"):
             return False
+
+        if request_dict:
+            payload = json.dumps(request_dict, sort_keys=True)
+            expected = "sha256:" + hashlib.sha256(payload.encode()).hexdigest()[:32]
+            if stored_signature == expected:
+                return True
+
         payload = json.dumps({
             "requesting_agent": agent,
             "sheet": sheet,
@@ -396,13 +405,18 @@ class Raksha:
                                            sheet_name="📒 Agrasandhanī",
                                            engine="odf", header=0, dtype=str)
                 for _, row in ledger_df.iterrows():
-                    sig = str(row.get("Signature", "") or "")
-                    if sig and not sig.startswith("sha256:"):
+                    sig = str(row.get("Signature", "") or "").strip()
+                    is_valid_format = (
+                        sig.startswith("sha256:") and
+                        len(sig) == 39 and
+                        all(c in "0123456789abcdefABCDEF" for c in sig[7:])
+                    )
+                    if sig and not is_valid_format:
                         findings.append({
                             "sheet":        "📒 Agrasandhanī",
                             "threat_level": "confirmed",
                             "threat_type":  "mudra_tamper",
-                            "threats_found":["Invalid signature format"],
+                            "threats_found":["Invalid signature format or corrupted hash"],
                             "preview":      f"Row {row.get('Request ID','?')} -- bad signature",
                         })
             except Exception:
