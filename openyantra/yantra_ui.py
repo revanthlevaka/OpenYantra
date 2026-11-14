@@ -49,7 +49,7 @@ from openyantra.yantra_passkey import (
 import logging as _oy_logging
 _oy_log = _oy_logging.getLogger("openyantra")
 
-app = FastAPI(title="OpenYantra", version="6.2.0", docs_url=None, redoc_url=None)
+app = FastAPI(title="OpenYantra", version="6.2.1", docs_url=None, redoc_url=None)
 _oy = None
 _cog_store = None
 
