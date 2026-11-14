@@ -51,13 +51,33 @@ def launch_desktop(
     oy_file: Optional[str] = None,
     mode: str = "hud",
     port: int = 7331,
-    title: str = "OpenYantra"
+    title: str = "OpenYantra",
+    daemon: bool = False,
 ):
     """
     Launches native desktop window (Dashboard or HUD) using pywebview or browser app mode.
+    Optionally starts the background Soul-Engine daemon alongside the window.
     """
     chitrapat = oy_file or os.environ.get("OPENYANTRA_FILE", str(Path.home() / "openyantra" / "chitrapat.ods"))
     ensure_server_running(chitrapat, port=port)
+
+    if daemon:
+        try:
+            import threading
+            from openyantra.core import OpenYantra
+            from openyantra.yantra_nidra import NidraDaemon
+            oy = OpenYantra(chitrapat)
+            nidra_worker = NidraDaemon(
+                oy,
+                interval_seconds=60,
+                idle_threshold_seconds=300,
+                logger_func=lambda msg: print(f"  [Desktop Soul-Engine] {msg}")
+            )
+            t = threading.Thread(target=nidra_worker.run_loop, daemon=True)
+            t.start()
+            print("  👁️ Background Soul-Engine daemon started alongside Desktop HUD.")
+        except Exception as e:
+            print(f"  [Desktop Warning] Could not spawn background daemon: {e}")
 
     target_url = f"http://127.0.0.1:{port}/" if mode == "dashboard" else f"http://127.0.0.1:{port}/hud"
 
@@ -100,9 +120,10 @@ def main():
     parser.add_argument("--file", "-f", default=str(Path.home() / "openyantra" / "chitrapat.ods"))
     parser.add_argument("--port", "-p", type=int, default=7331)
     parser.add_argument("--mode", "-m", choices=["hud", "dashboard"], default="hud", help="Desktop mode: floating 'hud' or full 'dashboard'")
+    parser.add_argument("--daemon", "-d", action="store_true", help="Spawn autonomous background soul-engine consolidator with desktop window")
     args = parser.parse_args()
 
-    launch_desktop(oy_file=args.file, mode=args.mode, port=args.port)
+    launch_desktop(oy_file=args.file, mode=args.mode, port=args.port, daemon=args.daemon)
 
 
 if __name__ == "__main__":
