@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
+import signal
+import time
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
 import logging as _oy_logging
 _oy_log = _oy_logging.getLogger("openyantra")
 
@@ -383,3 +387,122 @@ class NidraConsolidator:
             "loops_resolved": resolved_loops,
             "promoted_preferences": promoted_applied if not dry_run else promoted,
         }
+
+
+class NidraDaemon:
+    """
+    NidraDaemon -- Autonomous Soul-Engine Background Worker.
+    Detached background watcher that periodically inspects Chitrapat state.
+    When a quiet period (inactivity >= idle_threshold) follows recorded activity,
+    it executes offline sleep consolidation, loop pruning, semantic indexing, and WAL checkpointing.
+    """
+
+    def __init__(
+        self,
+        oy: Any,
+        interval_seconds: int = 60,
+        idle_threshold_seconds: int = 300,
+        provider: str = "auto",
+        dry_run: bool = False,
+        logger_func: Optional[Callable[[str], None]] = None,
+    ):
+        self.oy = oy
+        self.interval = interval_seconds
+        self.idle_threshold = idle_threshold_seconds
+        self.provider = provider
+        self.dry_run = dry_run
+        self.log = logger_func or print
+        self._running = False
+        self._last_consolidated_time = time.time()
+        self._consolidator = NidraConsolidator(oy)
+
+    def get_latest_mtime(self) -> float:
+        """Return the newest mtime among ODS workbook and SQLite DB."""
+        mtimes = [0.0]
+        if hasattr(self.oy, "path") and self.oy.path:
+            p = Path(self.oy.path)
+            if p.exists():
+                mtimes.append(p.stat().st_mtime)
+                db_path = p.with_suffix(".db")
+                if db_path.exists():
+                    mtimes.append(db_path.stat().st_mtime)
+        return max(mtimes)
+
+    def check_and_consolidate(self) -> Optional[dict]:
+        """
+        Check if quiet idle condition is satisfied and run consolidation.
+        Returns consolidation report dict if executed, None otherwise.
+        """
+        now = time.time()
+        latest_mtime = self.get_latest_mtime()
+
+        # If there were writes since our last consolidation, check if they are settled
+        if latest_mtime > self._last_consolidated_time:
+            idle_duration = now - latest_mtime
+            if idle_duration >= self.idle_threshold:
+                self.log(
+                    f"[Soul-Engine] Inactivity detected ({idle_duration:.1f}s >= {self.idle_threshold}s). "
+                    "Beginning autonomous Nidra consolidation..."
+                )
+                report = self._consolidator.consolidate(
+                    provider=self.provider, dry_run=self.dry_run
+                )
+
+                # Sync VidyaKosha semantic index if enabled
+                if hasattr(self.oy, "_vidyakosha") and self.oy._vidyakosha:
+                    try:
+                        self.oy._vidyakosha.sync(self.oy.path)
+                    except Exception:
+                        _oy_log.debug("ignored error syncing vidyakosha", exc_info=True)
+
+                # Reconcile WAL if DB engine enabled
+                if hasattr(self.oy, "db_engine") and self.oy.db_engine:
+                    try:
+                        self.oy.db_engine.reconcile()
+                    except Exception:
+                        _oy_log.debug("ignored error reconciling db", exc_info=True)
+
+                # Set last consolidated time to include any writes from consolidation itself
+                self._last_consolidated_time = max(time.time(), self.get_latest_mtime())
+
+                self.log(
+                    f"[Soul-Engine] Consolidation finished: "
+                    f"{report.get('sessions_clustered', 0)} sessions, "
+                    f"{len(report.get('loops_resolved', []))} loops resolved, "
+                    f"{len(report.get('promoted_preferences', []))} preferences promoted."
+                )
+                return report
+
+        return None
+
+    def run_loop(self, max_cycles: Optional[int] = None):
+        """Run the monitoring daemon loop until interrupted or max_cycles reached."""
+        self._running = True
+
+        def _handle_exit(signum, frame):
+            self.log("\n[Soul-Engine] Received shutdown signal. Stopping daemon gracefully...")
+            self._running = False
+
+        try:
+            signal.signal(signal.SIGINT, _handle_exit)
+            signal.signal(signal.SIGTERM, _handle_exit)
+        except (ValueError, AttributeError):
+            pass
+
+        cycles = 0
+        while self._running:
+            try:
+                self.check_and_consolidate()
+            except Exception as e:
+                self.log(f"[Soul-Engine] Error during consolidation cycle: {e}")
+
+            cycles += 1
+            if max_cycles is not None and cycles >= max_cycles:
+                break
+
+            for _ in range(max(1, int(self.interval))):
+                if not self._running:
+                    break
+                time.sleep(1)
+
+        self._running = False
