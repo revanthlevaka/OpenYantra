@@ -179,6 +179,9 @@ def main():
     dream_parser = subparsers.add_parser("dream", aliases=["consolidate", "nidra"], help="Autonomous Sleep & Memory Consolidation (Nidra)")
     dream_parser.add_argument("--dry-run", action="store_true", help="Simulate consolidation without committing changes")
     dream_parser.add_argument("--provider", choices=["auto", "ollama", "heuristic"], default="auto", help="Consolidation engine provider")
+    dream_parser.add_argument("--watch", "--daemon", "-d", dest="watch", action="store_true", help="Run as autonomous background soul-engine daemon")
+    dream_parser.add_argument("--interval", type=int, default=60, help="Daemon check interval in seconds (default: 60)")
+    dream_parser.add_argument("--idle-mins", type=int, default=15, help="Idle quiet period in minutes before consolidation triggers (default: 15)")
 
     # Obsidian Vault (v6.0)
     vault_parser = subparsers.add_parser("vault", help="Bi-directional Obsidian Markdown Vault Sync")
@@ -413,22 +416,37 @@ def main():
             script = script_dir / "cognitive_mcp.py"
             subprocess.run([sys.executable, str(script), "--file", oy_file])
     elif args.command in ["dream", "consolidate", "nidra"]:
-        from openyantra.yantra_nidra import NidraConsolidator
-        nidra = NidraConsolidator(oy)
         dry_run = getattr(args, "dry_run", False)
         provider = getattr(args, "provider", "auto")
-        print(f"\n  🌙 Running Nidra Memory Consolidation (dry_run={dry_run}, provider={provider})...")
-        report = nidra.consolidate(dry_run=dry_run, provider=provider)
-        print(f"  ✨ Consolidation Complete ({report['provider_used']}):")
-        print(f"     • Sessions Clustered: {report['sessions_clustered']}")
-        print(f"     • Active Projects: {', '.join(report['projects_active']) or 'None'}")
-        print(f"     • Open Loops Resolved: {len(report['loops_resolved'])}")
-        for l in report["loops_resolved"]:
-            print(f"       - {l['topic']} ({l['reason']})")
-        print(f"     • Promoted Preferences: {len(report['promoted_preferences'])}")
-        for p in report["promoted_preferences"]:
-            print(f"       - {p['Belief / Principle']}")
-        print(f"\n  Executive Digest:\n     {report['summary']}\n")
+        if getattr(args, "watch", False):
+            from openyantra.yantra_nidra import NidraDaemon
+            idle_sec = getattr(args, "idle_mins", 15) * 60
+            interval_sec = getattr(args, "interval", 60)
+            daemon = NidraDaemon(
+                oy,
+                interval_seconds=interval_sec,
+                idle_threshold_seconds=idle_sec,
+                provider=provider,
+                dry_run=dry_run
+            )
+            print(f"\n  👁️ OpenYantra Soul-Engine Daemon active (polling every {interval_sec}s, idle trigger: {idle_sec // 60}m)")
+            print("     Press Ctrl+C to stop.")
+            daemon.run_loop()
+        else:
+            from openyantra.yantra_nidra import NidraConsolidator
+            nidra = NidraConsolidator(oy)
+            print(f"\n  🌙 Running Nidra Memory Consolidation (dry_run={dry_run}, provider={provider})...")
+            report = nidra.consolidate(dry_run=dry_run, provider=provider)
+            print(f"  ✨ Consolidation Complete ({report['provider_used']}):")
+            print(f"     • Sessions Clustered: {report['sessions_clustered']}")
+            print(f"     • Active Projects: {', '.join(report['projects_active']) or 'None'}")
+            print(f"     • Open Loops Resolved: {len(report['loops_resolved'])}")
+            for l in report["loops_resolved"]:
+                print(f"       - {l['topic']} ({l['reason']})")
+            print(f"     • Promoted Preferences: {len(report['promoted_preferences'])}")
+            for p in report["promoted_preferences"]:
+                print(f"       - {p['Belief / Principle']}")
+            print(f"\n  Executive Digest:\n     {report['summary']}\n")
     elif args.command == "vault":
         from openyantra.yantra_vault import VaultSync
         v_dir = getattr(args, "path", "~/openyantra_vault")

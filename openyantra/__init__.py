@@ -11,7 +11,7 @@ from openyantra.core import (
     SHEET_SESSION_LOG, SHEET_AGENT_CONFIG, SHEET_LEDGER,
     SHEET_INBOX, SHEET_CORRECTIONS, SHEET_QUARANTINE, SHEET_SECURITY_LOG
 )
-from openyantra.yantra_nidra import NidraConsolidator
+from openyantra.yantra_nidra import NidraConsolidator, NidraDaemon
 from openyantra.yantra_vault import VaultSync
 from openyantra.mcp_setup import setup_mcp_config, auto_setup_clients
 from openyantra.yantra_git import install_git_hook, ingest_last_commit
