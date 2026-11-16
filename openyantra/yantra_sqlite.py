@@ -55,7 +55,7 @@ try:
 except ImportError:
     _PANDAS = False
 
-VERSION = "6.2.0"
+VERSION = "6.2.1"
 
 # Sheet name to SQLite table name mapping (plain and emoji names)
 SHEET_TABLE_MAP = {

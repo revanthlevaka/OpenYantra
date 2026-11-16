@@ -192,6 +192,7 @@ def main():
     desktop_parser = subparsers.add_parser("desktop", aliases=["app", "hud"], help="Launch native Desktop App or floating HUD palette")
     desktop_parser.add_argument("--mode", "-m", choices=["hud", "dashboard"], default="hud", help="Desktop window mode: floating 'hud' or full 'dashboard'")
     desktop_parser.add_argument("--port", "-p", type=int, default=7331, help="Local server port")
+    desktop_parser.add_argument("--daemon", "-d", action="store_true", help="Spawn autonomous background soul-engine consolidator with desktop window")
 
     # Git Hook Auto-Ingest (v6.1.0)
     hook_parser = subparsers.add_parser("hook", help="Git post-commit auto-ingest hook")
@@ -476,7 +477,8 @@ def main():
         from openyantra.desktop import launch_desktop
         mode = "hud" if args.command == "hud" else getattr(args, "mode", "hud")
         port = getattr(args, "port", 7331)
-        launch_desktop(oy_file=oy_file, mode=mode, port=port)
+        daemon = getattr(args, "daemon", False)
+        launch_desktop(oy_file=oy_file, mode=mode, port=port, daemon=daemon)
     elif args.command == "hook":
         from openyantra.yantra_git import install_git_hook, ingest_last_commit
         action = getattr(args, "action", "run")

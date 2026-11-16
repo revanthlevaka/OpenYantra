@@ -106,3 +106,15 @@ def test_pluggable_external_router(tmp_path):
     oy.set_external_router(None)
     fallback_routed = oy.route("Any prompt")
     assert isinstance(fallback_routed, list)
+
+
+def test_mock_plexus_router_example():
+    from examples.plexus_router_example import MockPlexusRouter
+    router = MockPlexusRouter()
+    res = router.route("Deploy Kubernetes cluster")
+    assert res is not None
+    assert len(res) >= 1
+    assert res[0]["sheet"] == SHEET_TASKS
+
+    # Unmatched prompt triggers fallback (returns None)
+    assert router.route("Nothing matching") is None
