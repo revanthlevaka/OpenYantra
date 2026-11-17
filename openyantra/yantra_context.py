@@ -33,7 +33,7 @@ try:
 except ImportError:
     _OY_AVAILABLE = False
 
-VERSION = "6.2.1"
+VERSION = "6.2.2"
 
 ALL_SECTIONS = [
     "identity", "goals", "projects", "people",

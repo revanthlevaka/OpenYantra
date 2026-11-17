@@ -31,7 +31,7 @@ from typing import Any, Callable, Optional
 import logging as _oy_logging
 _oy_log = _oy_logging.getLogger("openyantra")
 
-__version__ = "6.2.1"
+__version__ = "6.2.2"
 
 
 try:
@@ -762,7 +762,7 @@ class OpenYantra:
         oy.health_check()        -- system status + stats
     """
 
-    VERSION = "6.2.1"
+    VERSION = "6.2.2"
 
     def __init__(self, path: str | Path, agent_name: str = "Agent",
                  dead_switch_minutes: int = 30):

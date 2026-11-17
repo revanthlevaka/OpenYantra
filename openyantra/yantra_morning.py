@@ -36,7 +36,7 @@ except ImportError:
     _OY_AVAILABLE = False
 
 
-VERSION = "6.2.1"
+VERSION = "6.2.2"
 IMPORTANCE_THRESHOLD = 7    # Only show importance >= this in morning brief
 STALE_DAYS           = 7    # Project counts as stale after this many days
 MAX_LOOPS_SHOWN      = 5    # Max loops to surface in terminal output

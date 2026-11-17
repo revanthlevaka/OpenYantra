@@ -178,7 +178,7 @@ def main():
     # Nidra / Sleep Consolidation (v6.0)
     dream_parser = subparsers.add_parser("dream", aliases=["consolidate", "nidra"], help="Autonomous Sleep & Memory Consolidation (Nidra)")
     dream_parser.add_argument("--dry-run", action="store_true", help="Simulate consolidation without committing changes")
-    dream_parser.add_argument("--provider", choices=["auto", "ollama", "heuristic"], default="auto", help="Consolidation engine provider")
+    dream_parser.add_argument("--provider", choices=["auto", "apple-fm", "ollama", "heuristic"], default="auto", help="Consolidation engine provider (default: auto; uses Apple Foundation Model on macOS, Ollama, or heuristic)")
     dream_parser.add_argument("--watch", "--daemon", "-d", dest="watch", action="store_true", help="Run as autonomous background soul-engine daemon")
     dream_parser.add_argument("--interval", type=int, default=60, help="Daemon check interval in seconds (default: 60)")
     dream_parser.add_argument("--idle-mins", type=int, default=15, help="Idle quiet period in minutes before consolidation triggers (default: 15)")
@@ -193,6 +193,7 @@ def main():
     desktop_parser.add_argument("--mode", "-m", choices=["hud", "dashboard"], default="hud", help="Desktop window mode: floating 'hud' or full 'dashboard'")
     desktop_parser.add_argument("--port", "-p", type=int, default=7331, help="Local server port")
     desktop_parser.add_argument("--daemon", "-d", action="store_true", help="Spawn autonomous background soul-engine consolidator with desktop window")
+    desktop_parser.add_argument("--provider", choices=["auto", "apple-fm", "ollama", "heuristic"], default="auto", help="Soul-engine provider when running with --daemon")
 
     # Git Hook Auto-Ingest (v6.1.0)
     hook_parser = subparsers.add_parser("hook", help="Git post-commit auto-ingest hook")
@@ -439,6 +440,8 @@ def main():
             print(f"\n  🌙 Running Nidra Memory Consolidation (dry_run={dry_run}, provider={provider})...")
             report = nidra.consolidate(dry_run=dry_run, provider=provider)
             print(f"  ✨ Consolidation Complete ({report['provider_used']}):")
+            if report.get("license_notice"):
+                print(f"     💡 Tip: {report['license_notice']}")
             print(f"     • Sessions Clustered: {report['sessions_clustered']}")
             print(f"     • Active Projects: {', '.join(report['projects_active']) or 'None'}")
             print(f"     • Open Loops Resolved: {len(report['loops_resolved'])}")
@@ -478,7 +481,8 @@ def main():
         mode = "hud" if args.command == "hud" else getattr(args, "mode", "hud")
         port = getattr(args, "port", 7331)
         daemon = getattr(args, "daemon", False)
-        launch_desktop(oy_file=oy_file, mode=mode, port=port, daemon=daemon)
+        provider = getattr(args, "provider", "auto")
+        launch_desktop(oy_file=oy_file, mode=mode, port=port, daemon=daemon, provider=provider)
     elif args.command == "hook":
         from openyantra.yantra_git import install_git_hook, ingest_last_commit
         action = getattr(args, "action", "run")
