@@ -1,4 +1,4 @@
-"""OpenYantra -- The Sacred Memory Machine v6.2.1 (Akasha & Sutra)"""
+"""OpenYantra -- The Sacred Memory Machine v6.2.2 (Akasha & Sutra)"""
 
 from openyantra.core import (
     OpenYantra,
@@ -18,7 +18,7 @@ from openyantra.yantra_git import install_git_hook, ingest_last_commit
 from openyantra.desktop import launch_desktop
 from openyantra.yantra_tui import render_tui
 
-__version__ = "6.2.1"
+__version__ = "6.2.2"
 __all__ = [
     "OpenYantra",
     "WriteRequest",

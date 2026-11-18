@@ -11,7 +11,10 @@ import json
 import logging
 import os
 import re
+import shutil
 import signal
+import subprocess
+import sys
 import time
 import urllib.request
 import urllib.error
@@ -33,6 +36,121 @@ class NidraConsolidator:
     def __init__(self, oy: Any, ollama_url: str = "http://localhost:11434"):
         self.oy = oy
         self.ollama_url = ollama_url.rstrip("/")
+
+    def is_apple_fm_available(self, timeout_sec: float = 1.0) -> Tuple[bool, Optional[str]]:
+        """
+        Check if Apple Foundation Model (AFM) via /usr/bin/fm is available and licensed on macOS.
+        Returns:
+            (True, "system") if available and licensed,
+            (False, "license_required") if installed but legal terms not agreed,
+            (False, None) if not on macOS or fm CLI not found.
+        """
+        if sys.platform != "darwin":
+            return False, None
+
+        fm_path = shutil.which("fm") or "/usr/bin/fm"
+        if not os.path.exists(fm_path) or not os.access(fm_path, os.X_OK):
+            return False, None
+
+        try:
+            res = subprocess.run(
+                [fm_path, "license", "--status"],
+                capture_output=True,
+                text=True,
+                timeout=timeout_sec
+            )
+            out = (res.stdout + res.stderr).lower()
+            if "not agreed" in out or res.returncode == 69:
+                return False, "license_required"
+            if res.returncode == 0 or "agreed" in out:
+                return True, "system"
+        except Exception:
+            _oy_log.debug("ignored fm license check error", exc_info=True)
+            return False, None
+
+        return False, None
+
+    def query_apple_fm(self, prompt: str, timeout_sec: float = 15.0) -> Optional[str]:
+        """Query Apple Foundation Model via /usr/bin/fm respond."""
+        fm_path = shutil.which("fm") or "/usr/bin/fm"
+        try:
+            res = subprocess.run(
+                [fm_path, "respond", "--no-stream", prompt],
+                capture_output=True,
+                text=True,
+                timeout=timeout_sec
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                return res.stdout.strip()
+            logger.debug(f"Apple FM query exited with code {res.returncode}: {res.stderr}")
+        except Exception as e:
+            logger.debug(f"Apple FM query failed: {e}")
+        return None
+
+    def resolve_provider(self, requested_provider: str = "auto") -> Tuple[str, Optional[str], Optional[str]]:
+        """
+        Resolve the effective inference provider and model name.
+        Returns: (provider_name, model_name, notice_str)
+
+        Resolution hierarchy:
+        1. requested_provider (if != 'auto')
+        2. OPENYANTRA_NIDRA_PROVIDER env var (if set and != 'auto')
+        3. 'auto' cascade:
+           - On macOS: check Apple Foundation Model. If licensed -> ('apple-fm', 'system', None).
+             If unlicensed -> log/return notice to run 'sudo fm license' and check Ollama.
+           - Check Ollama (:11434). If active -> ('ollama', model_name, notice).
+           - Fallback -> ('heuristic', None, notice).
+        """
+        notice = None
+        effective = requested_provider.lower().strip() if requested_provider else "auto"
+
+        # Check environment variable override when auto is requested
+        if effective == "auto":
+            env_override = os.environ.get("OPENYANTRA_NIDRA_PROVIDER", "").lower().strip()
+            if env_override in ("apple-fm", "afm", "apple"):
+                effective = "apple-fm"
+            elif env_override in ("ollama", "heuristic"):
+                effective = env_override
+
+        if effective in ("apple-fm", "afm", "apple"):
+            afm_avail, status = self.is_apple_fm_available()
+            if afm_avail:
+                return "apple-fm", "system", None
+            if status == "license_required":
+                notice = "Apple Foundation Model found at /usr/bin/fm, but legal terms not agreed. Run 'sudo fm license' to enable."
+            else:
+                notice = "Apple Foundation Model (/usr/bin/fm) is not available on this system."
+            logger.warning(f"[Nidra] {notice} Falling back to heuristic.")
+            return "heuristic", None, notice
+
+        if effective == "ollama":
+            ollama_avail, model = self.is_ollama_available()
+            if ollama_avail and model:
+                return "ollama", model, None
+            notice = f"Ollama not reachable at {self.ollama_url}. Falling back to heuristic."
+            logger.warning(f"[Nidra] {notice}")
+            return "heuristic", None, notice
+
+        if effective == "heuristic":
+            return "heuristic", None, None
+
+        # Effective is "auto": Cascade
+        # 1. On macOS: prefer Apple Foundation Model
+        if sys.platform == "darwin":
+            afm_avail, status = self.is_apple_fm_available()
+            if afm_avail:
+                return "apple-fm", "system", None
+            if status == "license_required":
+                notice = "Apple Foundation Model found at /usr/bin/fm. Run 'sudo fm license' to enable native zero-RAM on-device inference without Ollama."
+                logger.info(f"[Nidra] {notice}")
+
+        # 2. Check Ollama
+        ollama_avail, model = self.is_ollama_available()
+        if ollama_avail and model:
+            return "ollama", model, notice
+
+        # 3. Fallback to heuristic
+        return "heuristic", None, notice
 
     def is_ollama_available(self, timeout_sec: float = 1.0) -> Tuple[bool, Optional[str]]:
         """Check if local Ollama daemon is active and return the first available model name."""
@@ -329,28 +447,31 @@ class NidraConsolidator:
 
         # 4. Synthesize Narrative
         provider_used = "heuristic"
-        model_name = None
-        ollama_active = False
-
-        if provider in ("auto", "ollama"):
-            ollama_active, model_name = self.is_ollama_available()
+        chosen_provider, model_name, license_notice = self.resolve_provider(provider)
 
         summary_text = ""
-        if ollama_active and model_name and provider != "heuristic":
-            prompt = (
-                "You are the subconscious memory consolidation daemon (Nidra) for an AI knowledge system.\n"
-                f"Recent topics touched: {', '.join(cluster_info['topics'][-10:])}\n"
-                f"Recent decisions made: {'; '.join(cluster_info['decisions'][-8:])}\n"
-                f"Active projects: {', '.join(cluster_info['projects'])}\n"
-                "Synthesize a concise 2-sentence episodic memory summary capturing key progress, changes, and focus areas."
-            )
+        prompt = (
+            "You are the subconscious memory consolidation daemon (Nidra) for an AI knowledge system.\n"
+            f"Recent topics touched: {', '.join(cluster_info['topics'][-10:])}\n"
+            f"Recent decisions made: {'; '.join(cluster_info['decisions'][-8:])}\n"
+            f"Active projects: {', '.join(cluster_info['projects'])}\n"
+            "Synthesize a concise 2-sentence episodic memory summary capturing key progress, changes, and focus areas."
+        )
+
+        if chosen_provider == "apple-fm":
+            llm_summary = self.query_apple_fm(prompt)
+            if llm_summary:
+                summary_text = llm_summary
+                provider_used = "apple-fm (system)"
+
+        elif chosen_provider == "ollama" and model_name:
             llm_summary = self.query_ollama(prompt, model=model_name)
             if llm_summary:
                 summary_text = llm_summary
                 provider_used = f"ollama ({model_name})"
 
         if not summary_text:
-            # Heuristic synthesis
+            # Heuristic synthesis fallback
             topics_snippet = ", ".join(cluster_info["topics"][-5:]) if cluster_info["topics"] else "Routine operations"
             proj_snippet = ", ".join(cluster_info["projects"]) if cluster_info["projects"] else "General"
             dec_snippet = f"Captured {len(cluster_info['decisions'])} decisions" if cluster_info["decisions"] else "No major architectural decisions"
@@ -381,6 +502,7 @@ class NidraConsolidator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "dry_run": dry_run,
             "provider_used": provider_used,
+            "license_notice": license_notice,
             "sessions_clustered": cluster_info["count"],
             "projects_active": cluster_info["projects"],
             "summary": summary_text,

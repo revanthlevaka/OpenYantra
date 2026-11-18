@@ -53,6 +53,7 @@ def launch_desktop(
     port: int = 7331,
     title: str = "OpenYantra",
     daemon: bool = False,
+    provider: str = "auto",
 ):
     """
     Launches native desktop window (Dashboard or HUD) using pywebview or browser app mode.
@@ -71,11 +72,13 @@ def launch_desktop(
                 oy,
                 interval_seconds=60,
                 idle_threshold_seconds=300,
+                provider=provider,
                 logger_func=lambda msg: print(f"  [Desktop Soul-Engine] {msg}")
             )
+            resolved_p, _, _ = nidra_worker._consolidator.resolve_provider(provider)
             t = threading.Thread(target=nidra_worker.run_loop, daemon=True)
             t.start()
-            print("  👁️ Background Soul-Engine daemon started alongside Desktop HUD.")
+            print(f"  👁️ Background Soul-Engine daemon started ({resolved_p}) alongside Desktop HUD.")
         except Exception as e:
             print(f"  [Desktop Warning] Could not spawn background daemon: {e}")
 

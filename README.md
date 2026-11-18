@@ -75,7 +75,9 @@ Mimics biological slow-wave sleep. Run `yantra dream` or `yantra consolidate`:
 - **Episodic Clustering:** Clusters recent session logs into macro-milestones and decisions.
 - **Open Loop Auto-Resolution:** Automatically identifies and closes loops resolved during work.
 - **Preference Promotion:** Promotes recurring user preferences (e.g., *"prefers dark mode"*, *"always use python 3.9"*) into foundational `Beliefs & Principles`.
-- **Local Ollama Integration:** Connects to local Ollama (`llama3`, `mistral`, `phi3`) with automatic fallback to deterministic heuristics. Zero cloud dependency.
+- **🍎 Native Apple Foundation Model (AFM) on macOS:** On Apple Silicon Macs running macOS Sequoia (15.1+), OpenYantra automatically detects and uses the built-in system Foundation Model (`/usr/bin/fm`) executing on the **Apple Neural Engine (ANE)**. Zero setup, zero downloads (0 MB extra disk), sub-50ms latency, and zero private RAM bloat.
+- **🎛️ User-Controlled Inference & Opt-Out:** Switch models or opt out anytime via CLI (`--provider apple-fm|ollama|heuristic`) or environment variable (`export OPENYANTRA_NIDRA_PROVIDER=ollama`).
+- **🦙 Ollama & Heuristic Fallbacks:** On Linux/Windows or when AFM is unavailable/unlicensed, seamlessly cascades to local Ollama (`llama3`, `mistral`) or deterministic rule-based heuristics with zero cloud dependency.
 
 ### 4. 📓 Bi-Directional Obsidian Vault Sync (`yantra vault sync`)
 - **Export:** Translates your Chitrapat into clean Obsidian Markdown notes with YAML frontmatter, wikilinks (`[[Projects/X]]`), and task checklists.
@@ -316,7 +318,7 @@ tests/test_vault.py ...                                                  [100%]
 | **Human Editability & Transparency**| API / Closed web dashboard | Closed JSON / Vector embeddings | **Open spreadsheet (`.ods`), Obsidian Markdown** |
 | **Desktop Ergonomics** | Browser dashboard | Browser dashboard | **Floating HUD (`Cmd+Shift+Y`), Cyberpunk TUI** |
 | **Secret & Credential Redactor** | ❌ (Raw context sent over wire) | ❌ (Requires manual masking) | **✅ Raksha automatic regex sanitizer** |
-| **Sleep & Memory Consolidation** | Cloud background job | ⚠️ Basic clustering | **✅ Local Ollama Nidra Consolidation** |
+| **Sleep & Memory Consolidation** | Cloud background job | ⚠️ Basic clustering | **✅ Native Apple Foundation Model (ANE) / Local Ollama / Heuristics** |
 | **Obsidian Vault Sync** | ❌ None | ❌ None | **✅ Bi-directional Markdown & `- [x]` sync** |
 | **1-Click MCP Setup** | ⚠️ Manual config | ⚠️ Manual config | **✅ Auto-injects Claude & Cursor JSON** |
 | **Vendor Lock-in & Pricing** | Monthly SaaS Subscription | Metered API Pricing | **100% Free & Open Source (MIT / CC0)** |
