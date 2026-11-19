@@ -745,12 +745,12 @@ class LedgerAgent:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# OpenYantra -- public API v6.2.0
+# OpenYantra -- public API v6.2.2
 # ══════════════════════════════════════════════════════════════════════════════
 
 class OpenYantra:
     """
-    OpenYantra v6.2.0 -- The Sacred Memory Machine
+    OpenYantra v6.2.2 -- The Sacred Memory Machine
 
     New in v2.1:
         oy.inbox(text)           -- quick capture to Inbox sheet

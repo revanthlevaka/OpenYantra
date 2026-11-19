@@ -99,6 +99,27 @@ def test_query_apple_fm_failure(mock_oy):
         assert res is None
 
 
+def test_query_apple_fm_default_timeout(mock_oy):
+    nidra = NidraConsolidator(mock_oy)
+    mock_run = MagicMock(returncode=0, stdout="Success", stderr="")
+
+    with patch("subprocess.run", return_value=mock_run) as mock_sub:
+        nidra.query_apple_fm("Test prompt")
+        assert mock_sub.call_args is not None
+        assert mock_sub.call_args[1].get("timeout") == 5.0
+
+
+def test_query_apple_fm_custom_timeout_env(mock_oy):
+    nidra = NidraConsolidator(mock_oy)
+    mock_run = MagicMock(returncode=0, stdout="Success", stderr="")
+
+    with patch.dict(os.environ, {"OPENYANTRA_NIDRA_TIMEOUT": "2.5"}), \
+         patch("subprocess.run", return_value=mock_run) as mock_sub:
+        nidra.query_apple_fm("Test prompt")
+        assert mock_sub.call_args is not None
+        assert mock_sub.call_args[1].get("timeout") == 2.5
+
+
 # ── Provider Resolution & Cascade ─────────────────────────────────────────────
 
 def test_resolve_provider_auto_on_mac_with_afm(mock_oy):

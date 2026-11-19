@@ -1,6 +1,6 @@
 """
 vidyakosha.py -- VidyaKosha (विद्याकोश -- Knowledge Repository)
-OpenYantra v6.2.0 -- Sidecar Semantic Index
+OpenYantra v6.2.2 -- Sidecar Semantic Index
 
 The VidyaKosha sits beside the Chitrapat and enables agents to query
 memory by meaning, not just keyword matching.

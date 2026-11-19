@@ -1,5 +1,5 @@
 """
-yantra_ui.py -- OpenYantra Browser Dashboard v6.2.0
+yantra_ui.py -- OpenYantra Browser Dashboard v6.2.2
 Run: yantra ui -> http://localhost:7331
 
 v6.2.0:
@@ -771,7 +771,7 @@ async def api_vault_sync(req: Request):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenYantra Dashboard v6.2.0")
+    parser = argparse.ArgumentParser(description=f"OpenYantra Dashboard v{app.version}")
     parser.add_argument("--file","-f",default=str(Path.home()/"openyantra"/"chitrapat.ods"))
     parser.add_argument("--port","-p",type=int,default=7331)
     parser.add_argument("--host",default="127.0.0.1")
@@ -783,7 +783,7 @@ def main():
     _oy = OpenYantra(str(path), agent_name="Yantra-UI")
     _cog_store = CognitiveMemoryStore(path.parent / "cognitive_memories.json")
     h = _oy.health_check()
-    print(f"\n{'='*50}\n  OpenYantra Dashboard v6.2.0 (Akasha & Sutra)\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
+    print(f"\n{'='*50}\n  OpenYantra Dashboard v{app.version} (Akasha & Sutra)\n  → http://{args.host}:{args.port}\n  Loops:{h.get('open_loops',0)} Inbox:{h.get('inbox_pending',0)}\n{'='*50}\n")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 
 if __name__ == "__main__":

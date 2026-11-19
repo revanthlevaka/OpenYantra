@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenYantra Mail Server (v6.2.0)
+OpenYantra Mail Server (v6.2.2)
 A simple SMTP server that listens for incoming emails and routes them to the Inbox.
 """
 

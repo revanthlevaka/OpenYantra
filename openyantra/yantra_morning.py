@@ -1,5 +1,5 @@
 """
-yantra_morning.py -- OpenYantra Morning Briefing v6.2.0
+yantra_morning.py -- OpenYantra Morning Briefing v6.2.2
 
 Surfaces what matters before you open any other app.
 Runs automatically on first yantra command each day.
@@ -282,7 +282,7 @@ def run_morning_brief(oy_path: str, force: bool = False) -> dict:
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="OpenYantra Morning Briefing v6.2.0")
+    parser = argparse.ArgumentParser(description=f"OpenYantra Morning Briefing v{VERSION}")
     parser.add_argument("--file", "-f",
                         default=str(Path.home() / "openyantra" / "chitrapat.ods"))
     parser.add_argument("--force", action="store_true",

@@ -1,5 +1,5 @@
 """
-openyantra.adapters.openclaw -- OpenYantra Adapter for OpenClaw v6.2.0
+openyantra.adapters.openclaw -- OpenYantra Adapter for OpenClaw v6.2.2
 
 Register in openclaw config.toml:
     [hooks]
