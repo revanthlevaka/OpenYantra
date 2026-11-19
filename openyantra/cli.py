@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenYantra CLI v6.2.0
+OpenYantra CLI v6.2.2
 Command-line interface for The Sacred Memory Machine.
 """
 

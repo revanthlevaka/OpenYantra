@@ -1,5 +1,5 @@
 """
-yantra_digest.py -- OpenYantra Daily Digest v6.2.0
+yantra_digest.py -- OpenYantra Daily Digest v6.2.2
 
 Proactively surfaces what matters -- open loops, stale projects,
 memory insights, and a random past memory for reflection.
@@ -271,7 +271,7 @@ def run_scheduled(oy_path: str, time_str: str = "08:00"):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OpenYantra Daily Digest v6.2.0"
+        description="OpenYantra Daily Digest v6.2.2"
     )
     parser.add_argument(
         "--file", "-f",

@@ -1,5 +1,5 @@
 """
-telegram_bot.py -- OpenYantra Telegram Bot v6.2.0
+telegram_bot.py -- OpenYantra Telegram Bot v6.2.2
 Mobile capture: message @YourBot → saved to Inbox
 
 Setup:
@@ -247,7 +247,7 @@ async def handle_error(update: object, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OpenYantra Telegram Bot v6.2.0"
+        description="OpenYantra Telegram Bot v6.2.2"
     )
     parser.add_argument(
         "--file", "-f",

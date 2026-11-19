@@ -1,5 +1,5 @@
 """
-OpenYantra Framework Adapters (v6.2.0).
+OpenYantra Framework Adapters (v6.2.2).
 First-class drop-in bindings for LangChain, CrewAI, OpenClaw, AutoGen, and custom LLM agent pipelines.
 """
 

@@ -1,5 +1,5 @@
 """
-yantra_security.py -- OpenYantra Security Engine v6.2.0
+yantra_security.py -- OpenYantra Security Engine v6.2.2
 The Raksha Layer (रक्षा -- Protection)
 
 Protects the Chitrapat from:
@@ -589,7 +589,7 @@ def run_security_audit(oy_path: str) -> None:
     raksha = Raksha()
 
     print(f"\n{'═'*60}")
-    print(f"  🔒  OpenYantra Security Audit v6.2.0")
+    print(f"  🔒  OpenYantra Security Audit v6.2.2")
     print(f"  Chitrapat: {path}")
     print(f"  Scanned:   {datetime.utcnow().isoformat(timespec='seconds')} UTC")
     print(f"{'═'*60}")

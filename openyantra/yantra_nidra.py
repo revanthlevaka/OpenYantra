@@ -70,8 +70,14 @@ class NidraConsolidator:
 
         return False, None
 
-    def query_apple_fm(self, prompt: str, timeout_sec: float = 15.0) -> Optional[str]:
+    def query_apple_fm(self, prompt: str, timeout_sec: Optional[float] = None) -> Optional[str]:
         """Query Apple Foundation Model via /usr/bin/fm respond."""
+        if timeout_sec is None:
+            try:
+                timeout_sec = float(os.environ.get("OPENYANTRA_NIDRA_TIMEOUT", "5.0"))
+            except ValueError:
+                timeout_sec = 5.0
+
         fm_path = shutil.which("fm") or "/usr/bin/fm"
         try:
             res = subprocess.run(
@@ -170,8 +176,13 @@ class NidraConsolidator:
             _oy_log.debug("ignored error", exc_info=True)
         return False, None
 
-    def query_ollama(self, prompt: str, model: str, timeout_sec: float = 10.0) -> Optional[str]:
+    def query_ollama(self, prompt: str, model: str, timeout_sec: Optional[float] = None) -> Optional[str]:
         """Query local Ollama instance for text generation."""
+        if timeout_sec is None:
+            try:
+                timeout_sec = float(os.environ.get("OPENYANTRA_NIDRA_TIMEOUT", "10.0"))
+            except ValueError:
+                timeout_sec = 10.0
         try:
             payload = json.dumps({
                 "model": model,
